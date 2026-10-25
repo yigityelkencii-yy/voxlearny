@@ -308,6 +308,9 @@
         <button onclick="switchTab('dict')" id="tab-dict" class="tab-btn px-3 sm:px-3.5 py-1.5 rounded-lg text-slate-400 hover:text-white transition shrink-0">
           Sözlük
         </button>
+        <button onclick="switchTab('reading')" id="tab-reading" class="tab-btn px-3 sm:px-3.5 py-1.5 rounded-lg text-slate-400 hover:text-white transition shrink-0">
+          Okuma Lab
+        </button>
         <button onclick="switchTab('grammar')" id="tab-grammar" class="tab-btn px-3 sm:px-3.5 py-1.5 rounded-lg text-slate-400 hover:text-white transition shrink-0">
           Gramer
         </button>
@@ -375,7 +378,10 @@
           20'lik Tur (<span id="fcActiveLevelLabel">Tümü</span>)
         </button>
         <button onclick="setFcSource('learn')" id="fcSource-learn" class="flex-1 py-1.5 px-3 rounded-lg font-medium transition text-rose-300 hover:bg-white/[0.04] flex items-center justify-center gap-1.5">
-          Tekrar Listesi (<span id="fcBtnLearnCount">0</span>)
+          Tekrar (<span id="fcBtnLearnCount">0</span>)
+        </button>
+        <button onclick="setFcSource('due')" id="fcSource-due" class="flex-1 py-1.5 px-3 rounded-lg font-medium transition text-amber-300 hover:bg-white/[0.04] flex items-center justify-center gap-1.5">
+          🔔 Vadesi Dolanlar (<span id="fcBtnDueCount">0</span>)
         </button>
         <button onclick="toggleReverseMode()" id="btnReverseMode" title="Öğrenme Yönünü Değiştir" 
                 class="py-1.5 px-3 rounded-lg font-mono text-[11px] transition bg-white/[0.04] hover:bg-white/[0.08] text-[#d6c7b2] border border-white/5 flex items-center justify-center gap-1.5 shrink-0">
@@ -429,6 +435,7 @@
                   <div class="flex items-center gap-2">
                     <span id="fcLvlBadge" class="px-2 py-0.5 rounded bg-white/[0.05] text-[#e8dbcc] font-mono text-[11px] border border-white/[0.08]">B1</span>
                     <span id="fcAwlBadge" class="hidden px-2 py-0.5 rounded bg-rose-500/10 text-rose-300 font-mono text-[10px] tracking-wider uppercase border border-rose-500/20">AWL</span>
+                    <span id="fcLeitnerBadge" class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 font-mono text-[10px] border border-amber-500/20">📦 Kutu 1/5</span>
                     <span id="fcModeBadge" class="px-2 py-0.5 rounded bg-white/[0.03] text-[#a8998c]/70 text-[10px] font-mono border border-white/5">EN</span>
                   </div>
                   <div class="flex items-center gap-2">
@@ -462,7 +469,10 @@
               <div class="card-back" onclick="flipCard()">
                 
                 <div class="flex justify-between items-center w-full">
-                  <span id="fcBackSubTitle" class="text-[10px] font-mono tracking-[0.22em] text-[#d6c7b2]/60 uppercase">Anlam ve Bağlam</span>
+                  <div class="flex items-center gap-2">
+                    <span id="fcBackSubTitle" class="text-[10px] font-mono tracking-[0.22em] text-[#d6c7b2]/60 uppercase">Anlam ve Bağlam</span>
+                    <span id="fcBackLeitnerBadge" class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 font-mono text-[10px] border border-amber-500/20">📦 Kutu 1/5</span>
+                  </div>
                   <button type="button" onclick="event.stopPropagation(); speakCurrentCard();" title="Telaffuz" class="p-1.5 rounded-lg text-[#d6c7b2]/70 hover:text-white hover:bg-white/[0.06] transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
                   </button>
@@ -840,6 +850,229 @@
     </section>
 
   
+
+    <!-- ==================== 5. READING LAB & ACADEMIC UPGRADER MODULE ==================== -->
+    <section id="view-reading" class="hidden max-w-4xl mx-auto space-y-6">
+      
+      <!-- Reading Lab Header & Sub-tab Switcher -->
+      <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between pb-3 border-b border-rose-950/40">
+        <div>
+          <div class="text-[11px] font-mono tracking-widest text-[#d6c7b2]/60 uppercase">Bilişsel Hafıza & Metin Çözümleme</div>
+          <h2 class="font-serif-hero text-2xl sm:text-3xl font-medium text-[#fdf6ee] flex items-center gap-2.5">
+            <span>Akıllı Okuma Laboratuvarı</span>
+            <span class="text-xs px-2.5 py-0.5 rounded-full bg-rose-950/80 border border-rose-500/40 text-rose-300 font-sans font-medium">Laboratuvar</span>
+          </h2>
+          <p class="text-[#a8998c] text-xs sm:text-sm mt-1">
+            Akademik metinleri CEFR & AWL kelime yoğunluğuna göre analiz et, kelimelere dokunup anlamını keşfet ve basit ifadeleri akademik alternatifleriyle yükselt.
+          </p>
+        </div>
+
+        <div class="flex items-center gap-1.5 bg-black/40 p-1 rounded-xl border border-white/[0.08] text-xs shrink-0 self-stretch sm:self-auto">
+          <button onclick="switchReadingSubTab('highlighter')" id="subtab-highlighter" class="flex-1 sm:flex-initial px-3.5 py-2 rounded-lg font-medium transition bg-rose-900/70 text-white border border-rose-500/30 shadow-sm flex items-center justify-center gap-1.5">
+            <span>📖</span> <span>Okuma & Fosforlama</span>
+          </button>
+          <button onclick="switchReadingSubTab('upgrader')" id="subtab-upgrader" class="flex-1 sm:flex-initial px-3.5 py-2 rounded-lg font-medium transition text-slate-400 hover:text-white flex items-center justify-center gap-1.5">
+            <span>✍️</span> <span>Kelime Yükseltici</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- PANEL 1: OKUMA & AKILLI FOSFORLAMA (SMART HIGHLIGHTER) -->
+      <div id="panel-reading-highlighter" class="space-y-5">
+        
+        <!-- Text Source Selection -->
+        <div class="flex flex-wrap items-center justify-between gap-2 p-2 rounded-2xl bg-[#140609] border border-white/[0.08]">
+          <div class="flex flex-wrap items-center gap-1.5">
+            <span class="text-[11px] font-mono uppercase tracking-wider text-[#d6c7b2]/60 px-2">Akademik Paragraflar:</span>
+            <button onclick="loadPresetReadingText(0)" id="readingPreset-0" class="px-3 py-1.5 rounded-xl text-xs font-medium border transition bg-rose-900/60 border-rose-500/30 text-white">
+              1. AI & Ethics
+            </button>
+            <button onclick="loadPresetReadingText(1)" id="readingPreset-1" class="px-3 py-1.5 rounded-xl text-xs font-medium border transition bg-white/[0.03] border-white/5 text-slate-300 hover:text-white hover:bg-white/[0.06]">
+              2. Climate Mechanisms
+            </button>
+            <button onclick="loadPresetReadingText(2)" id="readingPreset-2" class="px-3 py-1.5 rounded-xl text-xs font-medium border transition bg-white/[0.03] border-white/5 text-slate-300 hover:text-white hover:bg-white/[0.06]">
+              3. Behavioral Economics
+            </button>
+          </div>
+          <button onclick="toggleCustomPasteArea()" id="togglePasteBtn" class="px-3 py-1.5 rounded-xl text-xs font-medium border transition bg-white/[0.04] hover:bg-white/[0.08] text-[#d6c7b2] border-white/10 flex items-center gap-1.5">
+            <span>📋</span> <span>Kendi Metnini Yapıştır</span>
+          </button>
+        </div>
+
+        <!-- Custom Paste Area (Collapsible) -->
+        <div id="readingCustomPasteBox" class="hidden p-4 rounded-2xl bg-[#140609] border border-white/[0.08] space-y-3">
+          <div class="flex justify-between items-center text-xs">
+            <span class="text-[#d6c7b2] font-medium">Kendi Makale / Essay Metninizi Yapıştırın:</span>
+            <span class="text-[#a8998c] font-mono text-[11px]">3.609 kelimelik CEFR + AWL havuzu ile taranır</span>
+          </div>
+          <textarea id="readingCustomTextarea" rows="4" placeholder="Metninizi buraya yapıştırın... (örn: The comprehensive analysis demonstrates that autonomous technology alters economic structures...)"
+                    class="w-full bg-black/60 border border-white/[0.08] rounded-xl p-3.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-rose-500 transition font-sans leading-relaxed"></textarea>
+          <div class="flex justify-end gap-2">
+            <button onclick="toggleCustomPasteArea()" class="px-4 py-2 rounded-xl text-xs text-slate-400 hover:text-white transition">İptal</button>
+            <button onclick="analyzeCustomReadingText()" class="px-5 py-2 rounded-xl bg-rose-900/80 hover:bg-rose-800 text-white font-medium text-xs border border-rose-500/30 transition shadow-lg shadow-rose-950/50">
+              Metni Analiz Et & Fosforla ➔
+            </button>
+          </div>
+        </div>
+
+        <!-- Text Statistics Strip (Metin İstatistik Şeridi) -->
+        <div class="p-4 rounded-2xl bg-black/40 border border-white/[0.06] space-y-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/[0.05]">
+            <div class="text-xs sm:text-sm font-medium text-[#fdf6ee] flex flex-wrap items-center gap-x-4 gap-y-1.5">
+              <span>Toplam: <strong id="statTotalWords" class="font-mono text-amber-300">0</strong> Kelime</span>
+              <span class="text-white/20 hidden sm:inline">|</span>
+              <span>B2/C1 Oranı: <strong id="statB2C1Ratio" class="font-mono text-rose-300">%0</strong></span>
+              <span class="text-white/20 hidden sm:inline">|</span>
+              <span>AWL Akademik Yoğunluk: <strong id="statAwlRatio" class="font-mono text-pink-300">%0</strong></span>
+            </div>
+            <div class="text-[11px] font-mono text-[#a8998c] flex items-center gap-1.5">
+              <span>💡 Kelimenin üzerine tıklayarak Türkçe anlamını ve telaffuzunu görün</span>
+            </div>
+          </div>
+
+          <!-- Color Legend -->
+          <div class="flex flex-wrap items-center gap-2 pt-1 text-xs">
+            <span class="text-[11px] font-mono text-[#a8998c]/70 uppercase">Fosforlama Rehberi:</span>
+            <span class="px-2 py-0.5 rounded text-[11px] border-b border-sky-400/50 text-sky-200">A1/A2 Temel</span>
+            <span class="px-2 py-0.5 rounded text-[11px] bg-amber-500/15 text-amber-200 border-b border-amber-500/30 font-medium">B1/B2 Orta-İleri</span>
+            <span class="px-2 py-0.5 rounded text-[11px] bg-rose-500/15 text-rose-300 border-b border-rose-500/40 font-medium">C1 İleri</span>
+            <span class="px-2 py-0.5 rounded text-[11px] bg-pink-500/20 text-pink-300 border-b border-pink-500/50 font-bold font-mono">🎓 AWL Akademik</span>
+          </div>
+        </div>
+
+        <!-- Interactive Reading Paper Display -->
+        <div class="p-6 sm:p-8 rounded-2xl bg-[#140609] border border-white/[0.08] shadow-2xl relative">
+          <div id="readingTextTitle" class="font-serif-hero text-xl sm:text-2xl font-medium text-[#fdf6ee] mb-4 pb-3 border-b border-white/[0.05]">
+            Metin Başlığı
+          </div>
+          <div id="readingRenderedContainer" class="font-serif text-base sm:text-lg text-[#ede2d7] leading-[2.1] tracking-wide select-text space-y-4">
+            <!-- Interactively highlighted tokens will be injected here -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- PANEL 2: AKADEMİK KELİME YÜKSELTİCİ (WRITING VOCABULARY UPGRADER) -->
+      <div id="panel-reading-upgrader" class="hidden space-y-5">
+        
+        <div class="p-6 rounded-2xl bg-[#140609] border border-white/[0.08] shadow-xl space-y-4">
+          <div class="space-y-1">
+            <div class="text-[11px] font-mono tracking-widest text-[#d6c7b2]/60 uppercase">Akademik Yazım & Essay Geliştirici</div>
+            <h3 class="font-serif-hero text-2xl font-medium text-[#fdf6ee] flex items-center gap-2">
+              <span>Kelime Yükseltici (Writing Upgrader)</span>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20 font-sans">Essay Güçlendirici</span>
+            </h3>
+            <p class="text-[#a8998c] text-xs sm:text-sm">
+              Cümlenizdeki basit veya günlük ifadeleri (örn: <em>think, big, problem, fix, good, bad</em>) üniversite hazırlık, TOEFL ve IELTS standartlarına taşıyacak akademik alternatifleriyle tek tıkla değiştirin.
+            </p>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-xs font-mono text-[#d6c7b2]/80 uppercase tracking-wider">Cümlenizi veya Paragrafınızı Yazın / Yapıştırın:</label>
+            <textarea id="upgraderInput" rows="3" placeholder="Örnek: I think that pollution is a big problem, and we need to fix it because it is bad for nature and helps to cause extreme weather."
+                      class="w-full bg-black/60 border border-white/[0.08] rounded-xl p-3.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-rose-500 transition font-sans leading-relaxed"></textarea>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+            <div class="flex items-center gap-2">
+              <button onclick="loadSampleUpgraderText()" class="px-3 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-[#d6c7b2] text-xs font-mono border border-white/5 transition">
+                Örnek Cümle Doldur ⚡
+              </button>
+            </div>
+            <button onclick="analyzeSentenceUpgrades()" class="px-6 py-2.5 rounded-xl bg-rose-900/80 hover:bg-rose-800 text-white font-medium text-xs sm:text-sm border border-rose-500/30 transition shadow-lg shadow-rose-950/50 flex items-center gap-2">
+              <span>⚡</span> <span>Cümleyi İncele ve Kelimeleri Yükselt</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Upgraded Output Card -->
+        <div id="upgraderOutputCard" class="hidden p-6 sm:p-7 rounded-2xl bg-[#140609] border border-white/[0.08] shadow-2xl space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b border-white/[0.06]">
+            <div class="text-xs font-mono text-[#d6c7b2] flex items-center gap-2">
+              <span>Akademik İnceleme Sonucu:</span>
+              <span id="upgraderMatchesCount" class="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 font-bold text-[11px]">0 Geliştirilebilir Kelime</span>
+            </div>
+            <button onclick="copyUpgradedText()" id="copyUpgradedBtn" class="px-3.5 py-1.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-white text-xs font-medium border border-white/10 transition flex items-center gap-1.5">
+              <span>📋</span> <span>Metni Kopyala</span>
+            </button>
+          </div>
+
+          <!-- Interactive Clickable Sentence Container -->
+          <div id="upgraderRenderedBox" class="p-4 rounded-xl bg-black/50 border border-white/[0.06] font-serif text-base sm:text-lg text-[#ede2d7] leading-[2.2] tracking-wide">
+            <!-- Highlighted clickable chips -->
+          </div>
+
+          <div class="text-[11px] font-mono text-[#a8998c] flex items-center gap-1.5 pt-1">
+            <span>✨ İpucu: Altı kesikli ve parlak olan kelimelere tıklayarak gelişmiş akademik alternatiflerini cümleye anında yerleştirin.</span>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- Reading Word Popover / Details Modal -->
+    <div id="readingWordModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+      <div class="bg-[#140609] border border-white/[0.08] rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl relative">
+        <button onclick="closeReadingWordModal()" class="absolute top-4 right-4 p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.05] transition text-sm">
+          ✕
+        </button>
+
+        <div class="space-y-1 text-left">
+          <div class="flex items-center gap-2 flex-wrap">
+            <h3 id="rModalWord" class="font-serif-hero text-2xl font-bold text-[#fdf6ee]">Word</h3>
+            <span id="rModalLvl" class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-lg border bg-slate-800 text-slate-300">B2</span>
+            <span id="rModalAwl" class="hidden text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-pink-500/10 text-pink-300 border border-pink-500/20">🎓 AWL</span>
+            <span id="rModalLeitner" class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20">📦 Kutu 1/5</span>
+          </div>
+          <div class="flex items-center gap-2 text-xs font-mono text-cyan-300 pt-0.5">
+            <span id="rModalIpa">/ipa/</span>
+            <span id="rModalPos" class="text-slate-500 italic">verb</span>
+            <button id="rModalSpeakBtn" onclick="speakText(this.dataset.word)" data-word="" class="p-1 rounded text-slate-400 hover:text-white transition">
+              🔊
+            </button>
+          </div>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-black/50 border border-white/[0.05] text-left space-y-2">
+          <div class="text-[10px] font-mono uppercase text-[#a8998c]/70">Türkçe Anlamı:</div>
+          <div id="rModalTr" class="text-sm font-semibold text-emerald-400">...</div>
+          <div id="rModalExBox" class="hidden text-xs text-[#d6c7b2]/80 pt-2 border-t border-white/5 italic">
+            "<span id="rModalEx"></span>"
+          </div>
+        </div>
+
+        <div class="pt-1 flex items-center gap-2">
+          <button id="rModalLearnBtn" onclick="addReadingWordToLearn(this.dataset.word)" data-word="" class="w-full py-2.5 rounded-xl bg-rose-900/80 hover:bg-rose-800 text-white font-medium text-xs transition border border-rose-500/30 flex items-center justify-center gap-1.5 shadow-md">
+            <span>🔥</span> <span>Tekrar Listeme Ekle</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Upgrade Word Options Popover Modal -->
+    <div id="upgradeOptionsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+      <div class="bg-[#140609] border border-white/[0.08] rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl relative">
+        <button onclick="closeUpgradeOptionsModal()" class="absolute top-4 right-4 p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.05] transition text-sm">
+          ✕
+        </button>
+
+        <div class="text-left space-y-1">
+          <div class="text-[10px] font-mono tracking-widest text-[#d6c7b2]/60 uppercase">Akademik Alternatifler</div>
+          <h4 class="font-serif-hero text-xl font-semibold text-[#fdf6ee] flex items-center gap-2">
+            <span id="upgradeTargetWord" class="text-rose-400 line-through opacity-80">simple</span>
+            <span class="text-xs text-slate-400">➔</span>
+            <span class="text-xs text-[#a8998c] font-sans font-normal" id="upgradeTargetDesc">Kategori</span>
+          </h4>
+        </div>
+
+        <div id="upgradeOptionsList" class="space-y-1.5 pt-1 text-left">
+          <!-- Suggestion buttons injected here -->
+        </div>
+      </div>
+    </div>
+
+
     <!-- ==================== 6. GRAMMAR MODULE ==================== -->
     <section id="view-grammar" class="hidden max-w-4xl mx-auto space-y-6">
       
@@ -1137,7 +1370,7 @@
         <div class="text-[11px] font-mono tracking-wider text-[#d6c7b2]/60 uppercase">Veri Güvenliği & Cihazlar Arası Aktarım:</div>
         <div class="grid grid-cols-2 gap-2">
           <button type="button" onclick="exportProgressJSON()" class="py-2.5 px-3 rounded-xl text-xs font-medium border transition bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 border-white/10 flex items-center justify-center gap-1.5 shadow-sm">
-            <span>📤</span> <span>Yedeği İndir (JSON)</span>
+            <span>📤</span> <span>İlerlememi Yedekle (.json)</span>
           </button>
           <button type="button" onclick="document.getElementById('importBackupInput').click()" class="py-2.5 px-3 rounded-xl text-xs font-medium border transition bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 border-white/10 flex items-center justify-center gap-1.5 shadow-sm">
             <span>📥</span> <span>Yedeği Geri Yükle</span>
@@ -1419,9 +1652,11 @@
 
       loadSavedBatchIndex();
       loadStreakAndGoal();
+      loadLeitnerBoxes();
       updateGlobalStatsUI();
       updateReverseModeUI();
       updateShuffleModeUI();
+      updateDueCountUI();
     }
 
     function saveMemory() {
@@ -1443,6 +1678,7 @@
         learnSet.add(wordStr);
         knownSet.delete(wordStr);
       }
+      updateWordLeitner(wordStr, isKnown);
       saveMemory();
       incrementActivityCount();
     }
@@ -1925,7 +2161,7 @@
 
     // ==================== TAB SWITCHER ====================
     function switchTab(tabId) {
-      ['flashcards', 'cloze', 'quiz', 'match', 'dict', 'grammar'].forEach(t => {
+      ['flashcards', 'cloze', 'quiz', 'match', 'dict', 'reading', 'grammar'].forEach(t => {
         const view = document.getElementById('view-' + t);
         const tab = document.getElementById('tab-' + t);
         if (view) view.classList.add('hidden');
@@ -1939,7 +2175,7 @@
 
       const filterBar = document.getElementById('levelFilterBar');
       if (filterBar) {
-        filterBar.classList.toggle('hidden', tabId === 'grammar');
+        filterBar.classList.toggle('hidden', tabId === 'grammar' || tabId === 'reading');
       }
 
       if (tabId === 'flashcards') renderFlashcard();
@@ -1947,6 +2183,7 @@
       if (tabId === 'quiz') startQuiz();
       if (tabId === 'match') startMatchGame();
       if (tabId === 'dict') renderDict();
+      if (tabId === 'reading') initReadingLab();
       if (tabId === 'grammar') renderGrammarView();
     }
 
@@ -2048,6 +2285,10 @@
       fcSourceMode = mode;
       document.getElementById('fcSource-batch').className = mode === 'batch' ? 'flex-1 py-1.5 px-3 rounded-lg font-medium transition bg-rose-900/60 border border-rose-500/30 text-white shadow-sm' : 'flex-1 py-1.5 px-3 rounded-lg font-medium transition text-slate-400 hover:bg-white/[0.04]';
       document.getElementById('fcSource-learn').className = mode === 'learn' ? 'flex-1 py-1.5 px-3 rounded-lg font-medium transition bg-rose-900/60 border border-rose-500/30 text-white shadow-sm flex items-center justify-center gap-1.5' : 'flex-1 py-1.5 px-3 rounded-lg font-medium transition text-rose-300 hover:bg-white/[0.04] flex items-center justify-center gap-1.5';
+      const dueBtn = document.getElementById('fcSource-due');
+      if (dueBtn) {
+        dueBtn.className = mode === 'due' ? 'flex-1 py-1.5 px-3 rounded-lg font-medium transition bg-rose-900/60 border border-rose-500/30 text-white shadow-sm flex items-center justify-center gap-1.5' : 'flex-1 py-1.5 px-3 rounded-lg font-medium transition text-amber-300 hover:bg-white/[0.04] flex items-center justify-center gap-1.5';
+      }
 
       if (mode === 'learn') {
         const pool = getFilteredWords();
@@ -2058,6 +2299,14 @@
           return;
         }
         currentBatchWords = isShuffleMode ? shuffleArray(missed) : [...missed];
+      } else if (mode === 'due') {
+        const dueList = getDueWords();
+        if (dueList.length === 0) {
+          alert('Şu anda tekrar vakti gelmiş (vadesi dolan) kelime bulunmuyor. Harika gidiyorsun! Normal desteden devam ediliyor.');
+          setFcSource('batch');
+          return;
+        }
+        currentBatchWords = isShuffleMode ? shuffleArray(dueList) : [...dueList];
       } else {
         const pool = getFcPool();
         const start = batchIndex * BATCH_SIZE;
@@ -2169,7 +2418,15 @@
       }
 
       // Render Synonyms (Eş Anlamlılar) if available
-            // Word-to-Grammar linking pill
+            // Leitner Box Badge
+      const leitnerInfo = leitnerBoxes[card.w];
+      const boxNum = leitnerInfo ? leitnerInfo.box : 1;
+      const bEl = document.getElementById('fcLeitnerBadge');
+      if (bEl) bEl.innerText = `📦 Kutu ${boxNum}/5`;
+      const bBackEl = document.getElementById('fcBackLeitnerBadge');
+      if (bBackEl) bBackEl.innerText = `📦 Kutu ${boxNum}/5`;
+
+      // Word-to-Grammar linking pill
       const grammarLinkBox = document.getElementById('fcGrammarLinkBox');
       if (grammarLinkBox) {
         const cleanW = (card.w || '').toLowerCase().trim();
@@ -3226,10 +3483,11 @@
 
         const backupData = {
           app: 'VoxLearn',
-          version: 1,
+          version: 2,
           exportDate: new Date().toISOString(),
           knownWords: Array.from(knownSet),
           learnWords: Array.from(learnSet),
+          leitnerBoxes: leitnerBoxes,
           streakCount: streakCount,
           dailyGoal: dailyGoal,
           todayPracticed: todayPracticed,
@@ -3292,6 +3550,10 @@
           }
           if (Array.isArray(data.customWords)) {
             localStorage.setItem(STORAGE_CUSTOM_WORDS_KEY, JSON.stringify(data.customWords));
+          }
+          if (data.leitnerBoxes && typeof data.leitnerBoxes === 'object') {
+            localStorage.setItem(STORAGE_LEITNER_KEY, JSON.stringify(data.leitnerBoxes));
+            leitnerBoxes = data.leitnerBoxes;
           }
 
           loadCustomWords();
@@ -3458,6 +3720,505 @@
         if (btnEl) btnEl.classList.remove('animate-pulse', 'border-rose-500', 'text-rose-400');
       }
     }
+
+
+    // ==================== 11. LEITNER 5-BOX SPACED REPETITION ENGINE ====================
+    const STORAGE_LEITNER_KEY = 'voxlearn_leitner_boxes_v1';
+    let leitnerBoxes = {};
+
+    const LEITNER_INTERVALS_DAYS = {
+      1: 1,
+      2: 2,
+      3: 4,
+      4: 7,
+      5: 15
+    };
+
+    function loadLeitnerBoxes() {
+      try {
+        leitnerBoxes = JSON.parse(localStorage.getItem(STORAGE_LEITNER_KEY) || '{}');
+      } catch(e) { leitnerBoxes = {}; }
+    }
+
+    function saveLeitnerBoxes() {
+      try {
+        localStorage.setItem(STORAGE_LEITNER_KEY, JSON.stringify(leitnerBoxes));
+      } catch(e) {}
+      updateDueCountUI();
+    }
+
+    function updateWordLeitner(wordStr, isSuccess) {
+      if (!wordStr) return;
+      const now = Date.now();
+      const current = leitnerBoxes[wordStr] || { box: 1, lastReviewed: now, nextReview: now };
+      let newBox = 1;
+      if (isSuccess) {
+        newBox = Math.min(5, (current.box || 1) + 1);
+      } else {
+        newBox = 1;
+      }
+      const intervalDays = LEITNER_INTERVALS_DAYS[newBox] || 1;
+      leitnerBoxes[wordStr] = {
+        box: newBox,
+        lastReviewed: now,
+        nextReview: now + (intervalDays * 86400000)
+      };
+      saveLeitnerBoxes();
+    }
+
+    function getDueWords() {
+      const now = Date.now();
+      const pool = getFilteredWords();
+      return pool.filter(item => {
+        const entry = leitnerBoxes[item.w];
+        return entry && typeof entry.nextReview === 'number' && entry.nextReview <= now;
+      });
+    }
+
+    function updateDueCountUI() {
+      const dueWords = getDueWords();
+      const countEl = document.getElementById('fcBtnDueCount');
+      if (countEl) countEl.innerText = dueWords.length;
+    }
+
+    // ==================== 12. READING LAB & SMART HIGHLIGHTER ====================
+    const readingPresets = [
+      {
+        title: "Artificial Intelligence and Ethics",
+        text: "The rapid expansion of artificial intelligence presents a significant dilemma for contemporary society. While autonomous systems can analyze substantial amounts of data and enhance productivity, they also generate critical ethical concerns. Algorithms may unintentionally reinforce social bias or make decisions that lack transparency. Therefore, researchers argue that it is crucial to establish strict regulations and ethical frameworks to govern algorithmic decision-making and mitigate potential harm to vulnerable communities."
+      },
+      {
+        title: "Global Climate Mechanisms",
+        text: "Global climate patterns are driven by complex interactions between atmospheric currents and oceanic circulation. When greenhouse gas emissions increase, thermal energy is trapped within the atmosphere, precipitating notable shifts in precipitation and weather stability. Scientists emphasize that mitigating these adverse impacts requires comprehensive international collaboration, substantial investments in renewable energy, and innovative technologies to absorb and store carbon emissions efficiently."
+      },
+      {
+        title: "Behavioral Economics and Decision Making",
+        text: "Behavioral economics demonstrates that human decision-making frequently deviates from rational choice theory. Cognitive biases and emotional responses often cause individuals to prioritize immediate gratification over long-term financial security. By examining how subtle environmental cues influence consumer behavior, economists can design interventions that facilitate better choices without restricting personal freedom or imposing arbitrary constraints."
+      }
+    ];
+
+    let currentReadingTextIndex = 0;
+    let readingLookupMap = null;
+
+    function getReadingLookupMap() {
+      if (!readingLookupMap) {
+        readingLookupMap = new Map();
+        allWords.forEach(w => {
+          const key = w.w.toLowerCase().trim();
+          if (!readingLookupMap.has(key)) {
+            readingLookupMap.set(key, w);
+          }
+        });
+      }
+      return readingLookupMap;
+    }
+
+    function initReadingLab() {
+      loadPresetReadingText(currentReadingTextIndex);
+    }
+
+    function switchReadingSubTab(tab) {
+      const isHighlighter = tab === 'highlighter';
+      document.getElementById('panel-reading-highlighter').classList.toggle('hidden', !isHighlighter);
+      document.getElementById('panel-reading-upgrader').classList.toggle('hidden', isHighlighter);
+
+      const btnH = document.getElementById('subtab-highlighter');
+      const btnU = document.getElementById('subtab-upgrader');
+      if (btnH && btnU) {
+        btnH.className = isHighlighter
+          ? 'flex-1 sm:flex-initial px-3.5 py-2 rounded-lg font-medium transition bg-rose-900/70 text-white border border-rose-500/30 shadow-sm flex items-center justify-center gap-1.5'
+          : 'flex-1 sm:flex-initial px-3.5 py-2 rounded-lg font-medium transition text-slate-400 hover:text-white flex items-center justify-center gap-1.5';
+        btnU.className = !isHighlighter
+          ? 'flex-1 sm:flex-initial px-3.5 py-2 rounded-lg font-medium transition bg-rose-900/70 text-white border border-rose-500/30 shadow-sm flex items-center justify-center gap-1.5'
+          : 'flex-1 sm:flex-initial px-3.5 py-2 rounded-lg font-medium transition text-slate-400 hover:text-white flex items-center justify-center gap-1.5';
+      }
+    }
+
+    function loadPresetReadingText(idx) {
+      currentReadingTextIndex = idx;
+      [0, 1, 2].forEach(i => {
+        const btn = document.getElementById('readingPreset-' + i);
+        if (btn) {
+          btn.className = i === idx
+            ? 'px-3 py-1.5 rounded-xl text-xs font-medium border transition bg-rose-900/60 border-rose-500/30 text-white'
+            : 'px-3 py-1.5 rounded-xl text-xs font-medium border transition bg-white/[0.03] border-white/5 text-slate-300 hover:text-white hover:bg-white/[0.06]';
+        }
+      });
+      const pasteBox = document.getElementById('readingCustomPasteBox');
+      if (pasteBox) pasteBox.classList.add('hidden');
+
+      const preset = readingPresets[idx] || readingPresets[0];
+      renderReadingArticle(preset.title, preset.text);
+    }
+
+    function toggleCustomPasteArea() {
+      const box = document.getElementById('readingCustomPasteBox');
+      if (box) {
+        box.classList.toggle('hidden');
+        if (!box.classList.contains('hidden')) {
+          const ta = document.getElementById('readingCustomTextarea');
+          if (ta) ta.focus();
+        }
+      }
+    }
+
+    function analyzeCustomReadingText() {
+      const ta = document.getElementById('readingCustomTextarea');
+      const text = ta ? ta.value.trim() : '';
+      if (!text) {
+        alert('Lütfen analiz edilecek metni girin.');
+        return;
+      }
+      const title = text.slice(0, 45).trim() + (text.length > 45 ? '...' : '');
+      renderReadingArticle(title, text);
+      const box = document.getElementById('readingCustomPasteBox');
+      if (box) box.classList.add('hidden');
+    }
+
+    function renderReadingArticle(title, text) {
+      document.getElementById('readingTextTitle').innerText = title;
+      const container = document.getElementById('readingRenderedContainer');
+      const lookup = getReadingLookupMap();
+
+      const tokens = text.split(/(\b[A-Za-z'-]+\b)/);
+      let totalWords = 0;
+      let b2c1Words = 0;
+      let awlWords = 0;
+
+      const renderedHtml = tokens.map(token => {
+        const isWord = /^[A-Za-z'-]+$/.test(token);
+        if (!isWord) {
+          return escapeHtmlAttr(token);
+        }
+
+        totalWords++;
+        const lower = token.toLowerCase();
+        let matched = lookup.get(lower);
+
+        if (!matched && lower.endsWith('s') && lower.length > 3) {
+          matched = lookup.get(lower.slice(0, -1));
+        }
+        if (!matched && lower.endsWith('ed') && lower.length > 4) {
+          matched = lookup.get(lower.slice(0, -2));
+        }
+
+        if (matched) {
+          const isAwl = matched.isAwl;
+          const lvl = matched.lvl || 'B1';
+          if (lvl === 'B2' || lvl === 'C1') b2c1Words++;
+          if (isAwl) awlWords++;
+
+          let highlightClass = '';
+          if (isAwl) {
+            highlightClass = 'bg-pink-500/20 text-pink-300 border-b border-pink-500/50 font-bold font-mono px-1 py-0.5 rounded cursor-pointer hover:bg-pink-500/35 transition';
+          } else if (lvl === 'C1') {
+            highlightClass = 'bg-rose-500/15 text-rose-300 border-b border-rose-500/40 font-medium px-1 py-0.5 rounded cursor-pointer hover:bg-rose-500/25 transition';
+          } else if (lvl === 'B1' || lvl === 'B2') {
+            highlightClass = 'bg-amber-500/15 text-amber-200 border-b border-amber-500/30 font-medium px-1 py-0.5 rounded cursor-pointer hover:bg-amber-500/25 transition';
+          } else {
+            highlightClass = 'border-b border-sky-400/50 text-sky-200 px-0.5 rounded cursor-pointer hover:bg-sky-400/15 transition';
+          }
+
+          return `<span class="${highlightClass} word-highlight inline-block" onclick="showReadingWordPopover(this)" data-word="${escapeHtmlAttr(matched.w)}" data-tr="${escapeHtmlAttr(matched.tr)}" data-ipa="${escapeHtmlAttr(matched.ipa || '')}" data-lvl="${escapeHtmlAttr(matched.lvl || '')}" data-awl="${isAwl ? '1' : '0'}" data-pos="${escapeHtmlAttr(matched.pos || '')}" data-ex="${escapeHtmlAttr(matched.ex || '')}">${escapeHtmlAttr(token)}</span>`;
+        }
+
+        return escapeHtmlAttr(token);
+      }).join('');
+
+      container.innerHTML = renderedHtml;
+
+      const b2c1Ratio = totalWords > 0 ? Math.round((b2c1Words / totalWords) * 100) : 0;
+      const awlRatio = totalWords > 0 ? Math.round((awlWords / totalWords) * 100) : 0;
+
+      const statTotal = document.getElementById('statTotalWords');
+      const statB2C1 = document.getElementById('statB2C1Ratio');
+      const statAwl = document.getElementById('statAwlRatio');
+
+      if (statTotal) statTotal.innerText = totalWords;
+      if (statB2C1) statB2C1.innerText = '%' + b2c1Ratio;
+      if (statAwl) statAwl.innerText = '%' + awlRatio;
+    }
+
+    function showReadingWordPopover(el) {
+      if (!el || !el.dataset) return;
+      const word = el.dataset.word;
+      const tr = el.dataset.tr;
+      const ipa = el.dataset.ipa;
+      const lvl = el.dataset.lvl;
+      const isAwl = el.dataset.awl === '1';
+      const pos = el.dataset.pos;
+      const ex = el.dataset.ex;
+
+      document.getElementById('rModalWord').innerText = word;
+      document.getElementById('rModalLvl').innerText = lvl || 'B1';
+      document.getElementById('rModalAwl').classList.toggle('hidden', !isAwl);
+      document.getElementById('rModalIpa').innerText = ipa || '';
+      document.getElementById('rModalPos').innerText = pos || '';
+      document.getElementById('rModalTr').innerText = tr;
+
+      const speakBtn = document.getElementById('rModalSpeakBtn');
+      if (speakBtn) speakBtn.dataset.word = word;
+
+      const exBox = document.getElementById('rModalExBox');
+      const exEl = document.getElementById('rModalEx');
+      if (ex) {
+        exEl.innerText = ex;
+        exBox.classList.remove('hidden');
+      } else {
+        exBox.classList.add('hidden');
+      }
+
+      const leitnerInfo = leitnerBoxes[word];
+      const boxNum = leitnerInfo ? leitnerInfo.box : 1;
+      document.getElementById('rModalLeitner').innerText = `📦 Kutu ${boxNum}/5`;
+
+      const learnBtn = document.getElementById('rModalLearnBtn');
+      if (learnBtn) {
+        learnBtn.dataset.word = word;
+        learnBtn.innerHTML = '<span>🔥</span> <span>Tekrar Listeme Ekle</span>';
+      }
+
+      document.getElementById('readingWordModal').classList.remove('hidden');
+    }
+
+    function closeReadingWordModal() {
+      const modal = document.getElementById('readingWordModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function addReadingWordToLearn(word) {
+      if (!word) return;
+      recordWordStatus(word, false);
+      const learnBtn = document.getElementById('rModalLearnBtn');
+      if (learnBtn) {
+        learnBtn.innerHTML = '<span>✅</span> <span>Tekrar Listesine Eklendi!</span>';
+      }
+    }
+
+    // ==================== 13. ACADEMIC WRITING VOCABULARY UPGRADER ====================
+    const academicUpgradeMap = {
+      "think": {
+        alternatives: ["contend", "argue", "maintain", "assert", "posit"],
+        desc: "Görüş / İddia Bildirme"
+      },
+      "thinks": {
+        alternatives: ["contends", "argues", "maintains", "asserts", "posits"],
+        desc: "Görüş / İddia Bildirme"
+      },
+      "big": {
+        alternatives: ["substantial", "extensive", "significant", "considerable", "prominent"],
+        desc: "Boyut & Önem"
+      },
+      "problem": {
+        alternatives: ["obstacle", "dilemma", "complication", "challenge", "impediment"],
+        desc: "Sorun & Güçlük"
+      },
+      "problems": {
+        alternatives: ["obstacles", "dilemmas", "complications", "challenges", "impediments"],
+        desc: "Sorunlar & Güçlükler"
+      },
+      "fix": {
+        alternatives: ["mitigate", "resolve", "address", "rectify", "tackle"],
+        desc: "Çözüm & İyileştirme"
+      },
+      "solve": {
+        alternatives: ["resolve", "address", "tackle", "mitigate", "rectify"],
+        desc: "Çözüm & Çare"
+      },
+      "good": {
+        alternatives: ["beneficial", "advantageous", "viable", "constructive", "favorable"],
+        desc: "Faydalı & Olumlu"
+      },
+      "bad": {
+        alternatives: ["detrimental", "adverse", "unfavorable", "damaging", "pernicious"],
+        desc: "Zararlı & Olumsuz"
+      },
+      "show": {
+        alternatives: ["demonstrate", "illustrate", "exhibit", "indicate", "manifest"],
+        desc: "Gösterme & Kanıtlama"
+      },
+      "shows": {
+        alternatives: ["demonstrates", "illustrates", "exhibits", "indicates", "manifests"],
+        desc: "Gösterme & Kanıtlama"
+      },
+      "use": {
+        alternatives: ["utilize", "employ", "harness", "adopt", "deploy"],
+        desc: "Kullanım & Yararlanma"
+      },
+      "help": {
+        alternatives: ["facilitate", "accommodate", "assist", "expedite", "support"],
+        desc: "Kolaylaştırma & Destek"
+      },
+      "helps": {
+        alternatives: ["facilitates", "accommodates", "assists", "expedites", "supports"],
+        desc: "Kolaylaştırma & Destek"
+      },
+      "important": {
+        alternatives: ["crucial", "essential", "vital", "imperative", "pivotal"],
+        desc: "Hayati & Kritik Önem"
+      },
+      "change": {
+        alternatives: ["transform", "alter", "modify", "adapt", "evolve"],
+        desc: "Dönüşüm & Değişim"
+      },
+      "many": {
+        alternatives: ["numerous", "myriad", "substantial", "copious", "diverse"],
+        desc: "Çokluk & Çeşitlilik"
+      },
+      "make": {
+        alternatives: ["formulate", "generate", "construct", "establish", "synthesize"],
+        desc: "Üretim & Oluşturma"
+      },
+      "get": {
+        alternatives: ["acquire", "obtain", "derive", "secure", "gain"],
+        desc: "Edinme & Kazanım"
+      },
+      "give": {
+        alternatives: ["provide", "allocate", "distribute", "impart", "confer"],
+        desc: "Sağlama & Tahsis"
+      },
+      "new": {
+        alternatives: ["novel", "innovative", "contemporary", "unprecedented", "emerging"],
+        desc: "Yenilik & Çağdaşlık"
+      },
+      "old": {
+        alternatives: ["obsolete", "archaic", "traditional", "outdated", "conventional"],
+        desc: "Geleneksellik & Eskilik"
+      },
+      "hard": {
+        alternatives: ["arduous", "formidable", "demanding", "intricate", "laborious"],
+        desc: "Zorluk & Çetinlik"
+      },
+      "easy": {
+        alternatives: ["straightforward", "effortless", "accessible", "uncomplicated"],
+        desc: "Sadelik & Kolaylık"
+      },
+      "start": {
+        alternatives: ["commence", "initiate", "embark upon", "institute"],
+        desc: "Başlatma & Girişim"
+      },
+      "stop": {
+        alternatives: ["cease", "terminate", "discontinue", "halt"],
+        desc: "Durdurma & Sonlandırma"
+      },
+      "danger": {
+        alternatives: ["hazard", "peril", "jeopardy", "vulnerability"],
+        desc: "Risk & Tehlike"
+      },
+      "say": {
+        alternatives: ["state", "declare", "articulate", "convey", "assert"],
+        desc: "İfade Etme & Belirtme"
+      },
+      "cause": {
+        alternatives: ["precipitate", "induce", "engender", "trigger", "foster"],
+        desc: "Neden Olma & Tetikleme"
+      },
+      "check": {
+        alternatives: ["examine", "scrutinize", "inspect", "evaluate", "assess"],
+        desc: "İnceleme & Denetim"
+      }
+    };
+
+    let upgraderSentenceTokens = [];
+
+    function loadSampleUpgraderText() {
+      const ta = document.getElementById('upgraderInput');
+      if (ta) {
+        ta.value = "I think that global warming is a big problem for the world. Scientists need to use new technology to fix this issue, because it is very bad for nature and helps to cause extreme weather.";
+      }
+      analyzeSentenceUpgrades();
+    }
+
+    function analyzeSentenceUpgrades() {
+      const ta = document.getElementById('upgraderInput');
+      const text = ta ? ta.value.trim() : '';
+      if (!text) {
+        alert('Lütfen incelenecek cümlenizi girin.');
+        return;
+      }
+
+      upgraderSentenceTokens = text.split(/(\b[A-Za-z'-]+\b)/);
+      let matchCount = 0;
+
+      const renderedChips = upgraderSentenceTokens.map((token, idx) => {
+        const lower = token.toLowerCase();
+        if (academicUpgradeMap[lower]) {
+          matchCount++;
+          return `<button type="button" onclick="openUpgradeOptions(${idx})" class="inline-flex items-center gap-1 px-2 py-0.5 my-0.5 rounded-lg bg-rose-500/15 border border-dashed border-rose-400 text-rose-200 font-medium hover:bg-rose-500/30 transition text-sm sm:text-base cursor-pointer shadow-sm">
+            <span>${escapeHtmlAttr(token)}</span>
+            <span class="text-[10px] text-amber-300">⚡</span>
+          </button>`;
+        }
+        return escapeHtmlAttr(token);
+      }).join('');
+
+      document.getElementById('upgraderRenderedBox').innerHTML = renderedChips;
+      document.getElementById('upgraderMatchesCount').innerText = `${matchCount} Geliştirilebilir Kelime`;
+      document.getElementById('upgraderOutputCard').classList.remove('hidden');
+    }
+
+    let activeUpgradeTokenIdx = null;
+
+    function openUpgradeOptions(tokenIdx) {
+      activeUpgradeTokenIdx = tokenIdx;
+      const rawWord = upgraderSentenceTokens[tokenIdx];
+      const lower = rawWord.toLowerCase();
+      const entry = academicUpgradeMap[lower];
+      if (!entry) return;
+
+      document.getElementById('upgradeTargetWord').innerText = rawWord;
+      document.getElementById('upgradeTargetDesc').innerText = entry.desc || 'Alternatifler';
+
+      const listContainer = document.getElementById('upgradeOptionsList');
+      listContainer.innerHTML = entry.alternatives.map(alt => {
+        const formattedAlt = (rawWord[0] === rawWord[0].toUpperCase() && rawWord[0] !== rawWord[0].toLowerCase())
+          ? alt.charAt(0).toUpperCase() + alt.slice(1)
+          : alt;
+
+        return `
+          <button onclick="applyWordUpgrade('${escapeHtmlAttr(formattedAlt)}')" class="w-full p-2.5 rounded-xl bg-white/[0.04] hover:bg-rose-900/40 border border-white/5 hover:border-rose-500/30 text-left transition flex items-center justify-between group">
+            <span class="text-sm font-semibold text-white group-hover:text-rose-200">${escapeHtmlAttr(formattedAlt)}</span>
+            <span class="text-xs text-slate-400 group-hover:text-emerald-400 font-mono">Uygula ➔</span>
+          </button>
+        `;
+      }).join('');
+
+      document.getElementById('upgradeOptionsModal').classList.remove('hidden');
+    }
+
+    function closeUpgradeOptionsModal() {
+      const modal = document.getElementById('upgradeOptionsModal');
+      if (modal) modal.classList.add('hidden');
+      activeUpgradeTokenIdx = null;
+    }
+
+    function applyWordUpgrade(newWord) {
+      if (activeUpgradeTokenIdx === null) return;
+      upgraderSentenceTokens[activeUpgradeTokenIdx] = newWord;
+      const newSentence = upgraderSentenceTokens.join('');
+      const ta = document.getElementById('upgraderInput');
+      if (ta) ta.value = newSentence;
+      closeUpgradeOptionsModal();
+      analyzeSentenceUpgrades();
+    }
+
+    function copyUpgradedText() {
+      const ta = document.getElementById('upgraderInput');
+      const text = ta ? ta.value : '';
+      if (!text) return;
+      if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          const btn = document.getElementById('copyUpgradedBtn');
+          if (btn) {
+            btn.innerHTML = '<span>✅</span> <span>Kopyalandı!</span>';
+            setTimeout(() => { btn.innerHTML = '<span>📋</span> <span>Metni Kopyala</span>'; }, 2000);
+          }
+        });
+      } else {
+        alert('Cümle kopyalandı:\n\n' + text);
+      }
+    }
+
 
     // ==================== 10. SERVICE WORKER REGISTRATION (PWA) ====================
     if ('serviceWorker' in navigator && (window.location.protocol === 'http:' || window.location.protocol === 'https:')) {

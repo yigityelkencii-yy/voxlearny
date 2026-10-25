@@ -1,0 +1,10 @@
+# Python and temp files
+*.py
+*.csv
+*.json
+!manifest.json
+*_backup*
+__pycache__/
+*.js
+!sw.js
+.DS_Store
