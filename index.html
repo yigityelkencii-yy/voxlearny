@@ -1798,9 +1798,9 @@
           <span>•</span>
           <span><kbd class="px-1.5 py-0.5 rounded-lg bg-slate-900 border border-white/10 text-slate-300">→</kbd> Biliyorum</span>
           <span>•</span>
-          <span><kbd class="px-1.5 py-0.5 rounded-lg bg-slate-900 border border-white/10 text-slate-300">P</kbd> Akış</span>
+          <span><kbd class="px-1.5 py-0.5 rounded-lg bg-slate-900 border border-white/10 text-slate-300">V</kbd> Dinle</span>
           <span>•</span>
-          <span><kbd class="px-1.5 py-0.5 rounded-lg bg-slate-900 border border-white/10 text-slate-300">R</kbd> Karıştır</span>
+          <span><kbd class="px-1.5 py-0.5 rounded-lg bg-slate-900 border border-white/10 text-slate-300">P</kbd> Akış</span>
         </div>
 
       <!-- Empty Learn State Box (Safe Non-Destructive Overlay) -->
@@ -1826,20 +1826,17 @@
         <div class="grid grid-cols-2 gap-3 max-w-xs mx-auto">
           <div class="p-3.5 rounded-xl bg-emerald-500/[0.06] border border-emerald-500/20 text-center">
             <div class="text-2xl font-mono font-bold text-emerald-400" id="fcSummaryKnown">0</div>
-            <div class="text-[11px] text-emerald-300/80 mt-0.5">Öğrenilen</div>
+            <div class="text-[11px] text-emerald-300/80 mt-0.5 font-medium">Bu Turda Bildin</div>
           </div>
           <div class="p-3.5 rounded-xl bg-rose-500/[0.06] border border-rose-500/20 text-center">
             <div class="text-2xl font-mono font-bold text-rose-300" id="fcSummaryLearn">0</div>
-            <div class="text-[11px] text-rose-300/80 mt-0.5">Tekrara Kalan</div>
+            <div class="text-[11px] text-rose-300/80 mt-0.5 font-medium">Tekrara Kalan</div>
           </div>
         </div>
 
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-2.5 pt-1">
-          <button onclick="startNext20Batch()" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-rose-900/70 hover:bg-rose-800 text-white font-medium text-xs sm:text-sm transition border border-rose-500/30 shadow-lg shadow-rose-950/50">
+        <div id="fcBatchCompleteActions" class="flex flex-col sm:flex-row items-center justify-center gap-2.5 pt-2">
+          <button onclick="startNext20Batch()" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-rose-900/90 via-rose-800/90 to-rose-950/90 hover:from-rose-800 hover:to-rose-700 text-white font-bold text-xs sm:text-sm transition border border-rose-400/40 active:scale-95 shadow-lg shadow-rose-950/50">
             Sıradaki 20 Kelimeye Geç ➔
-          </button>
-          <button onclick="restartBatch()" class="w-full sm:w-auto px-5 py-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 font-medium text-xs sm:text-sm transition border border-white/5">
-            Bu Turu Tekrarla
           </button>
         </div>
       </div>
@@ -7583,10 +7580,52 @@
       document.getElementById('fcPlayArea').classList.add('hidden');
       document.getElementById('fcBatchCompleteBox').classList.remove('hidden');
 
-      document.getElementById('fcSummaryKnown').innerText = knownSet.size;
-      document.getElementById('fcSummaryLearn').innerText = learnSet.size;
+      // Mevcut destedeki kelimelerin başarı dağılımını hesapla (kullanıcıya bu turun gerçek özetini ver)
+      const batchWords = currentBatchWords || [];
+      const batchMissedWords = batchWords.filter(w => learnSet.has(w.w));
+      const batchKnownWords = batchWords.filter(w => !learnSet.has(w.w));
+
+      const knownEl = document.getElementById('fcSummaryKnown');
+      const learnEl = document.getElementById('fcSummaryLearn');
+      if (knownEl) knownEl.innerText = batchKnownWords.length;
+      if (learnEl) learnEl.innerText = batchMissedWords.length;
+
+      // Hataları hemen pekiştirme butonu
+      const actionsContainer = document.getElementById('fcBatchCompleteActions');
+      if (actionsContainer) {
+        if (batchMissedWords.length > 0) {
+          actionsContainer.innerHTML = `
+            <button onclick="studyCurrentBatchMistakes()" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-rose-950/60 hover:bg-rose-900 border border-rose-500/40 text-rose-200 hover:text-white font-medium text-xs sm:text-sm transition flex items-center justify-center gap-1.5 active:scale-95 shadow-md">
+              <span>🔴</span> <span>${batchMissedWords.length} Hatalı Kelimeyi Hemen Pekiştir</span>
+            </button>
+            <button onclick="startNext20Batch()" class="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-rose-900/90 via-rose-800/90 to-rose-950/90 hover:from-rose-800 hover:to-rose-700 text-white font-bold text-xs sm:text-sm transition border border-rose-400/40 active:scale-95 shadow-lg shadow-rose-950/50">
+              <span>Sıradaki 20 Kelimeye Geç</span> ➔
+            </button>
+          `;
+        } else {
+          actionsContainer.innerHTML = `
+            <button onclick="startNext20Batch()" class="w-full sm:w-auto px-7 py-3 rounded-xl bg-gradient-to-r from-emerald-900/90 via-emerald-800/90 to-emerald-950/90 hover:from-emerald-800 hover:to-emerald-700 text-white font-bold text-xs sm:text-sm transition border border-emerald-400/40 active:scale-95 shadow-lg shadow-emerald-950/50 flex items-center justify-center gap-2">
+              <span>🎉 Kusursuz Tur! Sıradaki 20 Kelimeye Geç</span> ➔
+            </button>
+          `;
+        }
+      }
 
       triggerConfetti();
+    }
+
+    function studyCurrentBatchMistakes() {
+      const batchWords = currentBatchWords || [];
+      const missed = batchWords.filter(w => learnSet.has(w.w));
+      if (missed.length === 0) {
+        startNext20Batch();
+        return;
+      }
+      currentBatchWords = [...missed];
+      fcIndex = 0;
+      document.getElementById('fcBatchCompleteBox').classList.add('hidden');
+      document.getElementById('fcPlayArea').classList.remove('hidden');
+      renderFlashcard();
     }
 
             // ==================== FAST WORD LOOKUP ENGINE FOR EXAM ====================
@@ -8579,9 +8618,9 @@
       renderDict();
     });
 
-    // ==================== KEYBOARD NAVIGATION ====================
+    // ==================== MASTER UNIFIED KEYBOARD NAVIGATION ====================
     window.addEventListener('keydown', (e) => {
-      // Input, Textarea veya içerik düzenleme alanlarındayken boşluk (Space) ve harf kısayollarını engelleme!
+      // Input, Textarea veya içerik düzenleme alanlarındayken kısayolları çalıştırma
       const activeEl = document.activeElement;
       const tag = activeEl ? activeEl.tagName : '';
       if (['INPUT', 'SELECT', 'TEXTAREA'].includes(tag) || (activeEl && activeEl.isContentEditable)) {
@@ -8589,29 +8628,83 @@
       }
 
       const isFcActive = !document.getElementById('view-flashcards').classList.contains('hidden');
-      if (isFcActive && isFlipped) {
+      const isQuizActive = !document.getElementById('view-quiz').classList.contains('hidden');
+      const isClozeActive = !document.getElementById('view-cloze').classList.contains('hidden');
+      const isExamActive = !document.getElementById('view-exam').classList.contains('hidden');
+
+      // 1. KELİME KARTLARI (FLASHCARDS) KISAYOLLARI
+      if (isFcActive) {
         if (['1', 'Digit1', 'Numpad1', 'ArrowLeft', 'KeyA'].includes(e.code) || e.key === '1' || e.key === 'ArrowLeft') {
           handleCardAction(false); return;
         } else if (['2', 'Digit2', 'Numpad2', 'ArrowRight', 'KeyD'].includes(e.code) || e.key === '2' || e.key === 'ArrowRight') {
           handleCardAction(true); return;
+        } else if (e.code === 'Space') {
+          e.preventDefault();
+          flipCard(); return;
+        } else if (['KeyV', 'KeyS'].includes(e.code) || ['v', 'V', 's', 'S'].includes(e.key)) {
+          speakCurrentCard(); return;
+        } else if (e.code === 'KeyR' || e.key === 'r' || e.key === 'R') {
+          reshuffleDeck(); return;
+        } else if (e.key === 'p' || e.key === 'P') {
+          toggleAutoPlay(); return;
         }
       }
 
+      // 2. KELİME TESTİ (QUIZ) KISAYOLLARI
+      if (isQuizActive) {
+        if (['1', 'Digit1', 'Numpad1', 'KeyA'].includes(e.code) || ['1', 'a', 'A'].includes(e.key)) {
+          handleQuizAnswer(0); return;
+        } else if (['2', 'Digit2', 'Numpad2', 'KeyB'].includes(e.code) || ['2', 'b', 'B'].includes(e.key)) {
+          handleQuizAnswer(1); return;
+        } else if (['3', 'Digit3', 'Numpad3', 'KeyC'].includes(e.code) || ['3', 'c', 'C'].includes(e.key)) {
+          handleQuizAnswer(2); return;
+        } else if (['4', 'Digit4', 'Numpad4', 'KeyD'].includes(e.code) || ['4', 'd', 'D'].includes(e.key)) {
+          handleQuizAnswer(3); return;
+        } else if ((e.code === 'Space' || e.code === 'Enter') && typeof quizAnswered !== 'undefined' && quizAnswered) {
+          e.preventDefault();
+          nextQuizQuestion(); return;
+        }
+      }
+
+      // 3. BOŞLUK DOLDURMA (CLOZE) KISAYOLLARI
+      if (isClozeActive) {
+        if (['1', 'Digit1', 'Numpad1', 'KeyA'].includes(e.code) || ['1', 'a', 'A'].includes(e.key)) {
+          handleClozeAnswer(0); return;
+        } else if (['2', 'Digit2', 'Numpad2', 'KeyB'].includes(e.code) || ['2', 'b', 'B'].includes(e.key)) {
+          handleClozeAnswer(1); return;
+        } else if (['3', 'Digit3', 'Numpad3', 'KeyC'].includes(e.code) || ['3', 'c', 'C'].includes(e.key)) {
+          handleClozeAnswer(2); return;
+        } else if (['4', 'Digit4', 'Numpad4', 'KeyD'].includes(e.code) || ['4', 'd', 'D'].includes(e.key)) {
+          handleClozeAnswer(3); return;
+        } else if ((e.code === 'Space' || e.code === 'Enter') && typeof clozeAnswered !== 'undefined' && clozeAnswered) {
+          e.preventDefault();
+          nextClozeQuestion(); return;
+        }
+      }
+
+      // 4. DENEME SINAVI (EXAM) KISAYOLLARI
+      if (isExamActive) {
+        const activeScreen = document.getElementById('examActiveScreen');
+        if (activeScreen && !activeScreen.classList.contains('hidden')) {
+          if (['1', 'Digit1', 'Numpad1', 'KeyA'].includes(e.code) || ['1', 'a', 'A'].includes(e.key)) {
+            selectExamOption('A'); return;
+          } else if (['2', 'Digit2', 'Numpad2', 'KeyB'].includes(e.code) || ['2', 'b', 'B'].includes(e.key)) {
+            selectExamOption('B'); return;
+          } else if (['3', 'Digit3', 'Numpad3', 'KeyC'].includes(e.code) || ['3', 'c', 'C'].includes(e.key)) {
+            selectExamOption('C'); return;
+          } else if (['4', 'Digit4', 'Numpad4', 'KeyD'].includes(e.code) || ['4', 'd', 'D'].includes(e.key)) {
+            selectExamOption('D'); return;
+          } else if (e.code === 'ArrowRight') {
+            nextExamQuestion(); return;
+          } else if (e.code === 'ArrowLeft') {
+            prevExamQuestion(); return;
+          }
+        }
+      }
+
+      // Global Odak Modu
       if (e.code === 'KeyF') {
         toggleFocusMode();
-      
-      } else if (e.key === 'p' || e.key === 'P') {
-        toggleAutoPlay();
-      } else if (e.code === 'KeyR' || e.key === 'r' || e.key === 'R') {
-        const isFcActive = !document.getElementById('view-flashcards').classList.contains('hidden');
-        if (isFcActive) reshuffleDeck();
-      } else if (e.code === 'Space') {
-        e.preventDefault();
-        flipCard();
-      } else if (e.code === 'ArrowRight') {
-        handleSwipe('right');
-      } else if (e.code === 'ArrowLeft') {
-        handleSwipe('left');
       }
     });
 
@@ -12338,34 +12431,7 @@
     initParallaxTilt();
     initCardInteractiveSwipe();
     setLevelFilter(activeLevelFilter);
-    // Keyboard Shortcuts (1, 2, 3, 4 veya A, B, C, D ve Enter/Space)
-    document.addEventListener('keydown', (e) => {
-      // Input veya arama kutusuna yazı yazılıyorsa kısayolları çalıştırma
-      if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
-
-      const isClozeActive = !document.getElementById('view-cloze').classList.contains('hidden');
-      const isQuizActive = !document.getElementById('view-quiz').classList.contains('hidden');
-
-      if (isClozeActive) {
-        if (['1', 'a', 'A'].includes(e.key)) handleClozeAnswer(0);
-        else if (['2', 'b', 'B'].includes(e.key)) handleClozeAnswer(1);
-        else if (['3', 'c', 'C'].includes(e.key)) handleClozeAnswer(2);
-        else if (['4', 'd', 'D'].includes(e.key)) handleClozeAnswer(3);
-        else if (['Enter', ' '].includes(e.key) && clozeAnswered) {
-          e.preventDefault();
-          nextClozeQuestion();
-        }
-      } else if (isQuizActive) {
-        if (['1', 'a', 'A'].includes(e.key)) handleQuizAnswer(0);
-        else if (['2', 'b', 'B'].includes(e.key)) handleQuizAnswer(1);
-        else if (['3', 'c', 'C'].includes(e.key)) handleQuizAnswer(2);
-        else if (['4', 'd', 'D'].includes(e.key)) handleQuizAnswer(3);
-        else if (['Enter', ' '].includes(e.key) && quizAnswered) {
-          e.preventDefault();
-          nextQuizQuestion();
-        }
-      }
-    });
+// Keyboard shortcuts unified in master navigation engine
 
   
     // ==================== 6. GRAMMAR & IRREGULAR VERBS MODULE ====================
