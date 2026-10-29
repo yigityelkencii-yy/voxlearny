@@ -4215,7 +4215,7 @@
     </div>
   </div>
 
-  <!-- ==================== WELCOME & USAGE GUIDE MODAL (İLK GİRİŞ & ? REHBERİ — HER GÜNCELLEMEDE SENKRONİZE TUTULUR) ==================== -->
+  <!-- ==================== WELCOME & USAGE GUIDE MODAL (İLK GİRİŞ & ? REHBERİ) ==================== -->
   <div id="welcomeGuideModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md">
     <div class="absolute inset-0" onclick="closeWelcomeGuideModal()"></div>
     <div class="bg-[#140609] border border-rose-500/30 rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden relative z-10">
@@ -4227,11 +4227,11 @@
             Ox
           </div>
           <div>
-            <div class="text-[10px] font-mono tracking-widest uppercase text-rose-300/80">Hızlı Başlangıç & Güncel Kullanım Rehberi</div>
+            <div class="text-[10px] font-mono tracking-widest uppercase text-rose-300/80">Hızlı Başlangıç & Kullanım Rehberi</div>
             <h3 class="font-serif-hero text-xl sm:text-2xl font-bold text-[#fdf6ee] leading-tight">Oxford Lexicon'a Hoş Geldin</h3>
           </div>
         </div>
-        <button type="button" onclick="closeWelcomeGuideModal()" title="Kapat" class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.08] transition text-sm flex items-center justify-center w-8 h-8 shrink-0">
+        <button type="button" onclick="closeWelcomeGuideModal()" title="Kapat (ESC)" class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.08] transition text-sm flex items-center justify-center w-8 h-8 shrink-0">
           ✕
         </button>
       </div>
@@ -4241,75 +4241,84 @@
         
         <!-- 1. Amaç -->
         <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.07] space-y-1.5">
-          <div class="text-xs font-mono uppercase tracking-wider text-rose-300 font-bold">🎯 Bu Site Ne İşe Yarar?</div>
+          <div class="text-xs font-mono uppercase tracking-wider text-rose-300 font-bold flex items-center gap-1.5">
+            <span>🎯</span> <span>Bu Site Ne İşe Yarar?</span>
+          </div>
           <p class="text-[#d6c7b2] text-xs sm:text-sm leading-relaxed">
-            İster <strong>sıfırdan İngilizce öğren (A1–A2)</strong>, ister <strong>Üniversite Hazırlık (Proficiency), YDS/YÖKDİL, TOEFL/IELTS</strong> için C1 seviyesine çık: <strong>3.750 Oxford, AWL & Phrasal Verb kelimesini</strong>, <strong>227 sık karıştırılan nüans ikizini</strong>, A1–C1 tüm gramer yapılarını ve okuma metinlerini <strong>5 kutulu aralıklı tekrar (Leitner sistemi)</strong> ile kalıcı olarak öğrenmeni sağlar.
+            İster <strong>sıfırdan İngilizce öğren (A1–A2)</strong>, ister <strong>Üniversite Hazırlık Muafiyeti (Proficiency), YDS/YÖKDİL veya TOEFL/IELTS</strong> için C1 düzeyine çık: <strong>3.750 Oxford, AWL ve Phrasal Verb kelimesini</strong>, <strong>227 sık karıştırılan nüans ikizini</strong>, A1–C1 gramer yapılarını, akademik okuma laboratuvarını ve deneme sınavlarını <strong>arka planda çalışan akıllı hafıza algoritmasıyla (Adaptive Spaced Repetition)</strong> kalıcı olarak öğrenmeni sağlar. Seni kutu veya ayar karmaşasıyla yormaz; neyi bilip neyi tekrar etmen gerektiğini arka planda sessizce yönetir.
           </p>
         </div>
 
-        <!-- 2. Adım Adım Kullanım (7 Güncel Modül & Özellik) -->
+        <!-- 2. Adım Adım Kullanım (Güncel Modüller & Özellikler) -->
         <div class="space-y-2.5">
-          <div class="text-xs font-mono uppercase tracking-wider text-amber-300 font-bold">🚀 Adım Adım Nasıl Kullanılır?</div>
+          <div class="text-xs font-mono uppercase tracking-wider text-amber-300 font-bold flex items-center gap-1.5">
+            <span>🚀</span> <span>Adım Adım Nasıl Kullanılır?</span>
+          </div>
           
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             <div class="p-3.5 rounded-2xl bg-black/40 border border-white/[0.06] space-y-1">
-              <div class="font-bold text-white text-xs flex items-center gap-1.5"><span>1️⃣</span> <span>Seviye & Rota Belirleme</span></div>
+              <div class="font-bold text-white text-xs flex items-center gap-1.5"><span>1️⃣</span> <span>Seviye & Kur Seçimi</span></div>
               <p class="text-[11px] text-[#a8998c] leading-snug">
-                İster doğrudan seç (<strong class="text-emerald-300">🌱 A1–A2 Temel</strong>, <strong class="text-blue-300">🚀 B1–B2 Orta</strong>, <strong class="text-rose-300">🎓 C1 & AWL İleri</strong>), ister <strong>10 Soruluk Seviye Testi</strong> ile sistem seviyeni otomatik belirlesin.
+                Üst bardan dilediğin kuru seç (<strong class="text-emerald-300">A1–A2</strong>, <strong class="text-blue-300">B1–B2</strong>, <strong class="text-rose-300">C1</strong>, <strong class="text-amber-300">AWL</strong>, <strong class="text-cyan-300">Phrasal</strong>) veya <strong>Seviyemi Belirle</strong> testiyle sana özel rotayı oluştur.
               </p>
             </div>
 
             <div class="p-3.5 rounded-2xl bg-black/40 border border-white/[0.06] space-y-1">
-              <div class="font-bold text-white text-xs flex items-center gap-1.5"><span>2️⃣</span> <span>3B Kartlar & Nüans Motoru</span></div>
+              <div class="font-bold text-white text-xs flex items-center gap-1.5"><span>2️⃣</span> <span>Akıllı 20'lik Deste Kartları</span></div>
               <p class="text-[11px] text-[#a8998c] leading-snug">
-                Kartın arkasındaki <strong class="text-slate-200">edat kalıplarını (🔊)</strong>, <strong class="text-indigo-300">akademik eş anlamları</strong>, <strong class="text-amber-300">⚠️ Karıştırma (Nüans)</strong> uyarısını ve kelime ailesini incele. <strong class="text-amber-300">✍️ Yazım</strong> ile harf iskeletinden dikte çalış.
+                20 kelimelik odak desteleriyle çalış. Ön yüzde kelime ve IPA telaffuz, arkasında Türkçe anlam, <strong>tıklanabilir sesli örnek cümle (🔊 [E])</strong> ve edat kalıpları bulunur. <strong class="text-rose-300">[←] Bilmiyorum</strong> ile tekrara bırak, <strong class="text-emerald-400">[→] Biliyorum</strong> ile hafızayı güçlendir.
               </p>
             </div>
 
             <div class="p-3.5 rounded-2xl bg-black/40 border border-white/[0.06] space-y-1">
-              <div class="font-bold text-white text-xs flex items-center gap-1.5"><span>3️⃣</span> <span>Okuma Labı 2.0 & Metin Röntgeni</span></div>
+              <div class="font-bold text-white text-xs flex items-center gap-1.5"><span>3️⃣</span> <span>Aksan & Çift Yönlü Çalışma</span></div>
               <p class="text-[11px] text-[#a8998c] leading-snug">
-                Hazır makaleleri oku veya <strong>kendi metnini yapıştır</strong>: <em>🔬 Metin Röntgeni</em> akademik yoğunluğu hesaplar, kelimeleri tek tıkla tekrara ekler ve <strong>yapıştırdığın metinden otomatik 4 şıklı test üretir</strong>. <em>Kelime Yükseltici (92+ kalıp)</em> ile essay cümlelerini C1'e taşı.
+                <strong class="text-amber-300">🗣️ US / UK</strong> butonuyla Oxford İngilizcesi ve Amerikan telaffuzu arasında geçiş yap. <strong class="text-indigo-300">🔄 EN➔TR</strong> butonuyla kartları ters yüz ederek Türkçeden İngilizceye çağrışımını test et.
               </p>
             </div>
 
             <div class="p-3.5 rounded-2xl bg-black/40 border border-white/[0.06] space-y-1">
-              <div class="font-bold text-white text-xs flex items-center gap-1.5"><span>4️⃣</span> <span>A1–C1 Gramer & 12 Karışan Yapı</span></div>
+              <div class="font-bold text-white text-xs flex items-center gap-1.5"><span>4️⃣</span> <span>Okuma Labı 2.0 & Metin Röntgeni</span></div>
               <p class="text-[11px] text-[#a8998c] leading-snug">
-                A1'den C1'e (<em>Inversion, Cleft, Subjunctive, Participle Clauses</em> dahil) tüm konuların formüllerini incele; <em>Karışan Yapılar, Preposition Avcısı, Hata Avcısı, Cümle Kurma</em> ve <em>148 Düzensiz Fiil Refleks Testi</em> ile pratik yap.
+                Akademik makaleleri oku veya <strong>kendi metnini yapıştır</strong>: <em>Metin Röntgeni</em> akademik kelimeleri tespit eder, bilmediklerini tek tıkla tekrara ekler ve yapıştırdığın metinden otomatik 4 şıklı test üretir.
               </p>
             </div>
 
             <div class="p-3.5 rounded-2xl bg-black/40 border border-white/[0.06] space-y-1">
               <div class="font-bold text-white text-xs flex items-center gap-1.5"><span>5️⃣</span> <span>Akıllı Testler & Deneme Sınavı</span></div>
               <p class="text-[11px] text-[#a8998c] leading-snug">
-                Karışan ikizleri ve aynı kelime türünü (POS) akıllı çeldirici yapan <em>Boşluk Doldurma, Kelime Testi, Eşleştirme</em> ve süreli <em>B1/B2/C1 Hazırlık Muafiyet Deneme Sınavı</em> ile kendini dene.
+                <em>Kelime Testi (Quiz)</em> ve <em>Boşluk Doldurma (Cloze)</em> modlarıyla kelimeleri cümle bağlamında test et; <em>Hazırlık Muafiyet Deneme Sınavı</em> ile süreli sınav simülasyonuna gir.
               </p>
             </div>
 
             <div class="p-3.5 rounded-2xl bg-black/40 border border-white/[0.06] space-y-1">
-              <div class="font-bold text-white text-xs flex items-center gap-1.5"><span>6️⃣</span> <span>AMOLED Odak Modu & Dinamik Seri Alevi</span></div>
+              <div class="font-bold text-white text-xs flex items-center gap-1.5"><span>6️⃣</span> <span>Hata Havuzu & Tur Sonu Telafi</span></div>
               <p class="text-[11px] text-[#a8998c] leading-snug">
-                <strong class="text-rose-300">🎯 Odak [F]</strong> butonu veya <strong class="text-cyan-300">🎨 Tema</strong> menüsünden <strong class="text-white">Odak (AMOLED Siyah)</strong> modunu seç: Saf siyah zemin, yüksek kontrastlı tok butonlar ve <em>Lexend</em> / <em>Atkinson</em> fontuyla sıfır göz yorgunluğu sağlar. Ayrıca tüm modlarda soruları doğru bildikçe sitenin rengi ve aurası evrilir (Kor ➔ Ateş ➔ Plazma Mavi Alev)!
-              </p>
-            </div>
-
-            <div class="p-3.5 rounded-2xl bg-black/40 border border-white/[0.06] space-y-1">
-              <div class="font-bold text-white text-xs flex items-center gap-1.5"><span>7️⃣</span> <span>Büyük 5'li Bilişsel Kart Motoru</span></div>
-              <p class="text-[11px] text-[#a8998c] leading-snug">
-                Kartlarda <strong class="text-rose-300">🧬 Word DNA</strong> (kökten A1-C1 türetme), <strong class="text-amber-300">⚡ Blitz Refleks [Z]</strong> (2.5s hızlı çağrışım), <strong class="text-amber-400">✨ C1 Seviye Aynası</strong> (günlük ➔ akademik essay dönüşümü), <strong class="text-cyan-300">🏛️ Tarihi Yankı</strong> (Marcus Aurelius, Orwell kült alıntıları) ve <strong class="text-emerald-300">🧠 Ebbinghaus Can Barı</strong> devrede!
+                Tur bittiğinde net karneni gör; yanlış bildiğin kelimeleri tek tıkla <strong class="text-rose-300">🔴 Hataları Hemen Pekiştir</strong> butonuyla sadece eksiklerine odaklanarak tekrarla.
               </p>
             </div>
           </div>
         </div>
 
-        <!-- 3. Kısayollar ve İkonlar -->
-        <div class="p-3.5 rounded-2xl bg-black/50 border border-white/[0.06] flex flex-wrap items-center justify-between gap-2 text-[11px] text-[#a8998c]">
-          <div><strong class="text-amber-300">🔥 Seri Alevi:</strong> Doğru bildikçe renk değiştiren aura</div>
-          <div><strong class="text-cyan-300">⚡ Blitz [Z]:</strong> 2.5s hızlı refleks bonusu</div>
-          <div><strong class="text-rose-300">🧬 Word DNA:</strong> Kök ağacı</div>
-          <div><strong class="text-emerald-300">🧠 Can Barı:</strong> Nöral hafıza gücü</div>
-          <div><strong class="text-white">🎯 Odak [F]:</strong> AMOLED yüksek kontrast</div>
+        <!-- 3. Klavye Kısayolları -->
+        <div class="p-4 rounded-2xl bg-black/50 border border-white/[0.08] space-y-2.5">
+          <div class="text-xs font-mono uppercase tracking-wider text-cyan-300 font-bold flex items-center gap-1.5">
+            <span>⌨️</span> <span>Hızlı Klavye Kısayolları (Masaüstü)</span>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] font-mono text-[#d6c7b2]">
+            <div class="flex items-center gap-1.5"><kbd class="px-1.5 py-0.5 rounded bg-slate-900 border border-white/10 text-white font-bold">Boşluk</kbd> <span>Çevir / Geç</span></div>
+            <div class="flex items-center gap-1.5"><kbd class="px-1.5 py-0.5 rounded bg-slate-900 border border-white/10 text-white font-bold">← / 1</kbd> <span>Bilmiyorum</span></div>
+            <div class="flex items-center gap-1.5"><kbd class="px-1.5 py-0.5 rounded bg-slate-900 border border-white/10 text-white font-bold">→ / 2</kbd> <span>Biliyorum</span></div>
+            <div class="flex items-center gap-1.5"><kbd class="px-1.5 py-0.5 rounded bg-slate-900 border border-white/10 text-white font-bold">V / S</kbd> <span>Kelimeyi Dinle</span></div>
+            <div class="flex items-center gap-1.5"><kbd class="px-1.5 py-0.5 rounded bg-slate-900 border border-white/10 text-white font-bold">E</kbd> <span>Cümleyi Dinle</span></div>
+            <div class="flex items-center gap-1.5"><kbd class="px-1.5 py-0.5 rounded bg-slate-900 border border-white/10 text-white font-bold">/ veya ⌘K</kbd> <span>Hızlı Sözlük</span></div>
+            <div class="flex items-center gap-1.5"><kbd class="px-1.5 py-0.5 rounded bg-slate-900 border border-white/10 text-white font-bold">P</kbd> <span>Akış Modu</span></div>
+            <div class="flex items-center gap-1.5"><kbd class="px-1.5 py-0.5 rounded bg-slate-900 border border-white/10 text-white font-bold">R</kbd> <span>Karıştır</span></div>
+            <div class="flex items-center gap-1.5"><kbd class="px-1.5 py-0.5 rounded bg-slate-900 border border-white/10 text-white font-bold">F</kbd> <span>Odak Modu</span></div>
+            <div class="flex items-center gap-1.5"><kbd class="px-1.5 py-0.5 rounded bg-slate-900 border border-white/10 text-white font-bold">1–4 / A–D</kbd> <span>Test Şıkları</span></div>
+            <div class="flex items-center gap-1.5"><kbd class="px-1.5 py-0.5 rounded bg-slate-900 border border-white/10 text-white font-bold">Enter</kbd> <span>Sonraki Soru</span></div>
+            <div class="flex items-center gap-1.5"><kbd class="px-1.5 py-0.5 rounded bg-slate-900 border border-white/10 text-white font-bold">Esc</kbd> <span>Kapat</span></div>
+          </div>
         </div>
 
       </div>
@@ -4317,7 +4326,7 @@
       <!-- Guide Footer -->
       <div class="p-4 sm:p-5 bg-black/60 border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-3">
         <span class="text-[11px] text-[#a8998c] font-mono">
-          💡 Bu rehberi istediğin zaman <strong class="text-slate-300">🧭 Mod</strong> menüsünün köşesindeki <strong class="text-slate-300">?</strong> ikonundan tekrar açabilirsin.
+          💡 Bu rehberi istediğin zaman <strong class="text-slate-300">🧭 Mod</strong> menüsünün altındaki <strong class="text-slate-300">? Rehber</strong> butonundan tekrar açabilirsin.
         </span>
         <div class="flex items-center gap-2 w-full sm:w-auto">
           <button type="button" onclick="closeWelcomeGuideModal(); openLearnerTrackModal();" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-rose-950/60 hover:bg-rose-900/80 border border-rose-500/40 text-rose-200 font-medium text-xs sm:text-sm shrink-0 flex items-center justify-center gap-1.5 transition">
