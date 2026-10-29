@@ -1834,7 +1834,7 @@
       <div id="fcBatchCompleteBox" class="hidden p-8 sm:p-10 rounded-2xl bg-black/50 border border-white/[0.08] text-center space-y-6 shadow-2xl backdrop-blur-md max-w-md mx-auto">
         <div class="space-y-2">
           <div class="text-[11px] font-mono tracking-widest text-[#d6c7b2]/60 uppercase">Tur Tamamlandı</div>
-          <h3 class="font-serif-hero text-3xl font-medium text-[#fdf6ee]">20 Kelime İncelendi</h3>
+          <h3 id="fcSummaryTitle" class="font-serif-hero text-3xl font-medium text-[#fdf6ee]">20 Kelime İncelendi</h3>
           <p class="text-[#a8998c] text-xs sm:text-sm">Hafıza durumun kaydedildi. Yeni tura başlayabilir veya bilmediğin kelimelere odaklanabilirsin.</p>
         </div>
 
@@ -2471,7 +2471,7 @@
           <button onclick="closeExamScorecardModal()" class="w-full sm:w-1/3 py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-slate-300 font-medium text-xs transition border border-white/10">
             Kapat ✕
           </button>
-          <button onclick="openMistakeVaultModal(); closeExamScorecardModal();" class="w-full sm:w-1/3 py-2.5 rounded-xl bg-rose-950/60 hover:bg-rose-900 border border-rose-500/40 text-rose-200 hover:text-white font-medium text-xs transition flex items-center justify-center gap-1.5 active:scale-95 shadow-sm">
+          <button onclick="closeExamScorecardModal(); toggleMistakeVaultModal();" class="w-full sm:w-1/3 py-2.5 rounded-xl bg-rose-950/60 hover:bg-rose-900 border border-rose-500/40 text-rose-200 hover:text-white font-medium text-xs transition flex items-center justify-center gap-1.5 active:scale-95 shadow-sm">
             <span>🎯</span> <span>Hataları Telafi Et</span>
           </button>
           <button onclick="restartMockExam()" class="w-full sm:w-1/3 py-2.5 rounded-xl bg-gradient-to-r from-rose-900/90 to-rose-800/90 hover:from-rose-800 text-white font-bold text-xs transition border border-rose-400/40 shadow-lg shadow-rose-950/50">
@@ -4887,6 +4887,16 @@
       return entry;
     }
 
+    // Unutma eğrisi: bilinen kelimenin çıkma ihtimali zamanla yavaşça geri yükselir
+    // (seri ne kadar uzunsa geri dönüş o kadar yavaş). Kullanıcıya gösterilmez.
+    function getEffectiveDecayWeight(wordStr) {
+      const entry = memoryDecayMap[wordStr];
+      if (!entry) return 0.35;
+      const days = Math.max(0, (Date.now() - (entry.lastSeen || Date.now())) / 86400000);
+      const halfLifeDays = [1, 2, 4, 10, 30][Math.min(entry.streak || 0, 4)];
+      return Math.min(1, (entry.weight || 0.35) * Math.pow(2, days / halfLifeDays));
+    }
+
     function loadMemory() {
       loadMemoryDecay();
       try {
@@ -5291,7 +5301,6 @@
       triggerHaptic('tap');
       const sample = currentVoiceAccent === 'uk' ? 'Oxford British English' : 'American English';
       speakText(sample, 0.92);
-      showFloatingToast(currentVoiceAccent === 'uk' ? '🇬🇧 Aksan: İngiliz Oxford (UK)' : '🇺🇸 Aksan: Amerikan (US)');
     }
 
     function updateVoiceAccentUI() {
@@ -6575,7 +6584,7 @@
         // 1. Zayıf / Hatalı kelimelerden 2-3 adet
         // 2. Hafızada decay ağırlığına göre bilinen kelimelerden araya serpiştirme
         const recentMistakes = pool.filter(w => learnSet.has(w.w));
-        const decayWords = pool.filter(w => knownSet.has(w.w) && Math.random() < (memoryDecayMap[w.w]?.weight || 0.35));
+        const decayWords = pool.filter(w => knownSet.has(w.w) && Math.random() < getEffectiveDecayWeight(w.w));
 
         let blended = [...baseSlice];
         const injects = [];
@@ -7644,9 +7653,12 @@
       document.getElementById('fcBatchCompleteBox').classList.remove('hidden');
 
       // Mevcut destedeki kelimelerin başarı dağılımını hesapla (kullanıcıya bu turun gerçek özetini ver)
-      const batchWords = currentBatchWords || [];
+      const batchWords = uniqueByWord(currentBatchWords || []);
       const batchMissedWords = batchWords.filter(w => learnSet.has(w.w));
       const batchKnownWords = batchWords.filter(w => !learnSet.has(w.w));
+
+      const titleEl = document.getElementById('fcSummaryTitle');
+      if (titleEl) titleEl.innerText = `${batchWords.length} Kelime İncelendi`;
 
       const knownEl = document.getElementById('fcSummaryKnown');
       const learnEl = document.getElementById('fcSummaryLearn');
@@ -7677,8 +7689,18 @@
       triggerConfetti();
     }
 
+    // Tekrar kuyruğuna eklenen kartlar destede birden fazla kez bulunabilir; özet için tekilleştir
+    function uniqueByWord(list) {
+      const seen = new Set();
+      return list.filter(w => {
+        if (!w || seen.has(w.w)) return false;
+        seen.add(w.w);
+        return true;
+      });
+    }
+
     function studyCurrentBatchMistakes() {
-      const batchWords = currentBatchWords || [];
+      const batchWords = uniqueByWord(currentBatchWords || []);
       const missed = batchWords.filter(w => learnSet.has(w.w));
       if (missed.length === 0) {
         startNext20Batch();
@@ -8700,6 +8722,29 @@
         return;
       }
 
+      // Açık bir pencere (modal) varken arka plandaki kartlara/sorulara tuş gitmesin; Esc pencereyi kapatsın
+      const openModal = Array.from(document.querySelectorAll('[id$="Modal"]'))
+        .find(m => m.id !== 'defenderScorecardModal' && !m.classList.contains('hidden'));
+      if (openModal) {
+        if (e.key === 'Escape') {
+          const closers = {
+            modeSelectModal: () => toggleModeSelectModal(),
+            mistakeVaultModal: () => toggleMistakeVaultModal(),
+            themeModal: () => toggleThemeModal(),
+            examScorecardModal: () => closeExamScorecardModal(),
+            welcomeGuideModal: () => closeWelcomeGuideModal()
+          };
+          try {
+            if (closers[openModal.id]) closers[openModal.id]();
+            else { openModal.classList.add('hidden'); document.body.style.overflow = ''; }
+          } catch (err) { openModal.classList.add('hidden'); document.body.style.overflow = ''; }
+        }
+        return;
+      }
+
+      // Tuşa basılı tutunca kartlar art arda işaretlenmesin
+      if (e.repeat) return;
+
       // 0. GLOBAL HIZLI SÖZLÜK ARAMASI: '/' veya 'Cmd+K' / 'Ctrl+K'
       if (e.key === '/' || ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K'))) {
         e.preventDefault();
@@ -8746,7 +8791,7 @@
           handleQuizAnswer(2); return;
         } else if (['4', 'Digit4', 'Numpad4', 'KeyD'].includes(e.code) || ['4', 'd', 'D'].includes(e.key)) {
           handleQuizAnswer(3); return;
-        } else if ((e.code === 'Space' || e.code === 'Enter') && typeof quizAnswered !== 'undefined' && quizAnswered) {
+        } else if ((e.code === 'Space' || e.code === 'Enter') && typeof quizAnswered !== 'undefined' && quizAnswered && document.getElementById('quizResultsCard').classList.contains('hidden')) {
           e.preventDefault();
           nextQuizQuestion(); return;
         }
@@ -8762,7 +8807,7 @@
           handleClozeAnswer(2); return;
         } else if (['4', 'Digit4', 'Numpad4', 'KeyD'].includes(e.code) || ['4', 'd', 'D'].includes(e.key)) {
           handleClozeAnswer(3); return;
-        } else if ((e.code === 'Space' || e.code === 'Enter') && typeof clozeAnswered !== 'undefined' && clozeAnswered) {
+        } else if ((e.code === 'Space' || e.code === 'Enter') && typeof clozeAnswered !== 'undefined' && clozeAnswered && document.getElementById('clozeResultsCard').classList.contains('hidden')) {
           e.preventDefault();
           nextClozeQuestion(); return;
         }
@@ -8936,7 +8981,9 @@
           lastActiveDate: localStorage.getItem(STORAGE_LAST_ACTIVE_KEY) || getTodayString(),
           todayDate: localStorage.getItem(STORAGE_TODAY_DATE_KEY) || getTodayString(),
           activeLevelFilter: activeLevelFilter,
-          customWords: customWords
+          customWords: customWords,
+          memoryDecay: memoryDecayMap,
+          voiceAccent: currentVoiceAccent
         };
 
         const jsonStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
@@ -8992,6 +9039,14 @@
           }
           if (Array.isArray(data.customWords)) {
             localStorage.setItem(STORAGE_CUSTOM_WORDS_KEY, JSON.stringify(data.customWords));
+          }
+          if (data.memoryDecay && typeof data.memoryDecay === 'object') {
+            localStorage.setItem(STORAGE_MEMORY_DECAY_KEY, JSON.stringify(data.memoryDecay));
+          }
+          if (data.voiceAccent === 'us' || data.voiceAccent === 'uk') {
+            localStorage.setItem(STORAGE_VOICE_ACCENT_KEY, data.voiceAccent);
+            currentVoiceAccent = data.voiceAccent;
+            updateVoiceAccentUI();
           }
           if (data.leitnerBoxes && typeof data.leitnerBoxes === 'object') {
             localStorage.setItem(STORAGE_LEITNER_KEY, JSON.stringify(data.leitnerBoxes));
