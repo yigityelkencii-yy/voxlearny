@@ -1609,6 +1609,13 @@
           <svg class="w-3.5 h-3.5 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
           <span id="autoPlayLabel">Akış</span>
         </button>
+
+        <!-- Aksan Seçici (US / UK Oxford) -->
+        <button onclick="toggleVoiceAccent()" id="btnVoiceAccent" title="Telaffuz Aksanı: US (Amerikan) / UK (İngiliz Oxford)" 
+                class="py-1.5 px-2.5 rounded-lg font-mono text-[11px] transition bg-white/[0.04] hover:bg-white/[0.08] text-[#d6c7b2] border border-white/5 flex items-center justify-center gap-1 shrink-0 active:scale-95 cursor-pointer">
+          <span id="voiceAccentIcon">🇺🇸</span>
+          <span id="voiceAccentLabel">US</span>
+        </button>
       </div>
 
             
@@ -1734,8 +1741,14 @@
 
                   <h3 id="fcTr" class="fc-tr-heading text-2xl sm:text-3xl text-[#fdf6ee] font-semibold leading-snug tracking-tight text-center">Anlam</h3>
                   
-                  <div class="p-3.5 sm:p-4 rounded-xl bg-black/40 border border-white/[0.05] border-l-2 border-l-rose-500/50 text-left space-y-1.5">
-                    <div class="text-[10px] font-mono tracking-widest text-[#d6c7b2]/50 uppercase">Örnek Kullanım</div>
+                  <div class="p-3.5 sm:p-4 rounded-xl bg-black/40 border border-white/[0.05] border-l-2 border-l-rose-500/50 text-left space-y-1.5 group cursor-pointer hover:bg-white/[0.03] transition" onclick="speakCardExample(event)" title="Örnek cümleyi dinlemek için tıkla [Kısayol: E]">
+                    <div class="flex items-center justify-between">
+                      <div class="text-[10px] font-mono tracking-widest text-[#d6c7b2]/50 uppercase">Örnek Kullanım</div>
+                      <span class="text-[11px] font-mono text-[#a8998c] group-hover:text-rose-300 transition flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+                        <span>Cümleyi Dinle [E]</span>
+                      </span>
+                    </div>
                     <p id="fcEx" class="fc-example-sentence text-[#ede4d8] text-sm sm:text-base leading-relaxed">Example sentence goes here.</p>
                   </div>
 
@@ -1791,16 +1804,18 @@
       </div>
 
         <!-- Sleek Desktop Keyboard Shortcuts Pill -->
-        <div class="hidden sm:flex items-center justify-center gap-3 text-[11px] text-slate-400 font-mono pt-1">
+        <div class="hidden sm:flex items-center justify-center gap-2.5 text-[11px] text-slate-400 font-mono pt-1">
           <span><kbd class="px-1.5 py-0.5 rounded-lg bg-slate-900 border border-white/10 text-slate-300">Boşluk</kbd> Çevir</span>
           <span>•</span>
           <span><kbd class="px-1.5 py-0.5 rounded-lg bg-slate-900 border border-white/10 text-slate-300">←</kbd> Bilmiyorum</span>
           <span>•</span>
           <span><kbd class="px-1.5 py-0.5 rounded-lg bg-slate-900 border border-white/10 text-slate-300">→</kbd> Biliyorum</span>
           <span>•</span>
-          <span><kbd class="px-1.5 py-0.5 rounded-lg bg-slate-900 border border-white/10 text-slate-300">V</kbd> Dinle</span>
+          <span><kbd class="px-1.5 py-0.5 rounded-lg bg-slate-900 border border-white/10 text-slate-300">V</kbd> Kelime</span>
           <span>•</span>
-          <span><kbd class="px-1.5 py-0.5 rounded-lg bg-slate-900 border border-white/10 text-slate-300">P</kbd> Akış</span>
+          <span><kbd class="px-1.5 py-0.5 rounded-lg bg-slate-900 border border-white/10 text-slate-300">E</kbd> Cümle</span>
+          <span>•</span>
+          <span><kbd class="px-1.5 py-0.5 rounded-lg bg-slate-900 border border-white/10 text-slate-300">/</kbd> Ara</span>
         </div>
 
       <!-- Empty Learn State Box (Safe Non-Destructive Overlay) -->
@@ -2452,12 +2467,15 @@
           </div>
         </div>
 
-        <div class="pt-2 flex items-center gap-3">
-          <button onclick="closeExamScorecardModal()" class="w-1/2 py-3 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-slate-300 font-medium text-xs transition border border-white/10">
+        <div class="pt-2 flex flex-col sm:flex-row items-center gap-2.5">
+          <button onclick="closeExamScorecardModal()" class="w-full sm:w-1/3 py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-slate-300 font-medium text-xs transition border border-white/10">
             Kapat ✕
           </button>
-          <button onclick="restartMockExam()" class="w-1/2 py-3 rounded-xl bg-rose-900/80 hover:bg-rose-800 text-white font-medium text-xs transition border border-rose-500/30 shadow-lg shadow-rose-950/50">
-            Yeniden Sınav Ol 🔄
+          <button onclick="openMistakeVaultModal(); closeExamScorecardModal();" class="w-full sm:w-1/3 py-2.5 rounded-xl bg-rose-950/60 hover:bg-rose-900 border border-rose-500/40 text-rose-200 hover:text-white font-medium text-xs transition flex items-center justify-center gap-1.5 active:scale-95 shadow-sm">
+            <span>🎯</span> <span>Hataları Telafi Et</span>
+          </button>
+          <button onclick="restartMockExam()" class="w-full sm:w-1/3 py-2.5 rounded-xl bg-gradient-to-r from-rose-900/90 to-rose-800/90 hover:from-rose-800 text-white font-bold text-xs transition border border-rose-400/40 shadow-lg shadow-rose-950/50">
+            Yeniden Çöz 🔄
           </button>
         </div>
       </div>
@@ -5251,20 +5269,50 @@
       return candidates[0] || null;
     }
 
+    // ==================== OXFORD / US TELAFUZ AKSAN MOTORU ====================
+    const STORAGE_VOICE_ACCENT_KEY = 'voxlearn_voice_accent';
+    let currentVoiceAccent = 'us';
+
+    function loadVoiceAccent() {
+      try {
+        currentVoiceAccent = localStorage.getItem(STORAGE_VOICE_ACCENT_KEY) || 'us';
+      } catch(e) {
+        currentVoiceAccent = 'us';
+      }
+      updateVoiceAccentUI();
+    }
+
+    function toggleVoiceAccent() {
+      currentVoiceAccent = currentVoiceAccent === 'us' ? 'uk' : 'us';
+      try {
+        localStorage.setItem(STORAGE_VOICE_ACCENT_KEY, currentVoiceAccent);
+      } catch(e) {}
+      updateVoiceAccentUI();
+      triggerHaptic('tap');
+      const sample = currentVoiceAccent === 'uk' ? 'Oxford British English' : 'American English';
+      speakText(sample, 0.92);
+      showFloatingToast(currentVoiceAccent === 'uk' ? '🇬🇧 Aksan: İngiliz Oxford (UK)' : '🇺🇸 Aksan: Amerikan (US)');
+    }
+
+    function updateVoiceAccentUI() {
+      const lbl = document.getElementById('voiceAccentLabel');
+      const icon = document.getElementById('voiceAccentIcon');
+      if (lbl) lbl.innerText = currentVoiceAccent.toUpperCase();
+      if (icon) icon.innerText = currentVoiceAccent === 'uk' ? '🇬🇧' : '🇺🇸';
+    }
+
     function speakText(text, rate = 0.92) {
       if (!text) return;
-      const voiceEl = document.getElementById('globalVoice');
-      const voiceMode = voiceEl ? voiceEl.value : 'us';
-      if (voiceMode === 'mute' || !('speechSynthesis' in window)) return;
+      if (!('speechSynthesis' in window)) return;
 
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
-      const chosenVoice = getBestSystemVoice(voiceMode);
+      const chosenVoice = getBestSystemVoice(currentVoiceAccent);
       if (chosenVoice) {
         utterance.voice = chosenVoice;
         utterance.lang = chosenVoice.lang;
       } else {
-        utterance.lang = voiceMode === 'uk' ? 'en-GB' : 'en-US';
+        utterance.lang = currentVoiceAccent === 'uk' ? 'en-GB' : 'en-US';
       }
 
       utterance.rate = rate || 0.92;
@@ -5275,6 +5323,16 @@
     function speakCurrentCard(rate = 0.92) {
       if (fcIndex < currentBatchWords.length && currentBatchWords[fcIndex]) {
         speakText(currentBatchWords[fcIndex].w, rate);
+      }
+    }
+
+    function speakCardExample(e) {
+      if (e) e.stopPropagation();
+      if (fcIndex < currentBatchWords.length && currentBatchWords[fcIndex]) {
+        const card = currentBatchWords[fcIndex];
+        if (card && card.ex) {
+          speakText(card.ex, 0.88);
+        }
       }
     }
 
@@ -8615,12 +8673,22 @@
       }
     }
 
+    let dictSearchTimer = null;
     document.getElementById('searchInput').addEventListener('input', (e) => {
       dictSearch = e.target.value;
       dictLimit = 120;
       const btn = document.getElementById('searchClearBtn');
       if (btn) btn.classList.toggle('hidden', !dictSearch.trim());
-      renderDict();
+      if (dictSearchTimer) clearTimeout(dictSearchTimer);
+      dictSearchTimer = setTimeout(() => {
+        renderDict();
+      }, 90);
+    });
+
+    document.getElementById('searchInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        e.target.blur();
+      }
     });
 
     // ==================== MASTER UNIFIED KEYBOARD NAVIGATION ====================
@@ -8629,6 +8697,17 @@
       const activeEl = document.activeElement;
       const tag = activeEl ? activeEl.tagName : '';
       if (['INPUT', 'SELECT', 'TEXTAREA'].includes(tag) || (activeEl && activeEl.isContentEditable)) {
+        return;
+      }
+
+      // 0. GLOBAL HIZLI SÖZLÜK ARAMASI: '/' veya 'Cmd+K' / 'Ctrl+K'
+      if (e.key === '/' || ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K'))) {
+        e.preventDefault();
+        switchTab('dict');
+        const inp = document.getElementById('searchInput');
+        if (inp) {
+          setTimeout(() => { inp.focus(); inp.select(); }, 50);
+        }
         return;
       }
 
@@ -8648,6 +8727,8 @@
           flipCard(); return;
         } else if (['KeyV', 'KeyS'].includes(e.code) || ['v', 'V', 's', 'S'].includes(e.key)) {
           speakCurrentCard(); return;
+        } else if (e.code === 'KeyE' || e.key === 'e' || e.key === 'E') {
+          speakCardExample(); return;
         } else if (e.code === 'KeyR' || e.key === 'r' || e.key === 'R') {
           reshuffleDeck(); return;
         } else if (e.key === 'p' || e.key === 'P') {
@@ -12430,6 +12511,7 @@
 
     // ==================== INITIAL STARTUP ====================
     loadCustomWords();
+    loadVoiceAccent();
     loadMemory();
     initParallaxTilt();
     initCardInteractiveSwipe();
