@@ -4818,6 +4818,57 @@
       return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     }
 
+    // ==================== ARKA PLAN ADAPTİF HAFIZA VE AZALAN OLASILIK MOTORU ====================
+    const STORAGE_MEMORY_DECAY_KEY = 'voxlearn_memory_decay_v1';
+    let memoryDecayMap = {};
+
+    function loadMemoryDecay() {
+      try {
+        memoryDecayMap = JSON.parse(localStorage.getItem(STORAGE_MEMORY_DECAY_KEY) || '{}');
+      } catch(e) { memoryDecayMap = {}; }
+    }
+
+    function saveMemoryDecay() {
+      try {
+        localStorage.setItem(STORAGE_MEMORY_DECAY_KEY, JSON.stringify(memoryDecayMap));
+      } catch(e) {}
+    }
+
+    function updateWordDecayStatus(wordStr, isSuccess) {
+      if (!wordStr) return null;
+      const now = Date.now();
+      const entry = memoryDecayMap[wordStr] || {
+        streak: 0,
+        weight: 1.0,
+        lastSeen: now,
+        reviewCount: 0,
+        lapses: 0
+      };
+      entry.reviewCount = (entry.reviewCount || 0) + 1;
+      entry.lastSeen = now;
+
+      if (!isSuccess) {
+        entry.streak = 0;
+        entry.weight = 1.0;
+        entry.lapses = (entry.lapses || 0) + 1;
+      } else {
+        entry.streak = (entry.streak || 0) + 1;
+        if (entry.streak === 1) {
+          entry.weight = 0.50; // %50 çıkma olasılığı
+        } else if (entry.streak === 2) {
+          entry.weight = 0.25; // %25 çıkma olasılığı
+        } else if (entry.streak === 3) {
+          entry.weight = 0.10; // %10 çıkma olasılığı
+        } else {
+          entry.weight = 0.03; // %3 çıkma olasılığı (kalıcı hafıza)
+        }
+      }
+
+      memoryDecayMap[wordStr] = entry;
+      saveMemoryDecay();
+      return entry;
+    }
+
     function loadMemory() {
       loadMemoryDecay();
       try {
@@ -4871,6 +4922,7 @@
     }
 
     function recordWordStatus(wordStr, isKnown) {
+      if (!wordStr) return;
       if (isKnown) {
         knownSet.add(wordStr);
         learnSet.delete(wordStr);
@@ -4878,6 +4930,7 @@
         learnSet.add(wordStr);
         knownSet.delete(wordStr);
       }
+      updateWordDecayStatus(wordStr, isKnown);
       updateWordLeitner(wordStr, isKnown);
       saveMemory();
       incrementActivityCount();
@@ -7186,22 +7239,6 @@
       }, 280);
     }
 
-    // ==================== ARKA PLAN ADAPTİF HAFIZA VE AZALAN OLASILIK MOTORU ====================
-    const STORAGE_MEMORY_DECAY_KEY = 'voxlearn_memory_decay_v1';
-    let memoryDecayMap = {};
-
-    function loadMemoryDecay() {
-      try {
-        memoryDecayMap = JSON.parse(localStorage.getItem(STORAGE_MEMORY_DECAY_KEY) || '{}');
-      } catch(e) { memoryDecayMap = {}; }
-    }
-
-    function saveMemoryDecay() {
-      try {
-        localStorage.setItem(STORAGE_MEMORY_DECAY_KEY, JSON.stringify(memoryDecayMap));
-      } catch(e) {}
-    }
-
     function handleCardAction(isKnown) {
       if (isSwiping || fcIndex >= currentBatchWords.length) return;
       const card = currentBatchWords[fcIndex];
@@ -7211,24 +7248,9 @@
       incrementActivityCount();
       logHeatmapActivity(1);
 
-      const now = Date.now();
-      const entry = memoryDecayMap[card.w] || {
-        streak: 0,
-        weight: 1.0,
-        lastSeen: now,
-        reviewCount: 0,
-        lapses: 0
-      };
-
-      entry.reviewCount = (entry.reviewCount || 0) + 1;
-      entry.lastSeen = now;
+      const entry = updateWordDecayStatus(card.w, isKnown);
 
       if (!isKnown) {
-        // Bilmiyorum: Ağırlık %100'e fırlar, tekrar serisi sıfırlanır
-        entry.streak = 0;
-        entry.weight = 1.0;
-        entry.lapses = (entry.lapses || 0) + 1;
-
         learnSet.add(card.w);
         knownSet.delete(card.w);
         updateHeatStreak(false);
@@ -7245,25 +7267,11 @@
         // Sessizce oturum sonuna ekle (kullanıcıyı sürekli toast ile rahatsız etme)
         currentBatchWords.splice(Math.min(currentBatchWords.length, fcIndex + 4), 0, card);
 
-        memoryDecayMap[card.w] = entry;
-        saveMemoryDecay();
         saveMemory();
         advanceCard('left');
       } else {
-        // Biliyorum: Üst üste her doğru bilinmede çıkma olasılığı katlanarak azalır
-        entry.streak = (entry.streak || 0) + 1;
-
-        if (entry.streak === 1) {
-          entry.weight = 0.50; // %50 ihtimal
-          if (currentBatchWords.length >= fcIndex + 8) {
-            currentBatchWords.splice(fcIndex + 8, 0, card);
-          }
-        } else if (entry.streak === 2) {
-          entry.weight = 0.25; // %25 ihtimal
-        } else if (entry.streak === 3) {
-          entry.weight = 0.10; // %10 ihtimal
-        } else {
-          entry.weight = 0.03; // %3 ihtimal (artık kalıcı hafızada, sadece nadir hatırlatma)
+        if (entry && entry.streak === 1 && currentBatchWords.length >= fcIndex + 8) {
+          currentBatchWords.splice(fcIndex + 8, 0, card);
         }
 
         knownSet.add(card.w);
@@ -7272,9 +7280,6 @@
         triggerHaptic('success');
         removeMistakeFromVaultByWord(card.w);
 
-        // Sessiz ve pürüzsüz akış (toast gösterilmez)
-        memoryDecayMap[card.w] = entry;
-        saveMemoryDecay();
         saveMemory();
         advanceCard('right');
       }
@@ -10823,9 +10828,7 @@
     function addPassageAcademicWordsToLearn() {
       if (!currentPassageAcademicWords || currentPassageAcademicWords.length === 0) return;
       currentPassageAcademicWords.forEach(w => {
-        learnSet.add(w);
-        knownSet.delete(w);
-        updateWordLeitner(w, false);
+        recordWordStatus(w, false);
       });
       saveMemory();
       triggerHaptic('success');
