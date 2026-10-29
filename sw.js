@@ -1,5 +1,5 @@
 // VoxLearn Service Worker - Network-First Cache Strategy & PWA Support
-const CACHE_NAME = 'voxlearn-cache-v32';
+const CACHE_NAME = 'voxlearn-cache-v33';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
