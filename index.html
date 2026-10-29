@@ -5228,17 +5228,17 @@
       const labelMap = { ALL: 'Tümü', AWL: 'AWL', PV: 'Phrasal', CONF: 'İkizler' };
       if (lvlLabel) lvlLabel.innerText = labelMap[lvl] || lvl;
 
-      // Seviye değiştiğinde havuz önbelleğini sıfırla ve yeni kartları 0. indeksten başlat
+      // Seviye değiştiğinde ilgili kurun kayıtlı deste ve kart ilerlemesini yükle
       fcShuffledPool = null;
       fcCurrentLevelCached = null;
-      batchIndex = 0;
+      batchIndex = loadSavedBatchIndex();
       fcIndex = 0;
       fcSavedIndices = { batch: 0, learn: 0, due: 0 };
       quizQuestions = null;
       clozeQuestions = null;
       matchCards = null;
       
-      setFcSource('batch', true);
+      setFcSource('batch', false);
 
       // Aktif mod hangisiyse testi veya kartları anında yeni kur ile yeniden başlat
       const isClozeActive = !document.getElementById('view-cloze').classList.contains('hidden');
@@ -6423,6 +6423,9 @@
     let isFlipped = false;
     let isSwiping = false;
 
+    const STORAGE_BATCH_SESSION_KEY = 'voxlearn_batch_session_v1';
+    const STORAGE_SHUFFLED_POOL_KEY = 'voxlearn_shuffled_pool_v1';
+
     function saveBatchIndex() {
       try {
         localStorage.setItem(STORAGE_BATCH_INDEX_KEY + '_' + activeLevelFilter, String(batchIndex));
@@ -6437,6 +6440,48 @@
         batchIndex = 0;
       }
       return batchIndex;
+    }
+
+    function saveBatchSession() {
+      if (fcSourceMode !== 'batch') return;
+      try {
+        const payload = {
+          lvl: activeLevelFilter,
+          batchIndex: batchIndex,
+          fcIndex: fcIndex,
+          isShuffleMode: isShuffleMode,
+          words: (currentBatchWords || []).map(w => w.w)
+        };
+        localStorage.setItem(STORAGE_BATCH_SESSION_KEY + '_' + activeLevelFilter, JSON.stringify(payload));
+      } catch(e) {}
+    }
+
+    function loadBatchSession() {
+      try {
+        const raw = localStorage.getItem(STORAGE_BATCH_SESSION_KEY + '_' + activeLevelFilter);
+        if (!raw) return null;
+        const data = JSON.parse(raw);
+        if (!data || data.lvl !== activeLevelFilter || data.batchIndex !== batchIndex || data.isShuffleMode !== isShuffleMode || !Array.isArray(data.words) || data.words.length === 0) {
+          return null;
+        }
+        const pool = getFilteredWords();
+        const wordMap = new Map();
+        pool.forEach(item => wordMap.set(item.w, item));
+        allWords.forEach(item => { if (!wordMap.has(item.w)) wordMap.set(item.w, item); });
+        const resolved = data.words.map(wStr => wordMap.get(wStr)).filter(Boolean);
+        if (resolved.length === 0) return null;
+        const savedIdx = typeof data.fcIndex === 'number' ? data.fcIndex : 0;
+        if (savedIdx >= resolved.length) return null;
+        return { words: resolved, fcIndex: Math.max(0, savedIdx) };
+      } catch(e) {
+        return null;
+      }
+    }
+
+    function clearBatchSession(lvl = activeLevelFilter) {
+      try {
+        localStorage.removeItem(STORAGE_BATCH_SESSION_KEY + '_' + lvl);
+      } catch(e) {}
     }
 
     function shuffleArray(arr) {
@@ -6456,20 +6501,48 @@
         return pool; // Sıralı (alfabetik) liste
       }
       if (!fcShuffledPool || fcShuffledPool.length !== pool.length || fcCurrentLevelCached !== activeLevelFilter) {
-        fcShuffledPool = shuffleArray(pool);
+        let restored = null;
+        try {
+          const savedOrder = JSON.parse(localStorage.getItem(STORAGE_SHUFFLED_POOL_KEY + '_' + activeLevelFilter) || 'null');
+          if (Array.isArray(savedOrder) && savedOrder.length === pool.length) {
+            const map = new Map(pool.map(w => [w.w, w]));
+            const arr = savedOrder.map(k => map.get(k)).filter(Boolean);
+            if (arr.length === pool.length) restored = arr;
+          }
+        } catch(e) {}
+        fcShuffledPool = restored || shuffleArray(pool);
         fcCurrentLevelCached = activeLevelFilter;
+        if (!restored) {
+          try {
+            localStorage.setItem(STORAGE_SHUFFLED_POOL_KEY + '_' + activeLevelFilter, JSON.stringify(fcShuffledPool.map(w => w.w)));
+          } catch(e) {}
+        }
       }
       return fcShuffledPool;
     }
 
     function reshuffleDeck() {
-      const pool = getFilteredWords();
-      fcShuffledPool = shuffleArray(pool);
-      fcCurrentLevelCached = activeLevelFilter;
-      batchIndex = 0;
-      saveBatchIndex();
-      fcIndex = 0;
-      setFcSource(fcSourceMode || 'batch');
+      if (!currentBatchWords || currentBatchWords.length <= 1) return;
+      if (fcIndex < currentBatchWords.length - 1) {
+        // Mevcut desteyi ve tamamlanan kartları koru; yalnızca kalan kartları kendi içinde karıştır
+        const donePart = currentBatchWords.slice(0, fcIndex);
+        const currentWord = currentBatchWords[fcIndex] ? currentBatchWords[fcIndex].w : null;
+        const remainingPart = shuffleArray(currentBatchWords.slice(fcIndex));
+        if (remainingPart.length > 1 && remainingPart[0].w === currentWord) {
+          const swapIdx = 1 + Math.floor(Math.random() * (remainingPart.length - 1));
+          const tmp = remainingPart[0];
+          remainingPart[0] = remainingPart[swapIdx];
+          remainingPart[swapIdx] = tmp;
+        }
+        currentBatchWords = [...donePart, ...remainingPart];
+      } else {
+        // Son karttaysa mevcut desteyi (deste numarasını sıfırlamadan) yeniden karıştır
+        currentBatchWords = shuffleArray(currentBatchWords);
+        fcIndex = 0;
+        fcSavedIndices[fcSourceMode] = 0;
+      }
+      saveBatchSession();
+      renderFlashcard();
     }
 
     function toggleShuffleMode() {
@@ -6481,12 +6554,13 @@
       if (isShuffleMode) {
         fcShuffledPool = shuffleArray(pool);
         fcCurrentLevelCached = activeLevelFilter;
-        batchIndex = 0;
-      } else {
-        batchIndex = loadSavedBatchIndex();
+        try {
+          localStorage.setItem(STORAGE_SHUFFLED_POOL_KEY + '_' + activeLevelFilter, JSON.stringify(fcShuffledPool.map(w => w.w)));
+        } catch(e) {}
       }
-      saveBatchIndex();
-      setFcSource(fcSourceMode || 'batch');
+      batchIndex = loadSavedBatchIndex();
+      clearBatchSession();
+      setFcSource(fcSourceMode || 'batch', true);
     }
 
     function updateShuffleModeUI() {
@@ -6571,54 +6645,66 @@
         }
         currentBatchWords = isShuffleMode ? shuffleArray(dueList) : [...dueList];
       } else {
-        const pool = getFcPool();
-        const start = batchIndex * BATCH_SIZE;
-        let baseSlice = pool.slice(start, start + BATCH_SIZE);
-        if (baseSlice.length === 0 && pool.length > 0) {
-          batchIndex = 0;
-          saveBatchIndex();
-          baseSlice = pool.slice(0, BATCH_SIZE);
-        }
+        const restored = !forceReset ? loadBatchSession() : null;
+        if (restored) {
+          currentBatchWords = restored.words;
+          fcIndex = restored.fcIndex;
+          fcSavedIndices['batch'] = fcIndex;
+        } else {
+          const pool = getFcPool();
+          const start = batchIndex * BATCH_SIZE;
+          let baseSlice = pool.slice(start, start + BATCH_SIZE);
+          if (baseSlice.length === 0 && pool.length > 0) {
+            batchIndex = 0;
+            saveBatchIndex();
+            baseSlice = pool.slice(0, BATCH_SIZE);
+          }
 
-        // Akıllı Harmanlama (Arka Plan Adaptif Olasılık):
-        // 1. Zayıf / Hatalı kelimelerden 2-3 adet
-        // 2. Hafızada decay ağırlığına göre bilinen kelimelerden araya serpiştirme
-        const recentMistakes = pool.filter(w => learnSet.has(w.w));
-        const decayWords = pool.filter(w => knownSet.has(w.w) && Math.random() < getEffectiveDecayWeight(w.w));
+          // Akıllı Harmanlama (Arka Plan Adaptif Olasılık):
+          // 1. Zayıf / Hatalı kelimelerden 2-3 adet
+          // 2. Hafızada decay ağırlığına göre bilinen kelimelerden araya serpiştirme
+          const recentMistakes = pool.filter(w => learnSet.has(w.w));
+          const decayWords = pool.filter(w => knownSet.has(w.w) && Math.random() < getEffectiveDecayWeight(w.w));
 
-        let blended = [...baseSlice];
-        const injects = [];
-        if (recentMistakes.length > 0) {
-          injects.push(...shuffleArray(recentMistakes).slice(0, 2));
-        }
-        if (decayWords.length > 0) {
-          injects.push(...shuffleArray(decayWords).slice(0, 3));
-        }
+          let blended = [...baseSlice];
+          const injects = [];
+          if (recentMistakes.length > 0) {
+            injects.push(...shuffleArray(recentMistakes).slice(0, 2));
+          }
+          if (decayWords.length > 0) {
+            injects.push(...shuffleArray(decayWords).slice(0, 3));
+          }
 
-        if (injects.length > 0) {
-          const seen = new Set(baseSlice.map(w => w.w));
-          injects.forEach(inj => {
-            if (!seen.has(inj.w)) {
-              seen.add(inj.w);
-              const pos = Math.floor(Math.random() * (blended.length + 1));
-              blended.splice(pos, 0, inj);
-            }
-          });
-        }
+          if (injects.length > 0) {
+            const seen = new Set(baseSlice.map(w => w.w));
+            injects.forEach(inj => {
+              if (!seen.has(inj.w)) {
+                seen.add(inj.w);
+                const pos = Math.floor(Math.random() * (blended.length + 1));
+                blended.splice(pos, 0, inj);
+              }
+            });
+          }
 
-        currentBatchWords = isShuffleMode ? shuffleArray(blended) : blended;
+          currentBatchWords = isShuffleMode ? shuffleArray(blended) : blended;
+          fcIndex = 0;
+          fcSavedIndices['batch'] = 0;
+          saveBatchSession();
+        }
       }
 
-      // Yeni tura geçildiyse veya forceReset varsa doğrudan 0. karttan başla
-      if (forceReset) {
-        fcIndex = 0;
-        fcSavedIndices[mode] = 0;
-      } else {
-        fcIndex = fcSavedIndices[mode] || 0;
-        if (fcIndex >= currentBatchWords.length) {
+      // Batch dışındaki modlarda indeks yönetimi
+      if (mode !== 'batch') {
+        if (forceReset) {
           fcIndex = 0;
+          fcSavedIndices[mode] = 0;
+        } else {
+          fcIndex = fcSavedIndices[mode] || 0;
+          if (fcIndex >= currentBatchWords.length) {
+            fcIndex = 0;
+          }
+          fcSavedIndices[mode] = fcIndex;
         }
-        fcSavedIndices[mode] = fcIndex;
       }
 
       document.getElementById('fcCurrentBatch').innerText = batchIndex + 1;
@@ -6638,11 +6724,15 @@
         if (isShuffleMode) {
           const basePool = getFilteredWords();
           fcShuffledPool = shuffleArray(basePool);
+          try {
+            localStorage.setItem(STORAGE_SHUFFLED_POOL_KEY + '_' + activeLevelFilter, JSON.stringify(fcShuffledPool.map(w => w.w)));
+          } catch(e) {}
         }
       }
       fcIndex = 0;
       fcSavedIndices['batch'] = 0;
       saveBatchIndex();
+      clearBatchSession();
       setFcSource('batch', true);
     }
 
@@ -6653,6 +6743,7 @@
     function restartBatch() {
       fcIndex = 0;
       fcSavedIndices[fcSourceMode] = 0;
+      saveBatchSession();
       document.getElementById('fcPlayArea').classList.remove('hidden');
       document.getElementById('fcBatchCompleteBox').classList.add('hidden');
       const emptyBox = document.getElementById('fcEmptyLearnBox');
@@ -7302,6 +7393,7 @@
           fcIndex = Math.min(fcIndex, currentBatchWords.length);
         }
         fcSavedIndices[fcSourceMode] = fcIndex;
+        saveBatchSession();
         renderFlashcard();
       }, 280);
     }
@@ -7708,6 +7800,7 @@
       }
       currentBatchWords = [...missed];
       fcIndex = 0;
+      saveBatchSession();
       document.getElementById('fcBatchCompleteBox').classList.add('hidden');
       document.getElementById('fcPlayArea').classList.remove('hidden');
       renderFlashcard();
