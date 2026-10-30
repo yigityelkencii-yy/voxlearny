@@ -1902,9 +1902,16 @@
             <span id="clozeLvlBadge" class="px-2.5 py-0.5 rounded-lg bg-indigo-500/10 text-indigo-300 font-bold text-xs border border-indigo-500/20 font-mono">B2</span>
             <span id="clozePosBadge" class="text-xs font-mono uppercase tracking-wider text-slate-400">verb</span>
           </div>
-          <button onclick="toggleClozeHint()" id="clozeHintBtn" class="text-xs text-amber-400/80 hover:text-amber-300 flex items-center gap-1 transition">
-            <span>💡 İpucu: Anlamı Gör</span>
-          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="speakClozeSentence()" id="btnSpeakCloze" title="Cümleyi Dinle (V veya E)" class="px-2.5 py-1 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-xs text-slate-300 hover:text-white border border-white/5 flex items-center gap-1.5 transition active:scale-95">
+              <span>🔊</span>
+              <span class="hidden sm:inline">Cümleyi Dinle</span>
+              <kbd class="hidden sm:inline text-[9px] px-1 py-0.5 rounded bg-black/40 text-slate-400 font-mono">V</kbd>
+            </button>
+            <button onclick="toggleClozeHint()" id="clozeHintBtn" class="text-xs text-amber-400/80 hover:text-amber-300 flex items-center gap-1 transition">
+              <span>💡 İpucu: Anlamı Gör</span>
+            </button>
+          </div>
         </div>
 
         <!-- Sentence Display with Blank -->
@@ -4975,10 +4982,23 @@
     }
 
     function updateGlobalStatsUI() {
-      document.getElementById('navKnownCount').innerText = knownSet.size;
-      document.getElementById('navLearnCount').innerText = learnSet.size;
-      document.getElementById('fcBtnLearnCount').innerText = learnSet.size;
-      document.getElementById('quizLearnCount').innerText = learnSet.size;
+      const navKnown = document.getElementById('navKnownCount');
+      const navLearn = document.getElementById('navLearnCount');
+      if (navKnown) navKnown.innerText = knownSet.size;
+      if (navLearn) navLearn.innerText = learnSet.size;
+
+      const pool = typeof getFilteredWords === 'function' ? getFilteredWords() : [];
+      let currentLvlMissed = 0;
+      if (activeLevelFilter === 'ALL') {
+        currentLvlMissed = learnSet.size;
+      } else {
+        currentLvlMissed = pool.filter(w => learnSet.has(w.w)).length;
+      }
+
+      const fcBtn = document.getElementById('fcBtnLearnCount');
+      const quizBtn = document.getElementById('quizLearnCount');
+      if (fcBtn) fcBtn.innerText = currentLvlMissed;
+      if (quizBtn) quizBtn.innerText = currentLvlMissed;
     }
 
     // ==================== DYNAMIC HEAT & FLAME EVOLUTION ENGINE ====================
@@ -5259,6 +5279,7 @@
       if (isQuizActive) startQuiz();
       if (isMatchActive) startMatchGame();
       if (isDictActive) renderDict();
+      updateGlobalStatsUI();
     }
 
     // ==================== SPEECH SYNTHESIS (NATURAL & ROBUST) ====================
@@ -5323,6 +5344,12 @@
       if (!text) return;
       if (!('speechSynthesis' in window)) return;
 
+      try {
+        if (window.speechSynthesis.paused) {
+          window.speechSynthesis.resume();
+        }
+      } catch(e) {}
+
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
       const chosenVoice = getBestSystemVoice(currentVoiceAccent);
@@ -5335,6 +5362,20 @@
 
       utterance.rate = rate || 0.92;
       utterance.pitch = 1.0;
+
+      // Retain reference on window to prevent garbage collection cut-off on Safari/Chrome
+      window._activeUtterance = utterance;
+      utterance.onend = () => {
+        if (window._activeUtterance === utterance) {
+          window._activeUtterance = null;
+        }
+      };
+      utterance.onerror = () => {
+        if (window._activeUtterance === utterance) {
+          window._activeUtterance = null;
+        }
+      };
+
       window.speechSynthesis.speak(utterance);
     }
 
@@ -5355,6 +5396,7 @@
     }
 
     // ==================== CANVAS CONFETTI ====================
+    window.fireConfetti = function() { triggerConfetti(); };
     function triggerConfetti() {
       const canvas = document.getElementById('confettiCanvas');
       const ctx = canvas.getContext('2d');
@@ -7398,7 +7440,7 @@
 
       if (count === 30) {
         triggerHaptic('success');
-        if (typeof fireConfetti === 'function') fireConfetti();
+        if (typeof triggerConfetti === 'function') triggerConfetti();
         const toast = document.getElementById('goalToast');
         if (toast) {
           toast.classList.remove('hidden');
@@ -8504,7 +8546,18 @@
     }
 
     function speakQuizWord() {
-      speakText(quizQuestions[quizIndex].word);
+      if (quizQuestions && quizQuestions[quizIndex] && quizQuestions[quizIndex].word) {
+        speakText(quizQuestions[quizIndex].word);
+      }
+    }
+
+    function speakClozeSentence() {
+      const q = clozeQuestions && clozeQuestions[clozeIndex];
+      if (!q) return;
+      const textToSpeak = (clozeAnswered && (q.correctForm || q.cloze_word))
+        ? (q.sentence ? q.sentence.replace('___', q.correctForm || q.cloze_word) : q.targetWord)
+        : (q.sentence ? q.sentence.replace('___', 'blank') : q.targetWord);
+      speakText(textToSpeak, 0.88);
     }
 
     function handleQuizAnswer(optIdx) {
@@ -8572,6 +8625,7 @@
     let matchStartTime = null;
     let matchInterval = null;
     let matchGameMode = 'classic'; // 'classic' | 'synonym'
+    let isMatchLocked = false;
 
     function setMatchMode(mode) {
       matchGameMode = mode;
@@ -8598,6 +8652,7 @@
       document.getElementById('matchRemaining').innerText = matchRemaining;
       document.getElementById('matchTimer').innerText = '0.0s';
       matchSelected = null;
+      isMatchLocked = false;
 
       const pool = getFilteredWords();
       matchCards = [];
@@ -8645,9 +8700,10 @@
     }
 
     function handleMatchClick(idx) {
+      if (isMatchLocked) return;
       const card = matchCards[idx];
       const btn = document.getElementById('mc-' + idx);
-      if (btn.classList.contains('opacity-0') || btn.disabled) return;
+      if (!btn || btn.classList.contains('opacity-0') || btn.disabled) return;
 
       if (!matchSelected) {
         matchSelected = { idx, card };
@@ -8688,14 +8744,16 @@
           }, 320);
 
         } else {
+          isMatchLocked = true;
           btn.className = 'match-card h-24 sm:h-26 rounded-2xl bg-rose-500/20 border-2 border-rose-500 text-white font-bold text-xs sm:text-sm p-3 flex items-center justify-center text-center shadow-sm anim-shake';
           prevBtn.className = 'match-card h-24 sm:h-26 rounded-2xl bg-rose-500/20 border-2 border-rose-500 text-white font-bold text-xs sm:text-sm p-3 flex items-center justify-center text-center shadow-sm anim-shake';
           updateHeatStreak(false); // Cool down on mismatch
           triggerHaptic('error');
 
           setTimeout(() => {
-            btn.className = 'match-card h-24 sm:h-26 rounded-2xl bg-slate-900/90 border border-white/[0.08] hover:border-indigo-500/50 text-white font-medium text-xs sm:text-sm p-3 flex items-center justify-center text-center transition shadow-sm';
-            prevBtn.className = 'match-card h-24 sm:h-26 rounded-2xl bg-slate-900/90 border border-white/[0.08] hover:border-indigo-500/50 text-white font-medium text-xs sm:text-sm p-3 flex items-center justify-center text-center transition shadow-sm';
+            btn.className = 'match-card h-24 sm:h-26 rounded-2xl bg-[#140609] border border-white/[0.08] hover:border-rose-500/50 text-white font-medium text-xs sm:text-sm p-3 flex items-center justify-center text-center transition shadow-sm';
+            prevBtn.className = 'match-card h-24 sm:h-26 rounded-2xl bg-[#140609] border border-white/[0.08] hover:border-rose-500/50 text-white font-medium text-xs sm:text-sm p-3 flex items-center justify-center text-center transition shadow-sm';
+            isMatchLocked = false;
           }, 450);
         }
       }
@@ -8928,6 +8986,8 @@
           handleQuizAnswer(2); return;
         } else if (['4', 'Digit4', 'Numpad4', 'KeyD'].includes(e.code) || ['4', 'd', 'D'].includes(e.key)) {
           handleQuizAnswer(3); return;
+        } else if (['KeyV', 'KeyS'].includes(e.code) || ['v', 'V', 's', 'S'].includes(e.key)) {
+          speakQuizWord(); return;
         } else if ((e.code === 'Space' || e.code === 'Enter') && typeof quizAnswered !== 'undefined' && quizAnswered && document.getElementById('quizResultsCard').classList.contains('hidden')) {
           e.preventDefault();
           nextQuizQuestion(); return;
@@ -8944,6 +9004,8 @@
           handleClozeAnswer(2); return;
         } else if (['4', 'Digit4', 'Numpad4', 'KeyD'].includes(e.code) || ['4', 'd', 'D'].includes(e.key)) {
           handleClozeAnswer(3); return;
+        } else if (['KeyV', 'KeyE'].includes(e.code) || ['v', 'V', 'e', 'E'].includes(e.key)) {
+          speakClozeSentence(); return;
         } else if ((e.code === 'Space' || e.code === 'Enter') && typeof clozeAnswered !== 'undefined' && clozeAnswered && document.getElementById('clozeResultsCard').classList.contains('hidden')) {
           e.preventDefault();
           nextClozeQuestion(); return;
@@ -9083,8 +9145,51 @@
         let customList = JSON.parse(localStorage.getItem(STORAGE_CUSTOM_WORDS_KEY) || '[]');
         customList = customList.filter(item => item.w.toLowerCase() !== wordText.toLowerCase());
         localStorage.setItem(STORAGE_CUSTOM_WORDS_KEY, JSON.stringify(customList));
+
+        // Clean up from memory sets and storage
+        const targetLower = wordText.toLowerCase().trim();
+        let wasInLearn = false;
+        let wasInKnown = false;
+        learnSet.forEach(w => {
+          if (w.toLowerCase().trim() === targetLower) {
+            learnSet.delete(w);
+            wasInLearn = true;
+          }
+        });
+        knownSet.forEach(w => {
+          if (w.toLowerCase().trim() === targetLower) {
+            knownSet.delete(w);
+            wasInKnown = true;
+          }
+        });
+        if (wasInLearn || wasInKnown) {
+          saveMemory();
+          updateGlobalStatsUI();
+        }
+
+        // Clean up from Leitner & Decay
+        try {
+          const lData = JSON.parse(localStorage.getItem(STORAGE_LEITNER_KEY) || '{}');
+          delete lData[wordText];
+          delete lData[targetLower];
+          localStorage.setItem(STORAGE_LEITNER_KEY, JSON.stringify(lData));
+        } catch(e) {}
+
+        try {
+          const dData = JSON.parse(localStorage.getItem(STORAGE_DECAY_KEY) || '{}');
+          delete dData[wordText];
+          delete dData[targetLower];
+          localStorage.setItem(STORAGE_DECAY_KEY, JSON.stringify(dData));
+        } catch(e) {}
+
+        // Remove from Mistake Vault
+        if (typeof removeMistakeFromVaultByWord === 'function') {
+          removeMistakeFromVaultByWord(wordText);
+        }
+
         loadCustomWords();
         renderDict();
+        showFloatingToast(`🗑️ "${wordText}" özel kelime defterinden silindi.`);
       } catch(e) {
         console.error("Delete custom word error:", e);
       }
@@ -11130,12 +11235,14 @@
       triggerHaptic(q && choice === q.answer ? 'success' : 'error');
       logHeatmapActivity(1);
       if (q && choice !== q.answer) {
+        const correctOpt = q.options ? q.options.find(o => o.key === q.answer) : null;
+        const fullAnswer = correctOpt ? `${correctOpt.key}) ${correctOpt.text}` : (q.answer || '');
         addMistakeToVault({
           type: 'reading',
-          word: 'Okuma Sorusu',
+          word: `Okuma Sorusu #${qIdx + 1}`,
           prompt: q.prompt,
           options: q.options ? q.options.map(o => `${o.key}) ${o.text}`) : [],
-          answer: q.answer,
+          answer: fullAnswer,
           explanation: q.explanation || ''
         });
       }
@@ -12573,12 +12680,17 @@
           else if (q.category === 'Cloze Passage' || q.category === 'Restatement') grammarCorrect++;
           else if (q.category === 'Reading Comprehension') readingCorrect++;
         } else {
+          const correctOpt = q.options ? q.options.find(o => o.key === q.answer) : null;
+          const fullAnswer = correctOpt ? `${correctOpt.key}) ${correctOpt.text}` : (q.answer || '');
+          const wordMatch = q.prompt ? q.prompt.match(/<strong>(.*?)<\/strong>/) : null;
+          const targetWord = wordMatch ? wordMatch[1].trim() : q.category;
+
           addMistakeToVault({
             type: 'exam',
-            word: q.category,
+            word: targetWord,
             prompt: q.prompt,
             options: q.options ? q.options.map(o => `${o.key}) ${o.text}`) : [],
-            answer: q.answer,
+            answer: fullAnswer,
             explanation: q.explanation || ''
           });
         }
@@ -16527,8 +16639,12 @@
     function addMistakeToVault(item) {
       if (!item) return;
       const exists = mistakeVault.some(m => {
+        if (item.type && item.type !== 'word') {
+          if (item.prompt && m.prompt && item.prompt.trim() === m.prompt.trim()) return true;
+          return false;
+        }
         if (item.word && m.word && item.word.toLowerCase().trim() === m.word.toLowerCase().trim()) return true;
-        if (item.prompt && m.prompt && item.prompt === m.prompt) return true;
+        if (item.prompt && m.prompt && item.prompt.trim() === m.prompt.trim()) return true;
         return false;
       });
       if (exists) return;
@@ -16738,9 +16854,46 @@
       renderVaultPracticeItem();
     }
 
+    function normalizeVaultAnswer(str) {
+      if (!str) return '';
+      return String(str).trim().toLowerCase();
+    }
+
+    function checkVaultMatch(chosen, answer) {
+      const c = normalizeVaultAnswer(chosen);
+      const a = normalizeVaultAnswer(answer);
+      if (!c || !a) return false;
+      if (c === a) return true;
+
+      // Extract option keys (e.g. "a) apple" -> key "a", text "apple")
+      const cKeyMatch = c.match(/^([a-d])[\)\.\:\-\s]\s*(.*)$/);
+      const aKeyMatch = a.match(/^([a-d])[\)\.\:\-\s]\s*(.*)$/);
+
+      const cKey = cKeyMatch ? cKeyMatch[1] : (['a', 'b', 'c', 'd'].includes(c) ? c : '');
+      const cText = cKeyMatch ? cKeyMatch[2].trim() : (['a', 'b', 'c', 'd'].includes(c) ? '' : c);
+
+      const aKey = aKeyMatch ? aKeyMatch[1] : (['a', 'b', 'c', 'd'].includes(a) ? a : '');
+      const aText = aKeyMatch ? aKeyMatch[2].trim() : (['a', 'b', 'c', 'd'].includes(a) ? '' : a);
+
+      if (aKey && cKey && aKey === cKey) return true;
+      if (aText && cText && (aText === cText || cText.includes(aText) || aText.includes(cText))) return true;
+
+      return false;
+    }
+
+    function getVaultDisplayAnswer(m) {
+      if (!m) return '';
+      if (m.options && m.options.length > 0) {
+        const match = m.options.find(opt => checkVaultMatch(opt, m.answer));
+        if (match) return match;
+      }
+      return m.answer || '';
+    }
+
     function answerVaultPractice(chosen) {
       const m = mistakeVault[vaultPracticeIndex];
-      const isCorrect = chosen.trim().toLowerCase() === m.answer.trim().toLowerCase();
+      if (!m) return;
+      const isCorrect = checkVaultMatch(chosen, m.answer);
       const feedback = document.getElementById('vaultPracticeFeedback');
 
       if (isCorrect) {
@@ -16752,9 +16905,10 @@
         mistakeVault.splice(vaultPracticeIndex, 1);
         saveMistakeVault();
       } else {
+        const displayAns = getVaultDisplayAnswer(m);
         if (feedback) {
           feedback.className = 'text-xs p-3 rounded-lg bg-rose-500/20 border border-rose-500/40 text-rose-200';
-          feedback.innerHTML = `<strong>❌ Yanlış Cevap.</strong> Doğrusu: <strong>${escapeHtmlAttr(m.answer)}</strong>. ${escapeHtmlAttr(m.explanation || '')}`;
+          feedback.innerHTML = `<strong>❌ Yanlış Cevap.</strong> Doğrusu: <strong>${escapeHtmlAttr(displayAns)}</strong>. ${escapeHtmlAttr(m.explanation || '')}`;
           feedback.classList.remove('hidden');
         }
         vaultPracticeIndex++;
