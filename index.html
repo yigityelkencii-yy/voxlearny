@@ -1005,11 +1005,12 @@
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 25px 60px -10px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
     }
 
-    /* Soru Panelleri (Test, Boşluk Doldurma, Sınav, Okuma) */
+    /* Soru Panelleri (Test, Boşluk Doldurma, Sınav, Okuma, Fiil Çekimi) */
     [data-theme="slate"] #clozeQuestionBox,
     [data-theme="slate"] #quizQuestionBox,
     [data-theme="slate"] #readingQuestionsCard,
     [data-theme="slate"] #examOptionsContainer,
+    [data-theme="slate"] #grammarVerbFormsCard,
     [data-theme="slate"] #grammarSpotterSection > div,
     [data-theme="slate"] #grammarScrambleSection > div {
       background: linear-gradient(180deg, #1d2133 0%, #141725 100%) !important;
@@ -1295,6 +1296,7 @@
     body.focus-mode-active #quizQuestionBox,
     body.focus-mode-active #readingQuestionsCard,
     body.focus-mode-active #examOptionsContainer,
+    body.focus-mode-active #grammarVerbFormsCard,
     body.focus-mode-active #grammarSpotterSection > div,
     body.focus-mode-active #grammarScrambleSection > div,
     body.focus-mode-active .card-front,
@@ -2824,6 +2826,9 @@
           <button onclick="setGrammarSubTab('topics')" id="gSubTab-topics" class="px-3 py-1.5 rounded-lg bg-rose-900/60 border border-rose-500/30 text-white font-medium transition shrink-0 shadow-sm">
             Konular
           </button>
+          <button onclick="setGrammarSubTab('verbforms')" id="gSubTab-verbforms" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition shrink-0 flex items-center gap-1.5 font-medium">
+            <span>⚡</span> Fiil Çekimi Testi
+          </button>
           <button onclick="setGrammarSubTab('colloc')" id="gSubTab-colloc" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition shrink-0">
             🎯 Preposition Avcısı
           </button>
@@ -2879,6 +2884,127 @@
         </div>
       </div>
 
+
+      <!-- BÖLÜM: FİİL ÇEKİMİ & ZAMANLAR ARENASI (VERB FORMS & TENSES ARENA) -->
+      <div id="grammarVerbFormsSection" class="hidden space-y-5">
+        
+        <!-- Filter Bar: Level & Category & Question Count -->
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 sm:p-4 rounded-2xl bg-black/40 border border-white/[0.06]">
+          <!-- Level Pills -->
+          <div class="flex items-center gap-1.5 overflow-x-auto text-xs font-medium w-full sm:w-auto scrollbar-none">
+            <span class="text-[11px] text-[#a8998c]/70 font-mono uppercase tracking-wider mr-1">Seviye:</span>
+            <button onclick="setVerbFormsLevel('ALL')" id="vfLvl-ALL" class="px-2.5 py-1 rounded-lg bg-rose-900/60 border border-rose-500/30 text-white font-medium transition shrink-0">Tümü (70)</button>
+            <button onclick="setVerbFormsLevel('A1-A2')" id="vfLvl-A1-A2" class="px-2.5 py-1 rounded-lg bg-white/[0.04] text-slate-400 hover:text-white border border-white/5 transition shrink-0">A1–A2</button>
+            <button onclick="setVerbFormsLevel('B1')" id="vfLvl-B1" class="px-2.5 py-1 rounded-lg bg-white/[0.04] text-slate-400 hover:text-white border border-white/5 transition shrink-0">B1</button>
+            <button onclick="setVerbFormsLevel('B2')" id="vfLvl-B2" class="px-2.5 py-1 rounded-lg bg-white/[0.04] text-slate-400 hover:text-white border border-white/5 transition shrink-0">B2</button>
+            <button onclick="setVerbFormsLevel('C1')" id="vfLvl-C1" class="px-2.5 py-1 rounded-lg bg-white/[0.04] text-slate-400 hover:text-white border border-white/5 transition shrink-0">C1</button>
+          </div>
+
+          <!-- Category Selector Dropdown -->
+          <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+            <select id="vfCatFilter" onchange="setVerbFormsCategory(this.value)" class="bg-[#18080c] border border-white/10 rounded-xl px-2.5 py-1 text-xs text-slate-200 outline-none focus:border-rose-500/50">
+              <option value="ALL">Tüm Konular (Karma Sınav)</option>
+              <option value="Zaman Uyumları">⏳ Zaman Uyumları (Tenses)</option>
+              <option value="Gerund & Infinitive">🔗 Gerund & Infinitive</option>
+              <option value="Koşul & Dilek">🔀 Koşul & Dilek (Conditionals)</option>
+              <option value="Edilgen & Ettirgen">⚙️ Edilgen & Ettirgen (Passive/Causative)</option>
+              <option value="Modallar & Çıkarımlar">🧠 Modallar & Çıkarımlar</option>
+              <option value="Kısaltmalar (Participles)">✂️ Kısaltmalar (Participles)</option>
+              <option value="Subjunctive">📜 Subjunctive & Dilek</option>
+            </select>
+            <button onclick="restartVerbFormsTest()" title="Testi Yeniden Başlat" class="p-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-[#d6c7b2] border border-white/5 text-xs transition active:scale-95">
+              🔄
+            </button>
+          </div>
+        </div>
+
+        <!-- Question Box Container -->
+        <div id="grammarVerbFormsCard" class="p-6 sm:p-8 rounded-3xl study-focus-halo border border-white/[0.08] shadow-2xl space-y-6 relative bg-[#140609]/95 backdrop-blur-md">
+          
+          <!-- Top Card Header: Badges & Stats -->
+          <div class="flex items-center justify-between text-xs pb-3 border-b border-white/[0.06]">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span id="vfLvlBadge" class="px-2.5 py-0.5 rounded-lg bg-rose-950/80 border border-rose-500/40 text-rose-300 font-mono font-bold text-xs">B2</span>
+              <span id="vfCatBadge" class="px-2 py-0.5 rounded-md bg-white/[0.05] text-[#d6c7b2] text-[11px] font-mono">Gerund & Infinitive</span>
+              <span id="vfBaseVerbBadge" class="px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[11px] font-mono">Kök: wait</span>
+            </div>
+            
+            <div class="flex items-center gap-3 font-mono text-xs">
+              <span class="text-amber-300 font-bold flex items-center gap-1">
+                <span>🔥</span> <span id="vfStreakCount">0</span>
+              </span>
+              <span class="text-slate-400">
+                Soru: <strong id="vfCurrentQ" class="text-white font-mono">1</strong> / <span id="vfTotalQ" class="font-mono">15</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Sentence Prompt with Highlighted Blank -->
+          <div class="p-5 sm:p-6 rounded-2xl bg-black/50 border border-white/[0.06] space-y-3 relative text-center sm:text-left">
+            <div class="flex items-center justify-between text-xs text-[#a8998c] font-mono">
+              <span class="uppercase tracking-widest text-[10px] text-rose-400">Cümledeki Fiil Halini Seç:</span>
+              <button onclick="speakVerbFormSentence()" id="vfSpeakBtn" title="Cümleyi Dinle (V veya S)" class="px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 hover:text-white transition flex items-center gap-1.5 text-[11px]">
+                <span>🔊</span> <span class="hidden sm:inline">Cümleyi Dinle</span> <kbd class="hidden sm:inline text-[9px] px-1 rounded bg-black/40 text-slate-400">V</kbd>
+              </button>
+            </div>
+
+            <div id="vfPromptSentence" class="font-serif-hero text-lg sm:text-2xl text-[#fdf6ee] leading-relaxed font-normal">
+              <!-- Injected by JS -->
+            </div>
+          </div>
+
+          <!-- 4 Option Buttons -->
+          <div id="vfOptionsGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <!-- Injected by JS -->
+          </div>
+
+          <!-- Feedback & Rule Explanation Box -->
+          <div id="vfFeedbackBox" class="hidden p-5 rounded-2xl border text-left text-xs sm:text-sm space-y-3 transition-all">
+            <div class="flex items-center justify-between">
+              <div id="vfFeedbackStatus" class="font-bold text-sm flex items-center gap-2"></div>
+              <button id="vfVaultBadgeBtn" onclick="addCurrentVerbMistakeToVault()" class="hidden px-2.5 py-1 rounded-lg bg-rose-950/80 border border-rose-500/40 text-rose-300 hover:text-white text-[11px] font-mono transition">
+                📥 Kasaya Ekle
+              </button>
+            </div>
+            
+            <div id="vfTranslationBox" class="text-slate-300 italic text-xs sm:text-sm border-l-2 border-rose-500/40 pl-3 py-0.5"></div>
+
+            <div class="p-3.5 rounded-xl bg-black/40 border border-white/[0.06] text-xs leading-relaxed text-[#d6c7b2] space-y-1">
+              <div class="text-[10px] font-mono uppercase tracking-wider text-amber-400 font-bold flex items-center gap-1.5">
+                <span>💡</span> <span>Gramer Kuralı & Sınav İpucu</span>
+              </div>
+              <div id="vfRuleTip"></div>
+            </div>
+          </div>
+
+          <!-- Bottom Footer Navigation -->
+          <div class="flex items-center justify-between pt-2 text-xs">
+            <span class="text-[#a8998c]/70 text-[11px] hidden sm:inline font-mono">
+              ⌨️ Klavye: <kbd class="px-1 py-0.5 rounded bg-black/40 text-slate-300">1-4</kbd> / <kbd class="px-1 py-0.5 rounded bg-black/40 text-slate-300">A-D</kbd> Seç, <kbd class="px-1 py-0.5 rounded bg-black/40 text-slate-300">Boşluk / Enter</kbd> Geç
+            </span>
+            <div class="flex items-center gap-2 ml-auto">
+              <button onclick="nextVerbFormQuestion()" id="vfNextBtn" class="hidden px-6 py-2.5 rounded-xl btn-primary-glow font-medium text-xs sm:text-sm text-white transition shadow-lg active:scale-95 flex items-center gap-1.5">
+                <span>Sonraki Soru ➔</span>
+                <kbd class="text-[10px] px-1 py-0.2 rounded bg-black/30 font-mono hidden sm:inline">Enter</kbd>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Completion Scorecard Card -->
+        <div id="vfCompleteBox" class="hidden p-6 sm:p-8 rounded-3xl bg-[#140609] border border-white/[0.08] shadow-2xl text-center space-y-5">
+          <div class="text-4xl">🎉</div>
+          <h3 class="font-serif-hero text-2xl font-bold text-white">Fiil Çekimi Testi Tamamlandı!</h3>
+          <p id="vfCompleteSummary" class="text-xs sm:text-sm text-[#a8998c]">15 soruda 13 doğru (%87 Başarı)</p>
+          <div class="flex items-center justify-center gap-3 pt-2">
+            <button onclick="restartVerbFormsTest()" class="px-6 py-2.5 rounded-xl btn-primary-glow font-medium text-xs sm:text-sm text-white transition shadow-md">
+              🔄 Yeni Sınav Başlat
+            </button>
+          </div>
+        </div>
+
+      </div>
 
       <!-- BÖLÜM: KALIP & PREPOSITION AVCISI (DEPENDENT PREPOSITIONS ARENA) -->
       <div id="grammarCollocSection" class="hidden space-y-5">
@@ -3975,6 +4101,15 @@
             <div>
               <div class="text-sm font-bold text-white group-hover:text-emerald-200 transition">60sn Fiil Refleksi</div>
               <div class="text-[11px] text-[#a8998c] leading-snug mt-0.5">Düzensiz fiiller (Irregular Verbs) zaman yarışı</div>
+            </div>
+          </button>
+
+          <!-- 3.4 Fiil Çekimi Sınavı -->
+          <button type="button" onclick="openVerbFormsFromMenu()" id="modeCard-verbforms" class="mode-card w-full p-3.5 rounded-2xl bg-black/40 hover:bg-emerald-950/30 border border-white/[0.08] hover:border-emerald-500/50 transition-all text-left flex items-start gap-3 active:scale-[0.98] group">
+            <span class="w-10 h-10 rounded-xl bg-emerald-950/60 border border-emerald-500/30 text-lg flex items-center justify-center shrink-0 group-hover:scale-105 transition">⚡</span>
+            <div>
+              <div class="text-sm font-bold text-white group-hover:text-emerald-200 transition">Fiil Çekimi Testi (70 Soru)</div>
+              <div class="text-[11px] text-[#a8998c] leading-snug mt-0.5">Zamanlar, Gerund/Inf, Conditionals ve Pasifler</div>
             </div>
           </button>
         </div>
@@ -6325,6 +6460,16 @@
       const textEl = document.getElementById('activeModeText');
       if (iconEl) iconEl.innerText = '⚡';
       if (textEl) textEl.innerText = 'Fiil Refleksi';
+    }
+
+    function openVerbFormsFromMenu() {
+      closeModeSelectModal();
+      switchTab('grammar');
+      setGrammarSubTab('verbforms');
+      const iconEl = document.getElementById('activeModeIcon');
+      const textEl = document.getElementById('activeModeText');
+      if (iconEl) iconEl.innerText = '⚡';
+      if (textEl) textEl.innerText = 'Fiil Çekimi';
     }
 
     function switchTab(tabId, forceInit = false) {
@@ -9028,6 +9173,34 @@
             nextExamQuestion(); return;
           } else if (e.code === 'ArrowLeft') {
             prevExamQuestion(); return;
+          }
+        }
+      }
+
+      // 5. GRAMER: FİİL ÇEKİMİ TESTİ (VERB FORMS ARENA) KISAYOLLARI
+      const isGrammarActive = !document.getElementById('view-grammar').classList.contains('hidden');
+      if (isGrammarActive && typeof grammarActiveSubTab !== 'undefined' && grammarActiveSubTab === 'verbforms') {
+        const compBox = document.getElementById('vfCompleteBox');
+        const isComp = compBox && !compBox.classList.contains('hidden');
+        if (isComp) {
+          if (e.code === 'Enter' || e.code === 'Space') {
+            e.preventDefault();
+            restartVerbFormsTest(); return;
+          }
+        } else {
+          if (['1', 'Digit1', 'Numpad1', 'KeyA'].includes(e.code) || ['1', 'a', 'A'].includes(e.key)) {
+            handleVerbFormAnswer(0); return;
+          } else if (['2', 'Digit2', 'Numpad2', 'KeyB'].includes(e.code) || ['2', 'b', 'B'].includes(e.key)) {
+            handleVerbFormAnswer(1); return;
+          } else if (['3', 'Digit3', 'Numpad3', 'KeyC'].includes(e.code) || ['3', 'c', 'C'].includes(e.key)) {
+            handleVerbFormAnswer(2); return;
+          } else if (['4', 'Digit4', 'Numpad4', 'KeyD'].includes(e.code) || ['4', 'd', 'D'].includes(e.key)) {
+            handleVerbFormAnswer(3); return;
+          } else if (['KeyV', 'KeyS'].includes(e.code) || ['v', 'V', 's', 'S'].includes(e.key)) {
+            speakVerbFormSentence(); return;
+          } else if ((e.code === 'Space' || e.code === 'Enter') && typeof vfAnswered !== 'undefined' && vfAnswered) {
+            e.preventDefault();
+            nextVerbFormQuestion(); return;
           }
         }
       }
@@ -15700,16 +15873,17 @@
 
     function setGrammarSubTab(subTab) {
       grammarActiveSubTab = subTab;
-      const subTabs = ['topics', 'colloc', 'versus', 'spotter', 'scramble', 'timeline', 'irregulars'];
+      const subTabs = ['topics', 'verbforms', 'colloc', 'versus', 'spotter', 'scramble', 'timeline', 'irregulars'];
 
       // Hide all sub-sections & reset button classes
       subTabs.forEach(tab => {
         const sectionId = tab === 'topics' ? 'grammarTopicsSection' :
+                          (tab === 'verbforms' ? 'grammarVerbFormsSection' :
                           (tab === 'colloc' ? 'grammarCollocSection' :
                           (tab === 'versus' ? 'grammarVersusSection' :
                           (tab === 'spotter' ? 'grammarSpotterSection' :
                           (tab === 'scramble' ? 'grammarScrambleSection' :
-                          (tab === 'timeline' ? 'grammarTimelineSection' : 'grammarIrregularsSection')))));
+                          (tab === 'timeline' ? 'grammarTimelineSection' : 'grammarIrregularsSection'))))));
         const btnId = 'gSubTab-' + tab;
         const sec = document.getElementById(sectionId);
         const btn = document.getElementById(btnId);
@@ -15719,11 +15893,12 @@
 
       // Activate selected sub-section & button
       const activeSecId = subTab === 'topics' ? 'grammarTopicsSection' :
+                          (subTab === 'verbforms' ? 'grammarVerbFormsSection' :
                           (subTab === 'colloc' ? 'grammarCollocSection' :
                           (subTab === 'versus' ? 'grammarVersusSection' :
                           (subTab === 'spotter' ? 'grammarSpotterSection' :
                           (subTab === 'scramble' ? 'grammarScrambleSection' :
-                          (subTab === 'timeline' ? 'grammarTimelineSection' : 'grammarIrregularsSection')))));
+                          (subTab === 'timeline' ? 'grammarTimelineSection' : 'grammarIrregularsSection'))))));
       const activeBtnId = 'gSubTab-' + subTab;
       const activeSec = document.getElementById(activeSecId);
       const activeBtn = document.getElementById(activeBtnId);
@@ -15732,6 +15907,7 @@
 
       // Trigger sub-tab renderer
       if (subTab === 'topics') renderGrammarTopics();
+      else if (subTab === 'verbforms') startVerbFormsTest();
       else if (subTab === 'colloc') initCollocArena();
       else if (subTab === 'versus') renderGrammarVersus();
       else if (subTab === 'spotter') startSpotterGame();
@@ -16463,6 +16639,1385 @@
 
   
     // ==================== 17. PREPOSITION & COLLOCATION ARENA ====================
+    // ==================== 18b. VERB FORMS & TENSES ARENA ENGINE ====================
+    const verbFormsQuestionsData = [
+  {
+    "id": "vf_01",
+    "lvl": "A1",
+    "cat": "Zaman Uyumları",
+    "baseVerb": "visit",
+    "prompt": "Last summer, our family _____ (visit) our grandparents in the countryside.",
+    "options": [
+      "visits",
+      "visited",
+      "is visiting",
+      "has visited"
+    ],
+    "answer": "visited",
+    "ruleTip": "Geçmişte belirli ve tamamlanmış bir zaman zarfı (<strong>'Last summer'</strong>) kullanıldığı için cümle <strong>Past Simple (V2: visited)</strong> gerektirir.",
+    "tr": "Geçen yaz ailemiz kırsaldaki büyükanne ve büyükbabamızı ziyaret etti."
+  },
+  {
+    "id": "vf_02",
+    "lvl": "A1",
+    "cat": "Zaman Uyumları",
+    "baseVerb": "sleep",
+    "prompt": "Be quiet! The baby _____ (sleep) in the next room right now.",
+    "options": [
+      "sleeps",
+      "is sleeping",
+      "slept",
+      "has slept"
+    ],
+    "answer": "is sleeping",
+    "ruleTip": "Şu an gerçekleşen eylemler ve dikkat çeken ifadelerden (<strong>'Be quiet!', 'right now'</strong>) sonra <strong>Present Continuous (is sleeping)</strong> kullanılır.",
+    "tr": "Sessiz ol! Bebek şu anda yan odada uyuyor."
+  },
+  {
+    "id": "vf_03",
+    "lvl": "A2",
+    "cat": "Zaman Uyumları",
+    "baseVerb": "cook / arrive",
+    "prompt": "While my mother _____ (cook) dinner yesterday evening, my uncle arrived.",
+    "options": [
+      "cooked",
+      "was cooking",
+      "is cooking",
+      "has cooked"
+    ],
+    "answer": "was cooking",
+    "ruleTip": "<strong>'While'</strong> bağlacı geçmişte arka planda devam eden uzun eylemi (<strong>Past Continuous: was cooking</strong>), kesen ani eylemi ise Past Simple (arrived) ile anlatır.",
+    "tr": "Dün akşam annem akşam yemeği pişirirken amcam geldi."
+  },
+  {
+    "id": "vf_04",
+    "lvl": "A2",
+    "cat": "Gerund & Infinitive",
+    "baseVerb": "play",
+    "prompt": "My younger brother really enjoys _____ (play) chess on the weekends.",
+    "options": [
+      "to play",
+      "playing",
+      "played",
+      "play"
+    ],
+    "answer": "playing",
+    "ruleTip": "<strong>'Enjoy'</strong> fiili kendisinden sonra daima <strong>Gerund (-ing)</strong> alır: 'enjoy playing'.",
+    "tr": "Küçük erkek kardeşim hafta sonları satranç oynamaktan gerçekten keyif alır."
+  },
+  {
+    "id": "vf_05",
+    "lvl": "A2",
+    "cat": "Gerund & Infinitive",
+    "baseVerb": "buy",
+    "prompt": "They decided _____ (buy) an electric car to save on fuel costs.",
+    "options": [
+      "buying",
+      "to buy",
+      "bought",
+      "buy"
+    ],
+    "answer": "to buy",
+    "ruleTip": "<strong>'Decide'</strong> karar bildiren bir fiil olduğu için kendisinden sonra <strong>to-infinitive</strong> alır: 'decide to buy'.",
+    "tr": "Yakıt masraflarından tasarruf etmek için elektrikli bir araba almaya karar verdiler."
+  },
+  {
+    "id": "vf_06",
+    "lvl": "A2",
+    "cat": "Koşul & Dilek",
+    "baseVerb": "rain",
+    "prompt": "If it _____ (rain) tomorrow, we will stay indoors and watch movies.",
+    "options": [
+      "rains",
+      "will rain",
+      "rained",
+      "is raining"
+    ],
+    "answer": "rains",
+    "ruleTip": "Geleceğe dair Type 1 Conditional şart cümleciğinde (If clause) 'will' kullanılmaz; ana cümle 'will' alırken şart cümlesi <strong>Present Simple (rains)</strong> olur.",
+    "tr": "Yarın yağmur yağarsa, evde kalıp film izleyeceğiz."
+  },
+  {
+    "id": "vf_07",
+    "lvl": "A2",
+    "cat": "Edilgen & Ettirgen",
+    "baseVerb": "build",
+    "prompt": "This famous historical bridge _____ (build) in 1895.",
+    "options": [
+      "is built",
+      "was built",
+      "built",
+      "has built"
+    ],
+    "answer": "was built",
+    "ruleTip": "Köprü kendi kendini inşa edemez (nesne/özne uyumu) ve geçmişte net bir yıl (<strong>'in 1895'</strong>) belirtilmiştir. Bu nedenle <strong>Past Simple Passive (was built)</strong> gerekir.",
+    "tr": "Bu ünlü tarihi köprü 1895 yılında inşa edildi."
+  },
+  {
+    "id": "vf_08",
+    "lvl": "A2",
+    "cat": "Zaman Uyumları",
+    "baseVerb": "lose",
+    "prompt": "I can't open the door because I _____ (lose) my front door key.",
+    "options": [
+      "lost",
+      "have lost",
+      "was losing",
+      "am losing"
+    ],
+    "answer": "have lost",
+    "ruleTip": "Geçmişte olan bir eylemin sonucu şu an devam ediyorsa ('anahtarı açamıyorum') <strong>Present Perfect (have lost)</strong> kullanılır.",
+    "tr": "Kapıyı açamıyorum çünkü giriş kapımın anahtarını kaybettim."
+  },
+  {
+    "id": "vf_09",
+    "lvl": "A2",
+    "cat": "Modallar & Çıkarımlar",
+    "baseVerb": "study",
+    "prompt": "You _____ (study) harder if you want to pass tomorrow's biology exam.",
+    "options": [
+      "should study",
+      "must have studied",
+      "could study",
+      "studied"
+    ],
+    "answer": "should study",
+    "ruleTip": "Şimdiki zamanda tavsiye bildirmek için <strong>'should + V1' (should study)</strong> kullanılır.",
+    "tr": "Yarınki biyoloji sınavını geçmek istiyorsan daha sıkı çalışmalısın."
+  },
+  {
+    "id": "vf_10",
+    "lvl": "A2",
+    "cat": "Gerund & Infinitive",
+    "baseVerb": "swim",
+    "prompt": "She is very good at _____ (swim) long distances in open water.",
+    "options": [
+      "to swim",
+      "swimming",
+      "swim",
+      "swam"
+    ],
+    "answer": "swimming",
+    "ruleTip": "Tüm edatlardan (preposition: <strong>'at, in, on, of, for'</strong> vb.) sonra gelen fiiller daima <strong>-ing (Gerund: swimming)</strong> alır.",
+    "tr": "Açık suda uzun mesafeler yüzmede çok iyidir."
+  },
+  {
+    "id": "vf_11",
+    "lvl": "B1",
+    "cat": "Zaman Uyumları",
+    "baseVerb": "live",
+    "prompt": "Mr. Henderson _____ (live) in this small seaside town since 2012.",
+    "options": [
+      "lives",
+      "lived",
+      "has lived",
+      "is living"
+    ],
+    "answer": "has lived",
+    "ruleTip": "Geçmişten günümüze devam eden süreçleri belirten <strong>'since + başlangıç noktası'</strong> ifadesi <strong>Present Perfect (has lived)</strong> gerektirir.",
+    "tr": "Bay Henderson 2012'den beri bu küçük sahil kasabasında yaşamaktadır."
+  },
+  {
+    "id": "vf_12",
+    "lvl": "B1",
+    "cat": "Zaman Uyumları",
+    "baseVerb": "already / leave",
+    "prompt": "When we reached the platform, the express train _____ (already / leave).",
+    "options": [
+      "already left",
+      "had already left",
+      "has already left",
+      "was already leaving"
+    ],
+    "answer": "had already left",
+    "ruleTip": "Geçmişteki bir andan ('when we reached') daha önce gerçekleşip tamamlanmış eylemler için <strong>Past Perfect (had already left)</strong> kullanılır.",
+    "tr": "Biz perona vardığımızda ekspres tren çoktan kalkmıştı."
+  },
+  {
+    "id": "vf_13",
+    "lvl": "B1",
+    "cat": "Gerund & Infinitive",
+    "baseVerb": "lock",
+    "prompt": "Did you remember _____ (lock) the front gate before leaving home?",
+    "options": [
+      "locking",
+      "to lock",
+      "lock",
+      "locked"
+    ],
+    "answer": "to lock",
+    "ruleTip": "<strong>'Remember to do'</strong> yapılması gereken bir görevi/eylemi hatırlamaktır. <strong>'Remember doing'</strong> ise geçmişte yapılmış bir anıyı hatırlamaktır. Burada bir görev sorgulandığından <strong>to lock</strong> doğrudur.",
+    "tr": "Evden çıkmadan önce bahçe kapısını kilitlemeyi hatırladın mı?"
+  },
+  {
+    "id": "vf_14",
+    "lvl": "B1",
+    "cat": "Gerund & Infinitive",
+    "baseVerb": "see",
+    "prompt": "I vividly remember _____ (see) the Eiffel Tower for the very first time as a child.",
+    "options": [
+      "to see",
+      "seeing",
+      "see",
+      "saw"
+    ],
+    "answer": "seeing",
+    "ruleTip": "Geçmişte yaşanmış bir anıyı / deneyimi zihinde canlandırarak hatırlamak <strong>'remember + Gerund (-ing)' (seeing)</strong> gerektirir.",
+    "tr": "Çocukken Eyfel Kulesi'ni ilk kez görüşümü canlı bir şekilde hatırlıyorum."
+  },
+  {
+    "id": "vf_15",
+    "lvl": "B1",
+    "cat": "Gerund & Infinitive",
+    "baseVerb": "smoke",
+    "prompt": "The doctor advised him that he must stop _____ (smoke) immediately.",
+    "options": [
+      "to smoke",
+      "smoking",
+      "smoke",
+      "smoked"
+    ],
+    "answer": "smoking",
+    "ruleTip": "Bir alışkanlığı tamamen bırakmak <strong>'stop + Gerund' (stop smoking)</strong> ile ifade edilir. 'Stop to smoke' başka bir işi bırakıp sigara içmek anlamına gelir.",
+    "tr": "Doktor ona sigara içmeyi derhal bırakması gerektiğini tavsiye etti."
+  },
+  {
+    "id": "vf_16",
+    "lvl": "B1",
+    "cat": "Koşul & Dilek",
+    "baseVerb": "have",
+    "prompt": "If I _____ (have) enough money right now, I would travel around South America.",
+    "options": [
+      "have",
+      "had",
+      "would have",
+      "had had"
+    ],
+    "answer": "had",
+    "ruleTip": "Şu anki gerçek dışı / hayali durumları anlatan <strong>Type 2 Conditional</strong> yapısında 'If' cümlesi <strong>Past Simple (had)</strong>, ana cümle ise 'would + V1' alır.",
+    "tr": "Şu anda yeterli param olsaydı, Güney Amerika'yı baştan başa gezerdim."
+  },
+  {
+    "id": "vf_17",
+    "lvl": "B1",
+    "cat": "Edilgen & Ettirgen",
+    "baseVerb": "paint",
+    "prompt": "Our living room _____ (paint) right now, so there is furniture all over the hallway.",
+    "options": [
+      "is painted",
+      "is being painted",
+      "was painted",
+      "has painted"
+    ],
+    "answer": "is being painted",
+    "ruleTip": "Şu an devam eden ('right now') edilgen bir eylem için <strong>Present Continuous Passive (am/is/are + being + V3: is being painted)</strong> kullanılır.",
+    "tr": "Oturma odamız şu anda boyanıyor, bu yüzden koridorun her yeri eşyalarla dolu."
+  },
+  {
+    "id": "vf_18",
+    "lvl": "B1",
+    "cat": "Modallar & Çıkarımlar",
+    "baseVerb": "tell",
+    "prompt": "You _____ (tell) me the meeting was canceled; I waited at the office for two hours!",
+    "options": [
+      "must tell",
+      "should have told",
+      "could tell",
+      "can't have told"
+    ],
+    "answer": "should have told",
+    "ruleTip": "Geçmişe dair yapılması gereken ama yapılmamış bir eylem ve pişmanlık/eleştiri için <strong>'should have + V3' (should have told)</strong> kullanılır.",
+    "tr": "Toplantının iptal edildiğini bana söylemeliydin; ofiste iki saat boyunca boşuna bekledim!"
+  },
+  {
+    "id": "vf_19",
+    "lvl": "B1",
+    "cat": "Gerund & Infinitive",
+    "baseVerb": "avoid / make",
+    "prompt": "Careful drivers always avoid _____ (make) sudden lane changes in heavy traffic.",
+    "options": [
+      "to make",
+      "making",
+      "make",
+      "made"
+    ],
+    "answer": "making",
+    "ruleTip": "<strong>'Avoid' (kaçınmak)</strong> fiili kural olarak ardından daima <strong>Gerund (-ing)</strong> alır: 'avoid making'.",
+    "tr": "Dikkatli sürücüler yoğun trafikte ani şerit değişiklikleri yapmaktan her zaman kaçınırlar."
+  },
+  {
+    "id": "vf_20",
+    "lvl": "B1",
+    "cat": "Zaman Uyumları",
+    "baseVerb": "work",
+    "prompt": "She was exhausted because she _____ (work) in the garden all morning.",
+    "options": [
+      "has worked",
+      "had been working",
+      "is working",
+      "works"
+    ],
+    "answer": "had been working",
+    "ruleTip": "Geçmişteki bir durumun ('she was exhausted') geçmişte devam etmiş sebebini / sürecini vurgulamak için <strong>Past Perfect Continuous (had been working)</strong> kullanılır.",
+    "tr": "Tüm sabah boyunca bahçede çalıştığı için çok yorulmuştu."
+  },
+  {
+    "id": "vf_21",
+    "lvl": "B1",
+    "cat": "Edilgen & Ettirgen",
+    "baseVerb": "repair",
+    "prompt": "I don't know how to fix brakes, so I am going to have my bicycle _____ (repair) at the shop.",
+    "options": [
+      "repairing",
+      "repaired",
+      "to repair",
+      "repair"
+    ],
+    "answer": "repaired",
+    "ruleTip": "Ettirgen yapı olan <strong>'have something done'</strong> kalıbında nesneden sonra <strong>V3 (Past Participle: repaired)</strong> kullanılır.",
+    "tr": "Frenleri nasıl tamir edeceğimi bilmiyorum, bu yüzden bisikletimi dükkanda tamir ettireceğim."
+  },
+  {
+    "id": "vf_22",
+    "lvl": "B1",
+    "cat": "Gerund & Infinitive",
+    "baseVerb": "see",
+    "prompt": "We are all looking forward to _____ (see) our old classmates at the reunion.",
+    "options": [
+      "see",
+      "seeing",
+      "saw",
+      "be seen"
+    ],
+    "answer": "seeing",
+    "ruleTip": "<strong>'Look forward to'</strong> kalıbındaki 'to' bir edattır (preposition). Edatlardan sonra fiil daima <strong>-ing (seeing)</strong> alır.",
+    "tr": "Hepimiz buluşmada eski sınıf arkadaşlarımızı görmeyi dört gözle bekliyoruz."
+  },
+  {
+    "id": "vf_23",
+    "lvl": "B1",
+    "cat": "Zaman Uyumları",
+    "baseVerb": "finish",
+    "prompt": "By ten o'clock tonight, the chef _____ (prepare) all the desserts for tomorrow's banquet.",
+    "options": [
+      "will prepare",
+      "will have prepared",
+      "prepares",
+      "is preparing"
+    ],
+    "answer": "will have prepared",
+    "ruleTip": "Gelecekteki belirli bir sınıra kadar tamamlanmış olacak eylemler için (<strong>'By + gelecek zaman'</strong>) <strong>Future Perfect (will have prepared)</strong> kullanılır.",
+    "tr": "Bu gece saat ona kadar şef, yarınki ziyafetin tüm tatlılarını hazırlamış olacak."
+  },
+  {
+    "id": "vf_24",
+    "lvl": "B1",
+    "cat": "Koşul & Dilek",
+    "baseVerb": "study",
+    "prompt": "If she _____ (study) harder last semester, she would have passed the scholarship exam.",
+    "options": [
+      "studied",
+      "had studied",
+      "studies",
+      "would study"
+    ],
+    "answer": "had studied",
+    "ruleTip": "Geçmişe dair pişmanlık ve şartları anlatan <strong>Type 3 Conditional</strong> yapısında 'If' cümleciği <strong>Past Perfect (had studied)</strong> alır.",
+    "tr": "Geçen dönem daha sıkı çalışmış olsaydı, burs sınavını geçerdi."
+  },
+  {
+    "id": "vf_25",
+    "lvl": "B1",
+    "cat": "Modallar & Çıkarımlar",
+    "baseVerb": "be",
+    "prompt": "Look at the lights on in his apartment; Arthur _____ (be) at home.",
+    "options": [
+      "must be",
+      "can't be",
+      "should have been",
+      "would be"
+    ],
+    "answer": "must be",
+    "ruleTip": "Mevcut güçlü bir kanıta dayanarak şimdiki zamana dair kesin çıkarım yapmak için <strong>'must + V1' (must be)</strong> kullanılır.",
+    "tr": "Dairesindeki ışıklara bak; Arthur kesinlikle evde olmalı."
+  },
+  {
+    "id": "vf_26",
+    "lvl": "B2",
+    "cat": "Zaman Uyumları",
+    "baseVerb": "wait",
+    "prompt": "By the time the rescue team arrived, the injured hikers _____ (wait) in the freezing cold for twelve hours.",
+    "options": [
+      "were waiting",
+      "had been waiting",
+      "have waited",
+      "would wait"
+    ],
+    "answer": "had been waiting",
+    "ruleTip": "<strong>'By the time + Past Simple'</strong> geçmişteki bir sınıra kadar devam etmiş süreci belirttiği için <strong>Past Perfect Continuous ('had been waiting')</strong> gerektirir.",
+    "tr": "Kurtarma ekibi vardığında, yaralı dağcılar dondurucu soğukta on iki saatten beri beklemekteydi."
+  },
+  {
+    "id": "vf_27",
+    "lvl": "B2",
+    "cat": "Gerund & Infinitive",
+    "baseVerb": "admit / leak",
+    "prompt": "The former employee finally admitted _____ (leak) the confidential documents to the press.",
+    "options": [
+      "to leak",
+      "leaking",
+      "to have leaked",
+      "leaked"
+    ],
+    "answer": "leaking",
+    "ruleTip": "<strong>'Admit' (itiraf etmek)</strong> fiili kural olarak doğrudan <strong>Gerund (-ing: leaking / having leaked)</strong> alır.",
+    "tr": "Eski çalışan sonunda gizli belgeleri basına sızdırdığını itiraf etti."
+  },
+  {
+    "id": "vf_28",
+    "lvl": "B2",
+    "cat": "Modallar & Çıkarımlar",
+    "baseVerb": "commit",
+    "prompt": "The suspect _____ (commit) the burglary because security cameras proved he was in another city.",
+    "options": [
+      "must have committed",
+      "couldn't have committed",
+      "shouldn't commit",
+      "might commit"
+    ],
+    "answer": "couldn't have committed",
+    "ruleTip": "Geçmişe dair güçlü bir imkansızlık çıkarımı yapmak için <strong>'couldn't have + V3' (couldn't have committed)</strong> kullanılır.",
+    "tr": "Şüphelinin soygunu işlemiş olması imkansız; çünkü güvenlik kameraları onun başka bir şehirde olduğunu kanıtladı."
+  },
+  {
+    "id": "vf_29",
+    "lvl": "B2",
+    "cat": "Koşul & Dilek",
+    "baseVerb": "take",
+    "prompt": "If you _____ (take) my advice yesterday, we wouldn't be in this difficult situation now.",
+    "options": [
+      "took",
+      "had taken",
+      "would take",
+      "have taken"
+    ],
+    "answer": "had taken",
+    "ruleTip": "Geçmişteki bir eylemin (yesterday) şimdiki sonucunu (now) bağlayan <strong>Mixed Conditional</strong> kalıbında If cümlesi <strong>Past Perfect ('had taken')</strong> gerektirir.",
+    "tr": "Dün tavsiyemi dinlemiş olsaydın, şu an bu zor durumda olmazdık."
+  },
+  {
+    "id": "vf_30",
+    "lvl": "B2",
+    "cat": "Edilgen & Ettirgen",
+    "baseVerb": "believe / destroy",
+    "prompt": "The ancient temple is believed _____ (destroy) by a colossal volcanic eruption in 400 BC.",
+    "options": [
+      "to destroy",
+      "to have been destroyed",
+      "destroying",
+      "being destroyed"
+    ],
+    "answer": "to have been destroyed",
+    "ruleTip": "Günümüzdeki bir inanışın geçmişte yaşanmış edilgen bir olaya atfı için <strong>Perfect Passive Infinitive ('to have been destroyed')</strong> kullanılır.",
+    "tr": "Antik tapınağın M.Ö. 400 yılında devasa bir volkanik patlama ile yok edildiğine inanılmaktadır."
+  },
+  {
+    "id": "vf_31",
+    "lvl": "B2",
+    "cat": "Gerund & Infinitive",
+    "baseVerb": "regret / inform",
+    "prompt": "We regret _____ (inform) you that your loan application has been declined.",
+    "options": [
+      "informing",
+      "to inform",
+      "informed",
+      "having informed"
+    ],
+    "answer": "to inform",
+    "ruleTip": "Resmi bir dille üzücü bir haber vermek için <strong>'regret to inform / say'</strong> kalıbı (infinitive) kullanılır. 'Regret -ing' ise geçmişte yapılan bir şeyden pişman olmaktır.",
+    "tr": "Kredi başvurunuzun reddedildiğini bildirmekten üzüntü duyarız."
+  },
+  {
+    "id": "vf_32",
+    "lvl": "B2",
+    "cat": "Gerund & Infinitive",
+    "baseVerb": "object to / pay",
+    "prompt": "Several citizens strongly objected to _____ (pay) additional municipal taxes for road maintenance.",
+    "options": [
+      "pay",
+      "paying",
+      "paid",
+      "to pay"
+    ],
+    "answer": "paying",
+    "ruleTip": "<strong>'Object to' (itiraz etmek)</strong> kalıbındaki 'to' bir edat olduğu için ardından <strong>Gerund (-ing: paying)</strong> gelir.",
+    "tr": "Birçok vatandaş yol bakımı için ek belediye vergisi ödemeye şiddetle itiraz etti."
+  },
+  {
+    "id": "vf_33",
+    "lvl": "B2",
+    "cat": "Edilgen & Ettirgen",
+    "baseVerb": "get / sign",
+    "prompt": "She managed to get the director _____ (sign) the contract before he left for Tokyo.",
+    "options": [
+      "sign",
+      "to sign",
+      "signed",
+      "signing"
+    ],
+    "answer": "to sign",
+    "ruleTip": "Ettirgen yapılarda <strong>'get someone to do something'</strong> kuralı geçerlidir; kişiden sonra <strong>to-infinitive (to sign)</strong> gelir.",
+    "tr": "Tokyo'ya gitmeden önce müdüre sözleşmeyi imzalatmayı başardı."
+  },
+  {
+    "id": "vf_34",
+    "lvl": "B2",
+    "cat": "Edilgen & Ettirgen",
+    "baseVerb": "make / apologize",
+    "prompt": "The strict teacher made the mischievous student _____ (apologize) in front of the whole class.",
+    "options": [
+      "to apologize",
+      "apologize",
+      "apologizing",
+      "apologized"
+    ],
+    "answer": "apologize",
+    "ruleTip": "<strong>'Make someone do something'</strong> ettirgen kalıbında fiil yalın halde (<strong>bare infinitive: apologize</strong>) kullanılır.",
+    "tr": "Sert öğretmen, yaramaz öğrenciye bütün sınıfın önünde özür diletti."
+  },
+  {
+    "id": "vf_35",
+    "lvl": "B2",
+    "cat": "Modallar & Çıkarımlar",
+    "baseVerb": "needn't / buy",
+    "prompt": "You _____ (buy) so much fresh bread; we already had two loaves in the pantry!",
+    "options": [
+      "didn't need to buy",
+      "needn't have bought",
+      "mustn't buy",
+      "couldn't buy"
+    ],
+    "answer": "needn't have bought",
+    "ruleTip": "Geçmişte yapılmasına gerek olmadığı halde boş yere yapılan bir eylem için <strong>'needn't have + V3' (needn't have bought)</strong> kullanılır.",
+    "tr": "Bu kadar çok taze ekmek almana gerek yoktu; kilerde zaten iki somunumuz vardı!"
+  },
+  {
+    "id": "vf_36",
+    "lvl": "B2",
+    "cat": "Koşul & Dilek",
+    "baseVerb": "wish / study",
+    "prompt": "I wish I _____ (study) computer science instead of law when I was at university.",
+    "options": [
+      "studied",
+      "had studied",
+      "would study",
+      "study"
+    ],
+    "answer": "had studied",
+    "ruleTip": "Geçmişe dair dilek ve pişmanlıklarda (<strong>'wish + geçmiş zaman'</strong>) daima <strong>Past Perfect (had studied)</strong> kullanılır.",
+    "tr": "Keşke üniversitedeyken hukuk yerine bilgisayar mühendisliği okumuş olsaydım."
+  },
+  {
+    "id": "vf_37",
+    "lvl": "B2",
+    "cat": "Kısaltmalar (Participles)",
+    "baseVerb": "graduate",
+    "prompt": "_____ (graduate) from Harvard Law School, Amanda joined a prestigious international firm.",
+    "options": [
+      "Having graduated",
+      "Graduated",
+      "To graduate",
+      "Graduating"
+    ],
+    "answer": "Having graduated",
+    "ruleTip": "Cümle başında, ana eylemden daha önce tamamlanmış bir eylemi bağlaçsız kısaltmak için <strong>Perfect Participle ('Having + V3': Having graduated)</strong> kullanılır.",
+    "tr": "Harvard Hukuk Fakültesi'nden mezun olduktan sonra Amanda saygın bir uluslararası şirkete katıldı."
+  },
+  {
+    "id": "vf_38",
+    "lvl": "B2",
+    "cat": "Subjunctive",
+    "baseVerb": "rather / go",
+    "prompt": "I would rather you _____ (not go) out alone so late at night.",
+    "options": [
+      "don't go",
+      "didn't go",
+      "not go",
+      "won't go"
+    ],
+    "answer": "didn't go",
+    "ruleTip": "<strong>'Would rather + Özne'</strong> yapısı şimdiki/genel zaman tercihi belirtirken <strong>Past Simple (didn't go)</strong> alır.",
+    "tr": "Gece bu kadar geç saatte dışarı tek başına çıkmamanı tercih ederim."
+  },
+  {
+    "id": "vf_39",
+    "lvl": "B2",
+    "cat": "Zaman Uyumları",
+    "baseVerb": "graduate",
+    "prompt": "By this time next year, my daughter _____ (graduate) from medical school.",
+    "options": [
+      "will graduate",
+      "will have graduated",
+      "graduates",
+      "is graduating"
+    ],
+    "answer": "will have graduated",
+    "ruleTip": "Gelecekteki belirli bir zamana kadar eylemin tamamlanacağını belirten <strong>'By this time next year'</strong> ifadesi <strong>Future Perfect (will have graduated)</strong> gerektirir.",
+    "tr": "Gelecek yıl bu zamanlar kızım tıp fakültesinden mezun olmuş olacak."
+  },
+  {
+    "id": "vf_40",
+    "lvl": "B2",
+    "cat": "Gerund & Infinitive",
+    "baseVerb": "resist",
+    "prompt": "Despite being on a strict diet, she couldn't resist _____ (eat) a slice of chocolate cake.",
+    "options": [
+      "to eat",
+      "eating",
+      "eat",
+      "eaten"
+    ],
+    "answer": "eating",
+    "ruleTip": "<strong>'Can't resist' (kendini alamamak / direnememek)</strong> ifadesi ardından daima <strong>Gerund (-ing: eating)</strong> alır.",
+    "tr": "Sıkı bir diyette olmasına rağmen, bir dilim çikolatalı pasta yemekten kendini alamadı."
+  },
+  {
+    "id": "vf_41",
+    "lvl": "C1",
+    "cat": "Koşul & Dilek",
+    "baseVerb": "realize",
+    "prompt": "Had the engineers _____ (realize) the structural flaw earlier, the catastrophe would have been prevented.",
+    "options": [
+      "realize",
+      "realized",
+      "been realized",
+      "realizing"
+    ],
+    "answer": "realized",
+    "ruleTip": "Type 3 devrik şart cümlesinde <strong>'Had + Özne + V3' (Had the engineers realized)</strong> kalıbı kullanılır; 'If the engineers had realized' ile eş anlamlıdır.",
+    "tr": "Mühendisler yapısal kusuru daha önce fark etmiş olsalardı felaket önlenebilirdi."
+  },
+  {
+    "id": "vf_42",
+    "lvl": "C1",
+    "cat": "Koşul & Dilek",
+    "baseVerb": "resign",
+    "prompt": "Were the prime minister _____ (resign) unexpectedly, the entire cabinet would dissolve.",
+    "options": [
+      "resigning",
+      "to resign",
+      "resigned",
+      "resigns"
+    ],
+    "answer": "to resign",
+    "ruleTip": "Type 2 devrik şart cümlesinde fiil içeren durumlarda <strong>'Were + Özne + to-Infinitive' (Were the prime minister to resign)</strong> yapısı kullanılır.",
+    "tr": "Başbakan beklenmedik bir şekilde istifa edecek olursa, tüm kabine dağılır."
+  },
+  {
+    "id": "vf_43",
+    "lvl": "C1",
+    "cat": "Subjunctive",
+    "baseVerb": "comply",
+    "prompt": "It is imperative that every laboratory employee _____ (comply) with international biosafety regulations.",
+    "options": [
+      "complies",
+      "comply",
+      "complied",
+      "will comply"
+    ],
+    "answer": "comply",
+    "ruleTip": "Gereklilik bildiren sıfatlardan (imperative, essential, crucial) sonraki 'that' cümlesinde <strong>Subjunctive (yalın fiil / bare infinitive: comply)</strong> kullanılır.",
+    "tr": "Her laboratuvar çalışanının uluslararası biyogüvenlik yönetmeliklerine uyması zorunludur."
+  },
+  {
+    "id": "vf_44",
+    "lvl": "C1",
+    "cat": "Kısaltmalar (Participles)",
+    "baseVerb": "warn",
+    "prompt": "_____ (warn) repeatedly about the impending storm, the expedition team chose to proceed nonetheless.",
+    "options": [
+      "Warning",
+      "Having been warned",
+      "Warned",
+      "To have warned"
+    ],
+    "answer": "Having been warned",
+    "ruleTip": "Özneden önce gerçekleşmiş ve edilgen olan bir durumu nitelemek için <strong>Perfect Passive Participle ('Having been warned')</strong> kullanılır.",
+    "tr": "Yaklaşan fırtına konusunda defalarca uyarılmış olmalarına rağmen, keşif ekibi yine de yola devam etmeyi seçti."
+  },
+  {
+    "id": "vf_45",
+    "lvl": "C1",
+    "cat": "Subjunctive",
+    "baseVerb": "leave",
+    "prompt": "It is high time governments _____ (take) decisive measures against industrial deforestation.",
+    "options": [
+      "take",
+      "took",
+      "had taken",
+      "would take"
+    ],
+    "answer": "took",
+    "ruleTip": "<strong>'It is high time + Özne'</strong> yapısı gecikmiş bir eylemi vurgular ve kural olarak daima <strong>Past Simple (took)</strong> gerektirir.",
+    "tr": "Hükümetlerin endüstriyel ormansızlaşmaya karşı kararlı adımlar atmasının vakti çoktan geldi de geçiyor."
+  },
+  {
+    "id": "vf_46",
+    "lvl": "C1",
+    "cat": "Edilgen & Ettirgen",
+    "baseVerb": "rumor / flee",
+    "prompt": "The deposed monarch is rumored _____ (flee) the country with substantial state treasures.",
+    "options": [
+      "to flee",
+      "to have fled",
+      "fleeing",
+      "having fled"
+    ],
+    "answer": "to have fled",
+    "ruleTip": "Hakkında şu an dedikodu yapılan kişinin geçmişteki eylemini nitelemek için <strong>Perfect Active Infinitive ('to have fled')</strong> kullanılır.",
+    "tr": "Devrilen hükümdarın önemli devlet hazineleriyle birlikte ülkeden kaçtığı söyleniyor."
+  },
+  {
+    "id": "vf_47",
+    "lvl": "C1",
+    "cat": "Zaman Uyumları",
+    "baseVerb": "scarcely / step",
+    "prompt": "Scarcely _____ (he / step) out of the terminal when the torrential rain poured down.",
+    "options": [
+      "he stepped",
+      "had he stepped",
+      "did he step",
+      "he had stepped"
+    ],
+    "answer": "had he stepped",
+    "ruleTip": "Cümle başında <strong>'Scarcely / Hardly ... when'</strong> veya 'No sooner ... than' zarfları yer aldığında cümle devrik Past Perfect (<strong>had + özne + V3: had he stepped</strong>) gerektirir.",
+    "tr": "Terminalden henüz adımını atmıştı ki bardaktan boşanırcasına yağmur bastırdı."
+  },
+  {
+    "id": "vf_48",
+    "lvl": "C1",
+    "cat": "Gerund & Infinitive",
+    "baseVerb": "blame",
+    "prompt": "The senator vehemently denied _____ (have) any involvement in the offshore tax scandal.",
+    "options": [
+      "to have",
+      "having",
+      "have",
+      "had"
+    ],
+    "answer": "having",
+    "ruleTip": "<strong>'Deny'</strong> fiilinden sonra bir durum veya eylemi reddetmek için <strong>Gerund (-ing: having)</strong> kullanılır.",
+    "tr": "Senatör, kıyı ötesi vergi skandalıyla herhangi bir bağlantısı olduğunu şiddetle reddetti."
+  },
+  {
+    "id": "vf_49",
+    "lvl": "C1",
+    "cat": "Subjunctive",
+    "baseVerb": "propose",
+    "prompt": "The board of directors proposed that a neutral auditor _____ (appoint) without delay.",
+    "options": [
+      "is appointed",
+      "be appointed",
+      "was appointed",
+      "appointed"
+    ],
+    "answer": "be appointed",
+    "ruleTip": "Öneri bildiren 'propose that' cümlesinde edilgen yapı için <strong>Subjunctive 'be + V3' (be appointed)</strong> kullanılır.",
+    "tr": "Yönetim kurulu, gecikmeksizin tarafsız bir denetçinin atanmasını teklif etti."
+  },
+  {
+    "id": "vf_50",
+    "lvl": "C1",
+    "cat": "Modallar & Çıkarımlar",
+    "baseVerb": "anticipate",
+    "prompt": "Given his profound expertise, he might reasonably _____ (anticipate) the volatility of the crypto market.",
+    "options": [
+      "anticipate",
+      "have anticipated",
+      "be anticipating",
+      "anticipated"
+    ],
+    "answer": "have anticipated",
+    "ruleTip": "Geçmişe dönük makul bir olasılık veya beklenti çıkarımı için <strong>'might have + V3' (might have anticipated)</strong> kullanılır.",
+    "tr": "Derin uzmanlığı göz önüne alındığında, kripto piyasasının dalgalanmasını makul bir şekilde öngörmüş olabilirdi."
+  },
+  {
+    "id": "vf_51",
+    "lvl": "B2",
+    "cat": "Zaman Uyumları",
+    "baseVerb": "sail",
+    "prompt": "By next Friday, the transatlantic cargo vessel _____ (sail) for eighteen consecutive days.",
+    "options": [
+      "will sail",
+      "will have been sailing",
+      "is sailing",
+      "has sailed"
+    ],
+    "answer": "will have been sailing",
+    "ruleTip": "Gelecekteki belirli bir tarihe kadar eylemin devam etmekte olacağı süreci vurgulamak için <strong>Future Perfect Continuous ('will have been sailing')</strong> kullanılır.",
+    "tr": "Gelecek cumaya kadar transatlantik kargo gemisi aralıksız on sekiz gündür seyir halinde olmuş olacak."
+  },
+  {
+    "id": "vf_52",
+    "lvl": "B1",
+    "cat": "Gerund & Infinitive",
+    "baseVerb": "try / open",
+    "prompt": "The key won't turn. Why don't you try _____ (spray) some lubricant into the lock?",
+    "options": [
+      "to spray",
+      "spraying",
+      "spray",
+      "sprayed"
+    ],
+    "answer": "spraying",
+    "ruleTip": "Bir sorunu çözmek için deneme amaçlı bir yöntem uygulamak <strong>'try + Gerund' (try spraying)</strong> ile ifade edilir. 'Try to do' ise güçlük içeren bir şeyi başarmaya çabalamaktır.",
+    "tr": "Anahtar dönmüyor. Kilidin içine biraz yağlayıcı sıkmayı denesene?"
+  },
+  {
+    "id": "vf_53",
+    "lvl": "B2",
+    "cat": "Gerund & Infinitive",
+    "baseVerb": "try / reach",
+    "prompt": "She was breathless because she had been trying _____ (reach) the summit before dusk.",
+    "options": [
+      "reaching",
+      "to reach",
+      "reach",
+      "reached"
+    ],
+    "answer": "to reach",
+    "ruleTip": "Zorlu bir amaca ulaşmak için fiziksel/zihinsel çaba sarf etmek <strong>'try + to-infinitive' (try to reach)</strong> gerektirir.",
+    "tr": "Nefes nefeseydi çünkü alacakaranlıktan önce zirveye ulaşmaya çabalıyordu."
+  },
+  {
+    "id": "vf_54",
+    "lvl": "A2",
+    "cat": "Zaman Uyumları",
+    "baseVerb": "rain",
+    "prompt": "Take an umbrella with you; it looks like it _____ (rain) any minute.",
+    "options": [
+      "is going to rain",
+      "rained",
+      "has rained",
+      "was raining"
+    ],
+    "answer": "is going to rain",
+    "ruleTip": "Gözle görülür belirgin bir kanıta ('it looks like') dayalı yakın gelecek tahminlerinde <strong>'be going to' (is going to rain)</strong> kullanılır.",
+    "tr": "Yanına bir şemsiye al; her an yağmur yağacak gibi görünüyor."
+  },
+  {
+    "id": "vf_55",
+    "lvl": "B2",
+    "cat": "Edilgen & Ettirgen",
+    "baseVerb": "renovate",
+    "prompt": "The historic opera house _____ (currently / renovate) by a team of heritage specialists.",
+    "options": [
+      "is currently renovated",
+      "is currently being renovated",
+      "was currently renovated",
+      "has currently renovated"
+    ],
+    "answer": "is currently being renovated",
+    "ruleTip": "Şu anda devam etmekte olan edilgen bir restorasyon süreci için <strong>Present Continuous Passive (is currently being renovated)</strong> kullanılır.",
+    "tr": "Tarihi opera binası şu anda bir miras uzmanları ekibi tarafından restore edilmektedir."
+  },
+  {
+    "id": "vf_56",
+    "lvl": "C1",
+    "cat": "Koşul & Dilek",
+    "baseVerb": "require",
+    "prompt": "Should anyone _____ (require) further clarification regarding the syllabus, please consult the advisor.",
+    "options": [
+      "requires",
+      "require",
+      "required",
+      "will require"
+    ],
+    "answer": "require",
+    "ruleTip": "Type 1 devrik şart cümlesinde (<strong>'Should + Özne + V1'</strong>) fiil daima yalın halde (<strong>require</strong>) kalır; 3. tekil şahıs takısı almaz.",
+    "tr": "Müfredatla ilgili daha fazla açıklamaya ihtiyaç duyan olursa, lütfen danışmana başvursun."
+  },
+  {
+    "id": "vf_57",
+    "lvl": "B1",
+    "cat": "Modallar & Çıkarımlar",
+    "baseVerb": "leave",
+    "prompt": "His coat is still on the rack, so he _____ (cannot / leave) the office yet.",
+    "options": [
+      "must leave",
+      "cannot have left",
+      "should have left",
+      "might leave"
+    ],
+    "answer": "cannot have left",
+    "ruleTip": "Paltonun hala askıda olması kanıtına dayanarak geçmişe dönük kesin imkansızlık çıkarımı: <strong>'cannot have + V3' (cannot have left)</strong>.",
+    "tr": "Paltosu hala askılıkta, bu yüzden ofisten henüz ayrılmış olması imkansız."
+  },
+  {
+    "id": "vf_58",
+    "lvl": "B2",
+    "cat": "Subjunctive",
+    "baseVerb": "demand",
+    "prompt": "The human rights committee demanded that the detained journalist _____ (release) immediately.",
+    "options": [
+      "is released",
+      "be released",
+      "was released",
+      "releases"
+    ],
+    "answer": "be released",
+    "ruleTip": "Talep bildiren 'demand that' yapısından sonra pasif subjunctive kalıbı <strong>'be + V3' (be released)</strong> olarak kullanılır.",
+    "tr": "İnsan hakları komitesi, gözaltındaki gazetecinin derhal serbest bırakılmasını talep etti."
+  },
+  {
+    "id": "vf_59",
+    "lvl": "B1",
+    "cat": "Zaman Uyumları",
+    "baseVerb": "wait",
+    "prompt": "How long _____ (you / wait) for the bus before it finally showed up?",
+    "options": [
+      "have you waited",
+      "had you been waiting",
+      "did you wait",
+      "were you waiting"
+    ],
+    "answer": "had you been waiting",
+    "ruleTip": "Geçmişte başka bir eyleme kadar ('before it showed up') devam etmiş olan süreci sorgulamak için <strong>Past Perfect Continuous ('had you been waiting')</strong> kullanılır.",
+    "tr": "Otobüs nihayet gelmeden önce ne kadar süredir beklemekteydin?"
+  },
+  {
+    "id": "vf_60",
+    "lvl": "C1",
+    "cat": "Kısaltmalar (Participles)",
+    "baseVerb": "shock",
+    "prompt": "_____ (shock) by the sudden announcement, the employees stared in complete silence.",
+    "options": [
+      "Shocking",
+      "Shocked",
+      "Having shocked",
+      "To shock"
+    ],
+    "answer": "Shocked",
+    "ruleTip": "Öznenin etkilendiği duygusal/edilgen durumu cümle başında kısaltmak için <strong>Past Participle (V3: Shocked)</strong> kullanılır.",
+    "tr": "Ani duyuru karşısında şok olan çalışanlar tam bir sessizlik içinde bakakaldılar."
+  },
+  {
+    "id": "vf_61",
+    "lvl": "B2",
+    "cat": "Gerund & Infinitive",
+    "baseVerb": "confess / forge",
+    "prompt": "Under intense cross-examination, the accountant confessed to _____ (forge) the financial statements.",
+    "options": [
+      "forge",
+      "forging",
+      "have forged",
+      "to forge"
+    ],
+    "answer": "forging",
+    "ruleTip": "<strong>'Confess to' (itiraf etmek)</strong> kalıbındaki 'to' bir edat olduğu için ardından <strong>Gerund (-ing: forging)</strong> gelir.",
+    "tr": "Yoğun çapraz sorgu altında muhasebeci mali tabloları tahrif ettiğini itiraf etti."
+  },
+  {
+    "id": "vf_62",
+    "lvl": "B2",
+    "cat": "Koşul & Dilek",
+    "baseVerb": "help",
+    "prompt": "Without your financial backing, our startup _____ (never / survive) the pandemic.",
+    "options": [
+      "never survived",
+      "would never have survived",
+      "will never survive",
+      "never survives"
+    ],
+    "answer": "would never have survived",
+    "ruleTip": "'Without' kalıbı geçmişe dönük gizli bir Type 3 şartı ifade eder ve ana cümlede <strong>'would have + V3' (would never have survived)</strong> gerektirir.",
+    "tr": "Senin finansal desteğin olmasaydı, girişimimiz pandemiyi asla atlatamazdı."
+  },
+  {
+    "id": "vf_63",
+    "lvl": "C1",
+    "cat": "Subjunctive",
+    "baseVerb": "insist",
+    "prompt": "The union representatives insisted that wages _____ (adjust) to reflect the inflation rate.",
+    "options": [
+      "are adjusted",
+      "be adjusted",
+      "were adjusted",
+      "adjusted"
+    ],
+    "answer": "be adjusted",
+    "ruleTip": "Şart koşma ve ısrar fiili olan 'insist that' yapısından sonra pasif subjunctive kalıbı <strong>'be + V3' (be adjusted)</strong> kullanılır.",
+    "tr": "Sendika temsilcileri, ücretlerin enflasyon oranını yansıtacak şekilde ayarlanmasında ısrar etti."
+  },
+  {
+    "id": "vf_64",
+    "lvl": "A2",
+    "cat": "Zaman Uyumları",
+    "baseVerb": "see",
+    "prompt": "I haven't seen Emily _____ (since) she moved to Manchester.",
+    "options": [
+      "for",
+      "since",
+      "during",
+      "while"
+    ],
+    "answer": "since",
+    "ruleTip": "Geçmişte eylemin başladığı kesin zaman noktasını veya geçmiş zaman cümlesini bağlamak için <strong>'since'</strong> kullanılır.",
+    "tr": "Manchester'a taşındığından beri Emily'yi görmedim."
+  },
+  {
+    "id": "vf_65",
+    "lvl": "B1",
+    "cat": "Gerund & Infinitive",
+    "baseVerb": "waste / argue",
+    "prompt": "It is completely pointless _____ (waste) time arguing over trivial matters.",
+    "options": [
+      "wasting",
+      "to waste",
+      "waste",
+      "wasted"
+    ],
+    "answer": "to waste",
+    "ruleTip": "<strong>'It is + sıfat'</strong> kalıplarından sonra (pointless, difficult, easy, important) <strong>to-infinitive (to waste)</strong> kullanılır.",
+    "tr": "Önemsiz meseleler üzerinde tartışarak vakit kaybetmek tamamen anlamsızdır."
+  },
+  {
+    "id": "vf_66",
+    "lvl": "B2",
+    "cat": "Edilgen & Ettirgen",
+    "baseVerb": "expect",
+    "prompt": "All attendees are expected _____ (arrive) at least fifteen minutes prior to the keynote address.",
+    "options": [
+      "arriving",
+      "to arrive",
+      "arrive",
+      "arrived"
+    ],
+    "answer": "to arrive",
+    "ruleTip": "Edilgen fiillerden (be expected, be required, be allowed) sonra gelen fiiller <strong>to-infinitive (to arrive)</strong> kalıbında olur.",
+    "tr": "Tüm katılımcıların açılış konuşmasından en az on beş dakika önce gelmeleri beklenmektedir."
+  },
+  {
+    "id": "vf_67",
+    "lvl": "C1",
+    "cat": "Kısaltmalar (Participles)",
+    "baseVerb": "know",
+    "prompt": "Not _____ (know) how to handle the sophisticated equipment, the intern asked for assistance.",
+    "options": [
+      "knowing",
+      "known",
+      "to know",
+      "having known"
+    ],
+    "answer": "knowing",
+    "ruleTip": "Gerekçe bildiren cümlelerin ('Because he did not know...') olumsuz etken kısaltması <strong>'Not knowing'</strong> şeklinde yapılır.",
+    "tr": "Gelişmiş ekipmanı nasıl kullanacağını bilmediği için stajyer yardım istedi."
+  },
+  {
+    "id": "vf_68",
+    "lvl": "B2",
+    "cat": "Modallar & Çıkarımlar",
+    "baseVerb": "call",
+    "prompt": "Why didn't you answer my messages? You could _____ (call) me when you landed!",
+    "options": [
+      "call",
+      "have called",
+      "be calling",
+      "called"
+    ],
+    "answer": "have called",
+    "ruleTip": "Geçmişte mümkün olan ama yapılmamış bir eylem için sitem/eleştiri: <strong>'could have + V3' (could have called)</strong>.",
+    "tr": "Mesajlarıma neden cevap vermedin? Uçağın indiğinde beni arayabilirdin!"
+  },
+  {
+    "id": "vf_69",
+    "lvl": "C1",
+    "cat": "Koşul & Dilek",
+    "baseVerb": "tell",
+    "prompt": "I would rather you _____ (tell) me the whole truth before I signed that partnership contract.",
+    "options": [
+      "told",
+      "had told",
+      "tell",
+      "have told"
+    ],
+    "answer": "had told",
+    "ruleTip": "<strong>'Would rather + Özne'</strong> yapısı geçmişe dair bir pişmanlık/tercih belirttiğinde <strong>Past Perfect (had told)</strong> alır.",
+    "tr": "O ortaklık sözleşmesini imzalamadan önce bana bütün gerçeği söylemiş olmanı dilerdim."
+  },
+  {
+    "id": "vf_70",
+    "lvl": "B1",
+    "cat": "Zaman Uyumları",
+    "baseVerb": "hear",
+    "prompt": "As soon as she _____ (hear) the siren, she pulled her vehicle over to the shoulder.",
+    "options": [
+      "heard",
+      "had heard",
+      "was hearing",
+      "hears"
+    ],
+    "answer": "heard",
+    "ruleTip": "<strong>'As soon as'</strong> peş peşe gerçekleşen iki ani geçmiş eylemi birbirine bağlarken her iki tarafta da <strong>Past Simple (heard ... pulled over)</strong> kullanılır.",
+    "tr": "Siren sesini duyar duymaz aracını emniyet şeridine çekti."
+  }
+];
+
+    let activeVfLevel = 'ALL';
+    let activeVfCategory = 'ALL';
+    let vfActiveQuestions = [];
+    let vfCurrentIndex = 0;
+    let vfCorrect = 0;
+    let vfWrong = 0;
+    let vfStreak = 0;
+    let vfAnswered = false;
+
+    function setVerbFormsLevel(lvl) {
+      activeVfLevel = lvl;
+      ['ALL', 'A1-A2', 'B1', 'B2', 'C1'].forEach(l => {
+        const btn = document.getElementById('vfLvl-' + l);
+        if (!btn) return;
+        if (l === lvl) {
+          btn.className = 'px-2.5 py-1 rounded-lg bg-rose-900/60 border border-rose-500/30 text-white font-medium transition shrink-0';
+        } else {
+          btn.className = 'px-2.5 py-1 rounded-lg bg-white/[0.04] text-slate-400 hover:text-white border border-white/5 transition shrink-0';
+        }
+      });
+      restartVerbFormsTest();
+    }
+
+    function setVerbFormsCategory(cat) {
+      activeVfCategory = cat;
+      restartVerbFormsTest();
+    }
+
+    function getFilteredVerbFormsPool() {
+      return verbFormsQuestionsData.filter(q => {
+        if (activeVfLevel === 'A1-A2' && !(q.lvl === 'A1' || q.lvl === 'A2')) return false;
+        if (activeVfLevel === 'B1' && q.lvl !== 'B1') return false;
+        if (activeVfLevel === 'B2' && q.lvl !== 'B2') return false;
+        if (activeVfLevel === 'C1' && q.lvl !== 'C1') return false;
+
+        if (activeVfCategory !== 'ALL' && q.cat !== activeVfCategory) return false;
+        return true;
+      });
+    }
+
+    function restartVerbFormsTest() {
+      startVerbFormsTest();
+    }
+
+    function startVerbFormsTest() {
+      const compBox = document.getElementById('vfCompleteBox');
+      const cardBox = document.getElementById('grammarVerbFormsCard');
+      if (compBox) compBox.classList.add('hidden');
+      if (cardBox) cardBox.classList.remove('hidden');
+
+      const pool = getFilteredVerbFormsPool();
+      const count = Math.min(15, pool.length > 0 ? pool.length : 15);
+      if (pool.length === 0) {
+        vfActiveQuestions = shuffleArray([...verbFormsQuestionsData]).slice(0, count);
+      } else {
+        vfActiveQuestions = shuffleArray([...pool]).slice(0, count);
+      }
+
+      vfCurrentIndex = 0;
+      vfCorrect = 0;
+      vfWrong = 0;
+      vfStreak = 0;
+      renderVerbFormQuestion();
+    }
+
+    function renderVerbFormQuestion() {
+      if (vfCurrentIndex >= vfActiveQuestions.length) {
+        showVerbFormsComplete();
+        return;
+      }
+
+      vfAnswered = false;
+      const q = vfActiveQuestions[vfCurrentIndex];
+      if (!q) return;
+
+      const nextBtn = document.getElementById('vfNextBtn');
+      const fbBox = document.getElementById('vfFeedbackBox');
+      if (nextBtn) nextBtn.classList.add('hidden');
+      if (fbBox) fbBox.classList.add('hidden');
+
+      const lvlBadge = document.getElementById('vfLvlBadge');
+      const catBadge = document.getElementById('vfCatBadge');
+      const baseBadge = document.getElementById('vfBaseVerbBadge');
+      const curQ = document.getElementById('vfCurrentQ');
+      const totQ = document.getElementById('vfTotalQ');
+      const streak = document.getElementById('vfStreakCount');
+
+      if (lvlBadge) lvlBadge.innerText = q.lvl;
+      if (catBadge) catBadge.innerText = q.cat;
+      if (baseBadge) baseBadge.innerText = `Kök: ${q.baseVerb}`;
+      if (curQ) curQ.innerText = vfCurrentIndex + 1;
+      if (totQ) totQ.innerText = vfActiveQuestions.length;
+      if (streak) streak.innerText = vfStreak;
+
+      const promptEl = document.getElementById('vfPromptSentence');
+      if (promptEl) {
+        const formattedPrompt = q.prompt.replace(
+          '_____',
+          `<span id="vfBlankSpan" class="px-3 py-1 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 font-mono font-bold inline-block shadow-inner mx-1">______</span>`
+        );
+        promptEl.innerHTML = formattedPrompt;
+      }
+
+      const grid = document.getElementById('vfOptionsGrid');
+      if (grid) {
+        const letters = ['A', 'B', 'C', 'D'];
+        grid.innerHTML = q.options.map((opt, idx) => `
+          <button onclick="handleVerbFormAnswer(${idx})" id="vfOptBtn-${idx}" class="vf-opt-btn p-4 rounded-2xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.08] hover:border-rose-500/40 text-left text-xs sm:text-sm font-medium text-white transition active:scale-95 shadow-sm flex items-center gap-3">
+            <span class="w-7 h-7 rounded-lg bg-black/50 border border-white/10 text-slate-300 flex items-center justify-center font-mono font-bold text-xs shrink-0">${letters[idx]}</span>
+            <span class="text-[#fdf6ee] font-sans font-medium tracking-wide">${escapeHtmlAttr(opt)}</span>
+          </button>
+        `).join('');
+      }
+    }
+
+    function handleVerbFormAnswer(optIdx) {
+      if (vfAnswered) return;
+      vfAnswered = true;
+
+      const q = vfActiveQuestions[vfCurrentIndex];
+      if (!q) return;
+
+      const chosen = q.options[optIdx];
+      const isCorrect = chosen.trim().toLowerCase() === q.answer.trim().toLowerCase();
+
+      document.querySelectorAll('.vf-opt-btn').forEach((btn, idx) => {
+        btn.disabled = true;
+        if (q.options[idx].trim().toLowerCase() === q.answer.trim().toLowerCase()) {
+          btn.className = 'vf-opt-btn p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-500/20 text-white font-medium text-xs sm:text-sm shadow-md flex items-center gap-3 anim-correct-pop';
+        } else if (idx === optIdx && !isCorrect) {
+          btn.className = 'vf-opt-btn p-4 rounded-2xl border-2 border-rose-500 bg-rose-500/20 text-white font-medium text-xs sm:text-sm shadow-md flex items-center gap-3 anim-shake';
+        } else {
+          btn.className = 'vf-opt-btn p-4 rounded-2xl border border-white/[0.05] bg-white/[0.01] text-slate-500 text-xs sm:text-sm flex items-center gap-3 opacity-60';
+        }
+      });
+
+      const blankSpan = document.getElementById('vfBlankSpan');
+      if (blankSpan) {
+        if (isCorrect) {
+          blankSpan.className = 'px-3 py-1 rounded-xl bg-emerald-500/25 border-2 border-emerald-400 font-bold text-emerald-300 font-mono shadow-md inline-block animate-pulse mx-1';
+          blankSpan.innerText = q.answer;
+        } else {
+          blankSpan.className = 'px-3 py-1 rounded-xl bg-rose-500/25 border-2 border-rose-400 font-bold text-rose-300 font-mono inline-block mx-1';
+          blankSpan.innerText = q.answer;
+        }
+      }
+
+      const fbBox = document.getElementById('vfFeedbackBox');
+      const fbStatus = document.getElementById('vfFeedbackStatus');
+      const trBox = document.getElementById('vfTranslationBox');
+      const ruleTip = document.getElementById('vfRuleTip');
+      const vaultBtn = document.getElementById('vfVaultBadgeBtn');
+
+      if (isCorrect) {
+        vfCorrect++;
+        vfStreak++;
+        triggerHaptic('success');
+        updateHeatStreak(true);
+
+        if (fbStatus) {
+          fbStatus.className = 'font-bold text-sm text-emerald-400 flex items-center gap-2';
+          fbStatus.innerHTML = `<span>✅ Harika! Doğru Seçim:</span> <strong class="font-mono text-emerald-300">"${q.answer}"</strong>`;
+        }
+        if (fbBox) {
+          fbBox.className = 'p-5 rounded-2xl border border-emerald-500/30 bg-emerald-950/20 text-left text-xs sm:text-sm space-y-3 transition-all';
+          fbBox.classList.remove('hidden');
+        }
+        if (vaultBtn) vaultBtn.classList.add('hidden');
+      } else {
+        vfWrong++;
+        vfStreak = 0;
+        triggerHaptic('error');
+        updateHeatStreak(false);
+
+        if (fbStatus) {
+          fbStatus.className = 'font-bold text-sm text-rose-400 flex items-center gap-2';
+          fbStatus.innerHTML = `<span>❌ Yanlış Cevap.</span> Doğrusu: <strong class="font-mono text-white bg-rose-950/80 px-2 py-0.5 rounded border border-rose-500/40">"${q.answer}"</strong>`;
+        }
+        if (fbBox) {
+          fbBox.className = 'p-5 rounded-2xl border border-rose-500/30 bg-rose-950/20 text-left text-xs sm:text-sm space-y-3 transition-all';
+          fbBox.classList.remove('hidden');
+        }
+
+        // Otomatik Hata Kasasına ekle
+        addMistakeToVault({
+          type: 'grammar',
+          word: q.baseVerb || q.answer,
+          prompt: q.prompt,
+          options: q.options,
+          answer: q.answer,
+          explanation: q.ruleTip
+        });
+
+        if (vaultBtn) {
+          vaultBtn.classList.remove('hidden');
+          vaultBtn.innerText = '✅ Hata Kasasına Eklendi';
+        }
+      }
+
+      if (trBox) trBox.innerText = `"${q.tr}"`;
+      if (ruleTip) ruleTip.innerHTML = q.ruleTip;
+
+      const streakEl = document.getElementById('vfStreakCount');
+      if (streakEl) streakEl.innerText = vfStreak;
+
+      logHeatmapActivity(1);
+
+      const nextBtn = document.getElementById('vfNextBtn');
+      if (nextBtn) nextBtn.classList.remove('hidden');
+    }
+
+    function nextVerbFormQuestion() {
+      vfCurrentIndex++;
+      renderVerbFormQuestion();
+    }
+
+    function speakVerbFormSentence() {
+      const q = vfActiveQuestions[vfCurrentIndex];
+      if (!q) return;
+      const textToSpeak = vfAnswered ? q.prompt.replace('_____', q.answer) : q.prompt.replace('_____', 'blank');
+      speakText(textToSpeak, 0.90);
+    }
+
+    function showVerbFormsComplete() {
+      const cardBox = document.getElementById('grammarVerbFormsCard');
+      const compBox = document.getElementById('vfCompleteBox');
+      if (cardBox) cardBox.classList.add('hidden');
+      if (compBox) compBox.classList.remove('hidden');
+
+      const total = vfActiveQuestions.length;
+      const pct = Math.round((vfCorrect / (total || 1)) * 100);
+      const summaryEl = document.getElementById('vfCompleteSummary');
+      if (summaryEl) {
+        summaryEl.innerHTML = `<strong>${total}</strong> soruda <strong>${vfCorrect}</strong> doğru, <strong>${vfWrong}</strong> yanlış (%${pct} Başarı).`;
+      }
+
+      if (pct >= 80) triggerConfetti();
+    }
+
+    function addCurrentVerbMistakeToVault() {
+      const q = vfActiveQuestions[vfCurrentIndex];
+      if (!q) return;
+      addMistakeToVault({
+        type: 'grammar',
+        word: q.baseVerb || q.answer,
+        prompt: q.prompt,
+        options: q.options,
+        answer: q.answer,
+        explanation: q.ruleTip
+      });
+      const vaultBtn = document.getElementById('vfVaultBadgeBtn');
+      if (vaultBtn) vaultBtn.innerText = '✅ Kasada Kayıtlı';
+      showFloatingToast('📥 Soru Hata Kasasına eklendi.');
+    }
+
     const prepositionArenaData = [
       { item: "rely", prep: "on", tr: "güvenmek, bel bağlamak", ex: "Modern businesses rely heavily on automated algorithms." },
       { item: "comply", prep: "with", tr: "uymak, riayet etmek", ex: "All institutions must comply with environmental regulations." },
@@ -16735,6 +18290,7 @@
         else if (m.type === 'exam') typeBadge = '<span class="text-[9px] px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30 font-mono">Sınav</span>';
         else if (m.type === 'reading') typeBadge = '<span class="text-[9px] px-2 py-0.5 rounded bg-pink-500/20 text-pink-300 border border-pink-500/30 font-mono">Okuma</span>';
         else if (m.type === 'colloc') typeBadge = '<span class="text-[9px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-mono">Kalıp</span>';
+        else if (m.type === 'verbforms' || m.type === 'grammar') typeBadge = '<span class="text-[9px] px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-mono">Fiil Çekimi</span>';
 
         return `
           <div class="p-3 rounded-xl bg-black/40 border border-white/[0.06] flex items-center justify-between gap-3 text-xs hover:border-white/10 transition">
