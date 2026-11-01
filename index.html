@@ -3258,24 +3258,24 @@
     </section>
 
     <!-- ==================== 100+ IDIOMS & EXPRESSIONS ARENA ==================== -->
-    <section id="view-idioms" class="hidden max-w-4xl mx-auto space-y-6">
+    <section id="view-idioms" class="hidden max-w-5xl mx-auto space-y-6">
       
-      <!-- Üst Başlık & Mod Seçimi -->
+      <!-- Üst Başlık & Mod Seçimi (Kütüphane / Test) -->
       <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between pb-3 border-b border-amber-950/40">
         <div>
-          <div class="text-[11px] font-mono tracking-widest text-amber-400/80 uppercase">Popüler İngilizce Deyimler & İfadeler</div>
+          <div class="text-[11px] font-mono tracking-widest text-amber-400/80 uppercase">Deyimler Sözlüğü & Kütüphane</div>
           <h2 class="font-serif-hero text-2xl sm:text-3xl font-medium text-[#fdf6ee] flex items-center gap-2.5">
-            <span>🎭 100+ Deyimler Arenası</span>
+            <span>🎭 100+ Deyimler Kütüphanesi</span>
             <span class="text-xs px-2.5 py-0.5 rounded-full bg-amber-950/80 border border-amber-500/40 text-amber-300 font-sans font-medium">100 Deyim</span>
           </h2>
           <p class="text-[#a8998c] text-xs sm:text-sm mt-1">
-            İngilizcenin en renkli 100 deyimi: Harfi harfine çevirisi, gerçek anlamı, tarihi kök hikayesi ve örnek cümleler.
+            İngilizcenin en popüler 100 deyimi: Harfi harfine çeviri, Türkçe anlam, tarihi kök hikayesi ve örnek cümleler.
           </p>
         </div>
 
         <div class="flex items-center gap-2 bg-black/40 p-1.5 rounded-2xl border border-white/[0.08] shrink-0 self-start sm:self-auto">
-          <button onclick="setIdiomMode('cards')" id="idiomModeBtnCards" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm transition">
-            🎴 Deyim Kartları
+          <button onclick="setIdiomMode('library')" id="idiomModeBtnLibrary" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm transition">
+            📚 Deyim Kütüphanesi
           </button>
           <button onclick="setIdiomMode('quiz')" id="idiomModeBtnQuiz" class="px-3.5 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white transition">
             🎯 Deyim Testi
@@ -3283,137 +3283,86 @@
         </div>
       </div>
 
-      <!-- Category Filter Pills -->
-      <div class="flex items-center gap-1.5 flex-wrap p-3 rounded-2xl bg-black/40 border border-white/[0.06]">
-        <span class="text-[11px] text-slate-400 font-mono mr-1">Kategori:</span>
-        <button onclick="filterIdiomsByCategory('all')" id="idiomFilter-all" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm transition">Tümü (100)</button>
-        <button onclick="filterIdiomsByCategory('cesaret')" id="idiomFilter-cesaret" class="px-2.5 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-white/[0.03] border border-white/5 transition">Cesaret & Zorluk (14)</button>
-        <button onclick="filterIdiomsByCategory('zaman')" id="idiomFilter-zaman" class="px-2.5 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-white/[0.03] border border-white/5 transition">Zaman & Süreç (10)</button>
-        <button onclick="filterIdiomsByCategory('iletisim')" id="idiomFilter-iletisim" class="px-2.5 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-white/[0.03] border border-white/5 transition">İletişim & Sırlar (17)</button>
-        <button onclick="filterIdiomsByCategory('para')" id="idiomFilter-para" class="px-2.5 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-white/[0.03] border border-white/5 transition">Para & Başarı (19)</button>
-        <button onclick="filterIdiomsByCategory('şans')" id="idiomFilter-şans" class="px-2.5 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-white/[0.03] border border-white/5 transition">Şans & Hayat (40)</button>
-      </div>
-
-      <!-- Main Box Container -->
-      <div class="p-5 sm:p-7 rounded-2xl bg-[#140609] border border-white/[0.08] shadow-2xl space-y-5">
+      <!-- MODE 1: DEYİM KÜTÜPHANESİ & SÖZLÜĞÜ (LIBRARY / DIRECTORY VIEW) -->
+      <div id="idiomLibraryView" class="space-y-4">
         
-        <!-- MODE 1: DEYİM KARTLARI (FLASHCARDS WORKSTATION) -->
-        <div id="idiomCardsView" class="space-y-4">
-          <div onclick="flipIdiomCard()" class="min-h-[260px] cursor-pointer p-6 sm:p-8 rounded-2xl bg-black/50 border border-white/[0.08] hover:border-amber-500/40 transition shadow-lg relative flex flex-col justify-between group select-none">
-            
-            <!-- Front of Card -->
-            <div id="idiomCardFront" class="space-y-4 text-center my-auto">
-              <div class="flex items-center justify-between text-xs text-slate-500 font-mono">
-                <span id="idiomCardCategory" class="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20 text-[10px] font-bold">Kategori</span>
-                <span id="idiomCardCounter" class="text-slate-400 font-mono">1 / 100</span>
-              </div>
-              
-              <h4 id="idiomCardTitle" class="font-serif-hero text-2xl sm:text-4xl font-bold text-white tracking-wide group-hover:text-amber-300 transition">
-                Bite the bullet
-              </h4>
-
-              <div id="idiomCardLiteral" class="text-xs sm:text-sm text-slate-400 italic">
-                Harfi harfine: "Kurşunu ısırmak"
-              </div>
-
-              <div class="pt-3 flex items-center justify-center gap-2 text-xs text-amber-400 font-medium">
-                <svg class="w-4 h-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                <span>Anlamı & Kök Hikayesini Görmek İçin Dokun (Kartı Çevir)</span>
-              </div>
-            </div>
-
-            <!-- Back of Card -->
-            <div id="idiomCardBack" class="hidden space-y-4 text-left">
-              <div class="flex items-center justify-between text-xs text-slate-500 font-mono pb-2 border-b border-white/[0.06]">
-                <span class="text-emerald-400 font-bold">💡 Gerçek Anlamı & Hikayesi</span>
-                <span class="text-amber-400 text-[10px]">Ön Yüze Dön ↻</span>
-              </div>
-
-              <div>
-                <div class="text-[11px] text-slate-500 uppercase tracking-wider font-mono">Türkçe Karşılığı:</div>
-                <div id="idiomCardMeaning" class="text-base sm:text-lg font-bold text-emerald-400 leading-snug">
-                  Kaçınılmaz ve acı veren bir durumla cesaretle yüzleşmek, dişini sıkmak
-                </div>
-              </div>
-
-              <div class="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200/90 leading-relaxed">
-                <span class="font-bold text-amber-300">📜 Kök Hikayesi:</span> <span id="idiomCardOrigin">...</span>
-              </div>
-
-              <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.06] text-xs space-y-1">
-                <div class="text-slate-400 font-mono text-[10px]">Cümle İçi Kullanım:</div>
-                <div id="idiomCardEx" class="text-white font-medium italic">...</div>
-                <div id="idiomCardExTr" class="text-slate-400">...</div>
-              </div>
-            </div>
-
+        <!-- Arama Çubuğu & Kategori Filtreleri -->
+        <div class="space-y-3 p-4 rounded-2xl bg-[#140609] border border-white/[0.08]">
+          <!-- Arama Inputu -->
+          <div class="relative">
+            <input type="text" id="idiomSearchInput" oninput="handleIdiomSearchInput(this.value)" placeholder="Deyim, Türkçe anlam veya kök hikayesi ara... (örn: bite the bullet, kurşun, şans, sır, zaman)"
+                   class="w-full bg-black/60 border border-white/[0.08] focus:border-amber-500/60 rounded-xl px-4 py-2.5 pl-10 pr-10 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none transition font-sans">
+            <svg class="w-4 h-4 text-slate-500 absolute left-3.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            <button id="idiomSearchClearBtn" onclick="clearIdiomSearch()" class="hidden absolute right-3 top-2.5 text-slate-500 hover:text-white transition p-1 text-xs">✕</button>
           </div>
 
-          <!-- Card Controls -->
-          <div class="flex items-center justify-between gap-2 pt-2">
-            <button onclick="prevIdiom()" class="px-4 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-white text-xs font-semibold border border-white/5 transition flex items-center gap-1.5 active:scale-95">
-              ← Önceki
-            </button>
-
-            <div class="flex items-center gap-2">
-              <button onclick="speakCurrentIdiom()" class="p-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 transition active:scale-95" title="Sesli Dinle">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
-              </button>
-              <button onclick="randomIdiom()" class="px-3.5 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 hover:text-white text-xs font-medium border border-white/5 transition flex items-center gap-1.5 active:scale-95">
-                🎲 Rastgele
-              </button>
+          <!-- Kategori Filtre Butonları & Canlı Sayaç -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pt-1">
+            <div class="flex items-center gap-1.5 flex-wrap overflow-x-auto scrollbar-none">
+              <span class="text-[11px] text-slate-500 font-mono mr-1">Kategori:</span>
+              <button onclick="filterIdiomsByCategory('all')" id="idiomFilter-all" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm transition">Tümü (100)</button>
+              <button onclick="filterIdiomsByCategory('cesaret')" id="idiomFilter-cesaret" class="px-2.5 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-white/[0.03] border border-white/5 transition">Cesaret & Zorluk (14)</button>
+              <button onclick="filterIdiomsByCategory('zaman')" id="idiomFilter-zaman" class="px-2.5 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-white/[0.03] border border-white/5 transition">Zaman & Süreç (10)</button>
+              <button onclick="filterIdiomsByCategory('iletisim')" id="idiomFilter-iletisim" class="px-2.5 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-white/[0.03] border border-white/5 transition">İletişim & Sırlar (17)</button>
+              <button onclick="filterIdiomsByCategory('para')" id="idiomFilter-para" class="px-2.5 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-white/[0.03] border border-white/5 transition">Para & Başarı (19)</button>
+              <button onclick="filterIdiomsByCategory('şans')" id="idiomFilter-şans" class="px-2.5 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-white/[0.03] border border-white/5 transition">Şans & Hayat (40)</button>
             </div>
-
-            <button onclick="nextIdiom()" class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold shadow-md transition flex items-center gap-1.5 active:scale-95">
-              Sonraki →
-            </button>
+            <div id="idiomResultCount" class="text-xs font-mono text-amber-300/80 shrink-0 self-end sm:self-auto">
+              100 Deyim
+            </div>
           </div>
         </div>
 
-        <!-- MODE 2: DEYİM TESTİ (QUIZ CHALLENGE WORKSTATION) -->
-        <div id="idiomQuizView" class="hidden space-y-4">
-          <div class="p-6 rounded-2xl bg-black/50 border border-white/[0.08] space-y-4">
-            
-            <div class="flex items-center justify-between text-xs font-mono text-slate-400 pb-2 border-b border-white/[0.06]">
-              <div>Soru: Bu deyimin gerçek anlamı nedir?</div>
-              <div class="flex items-center gap-3">
-                <span class="text-amber-300 font-bold">Seri: <span id="idiomQuizStreak">0</span> 🔥</span>
-                <span class="text-emerald-400 font-bold">Skor: <span id="idiomQuizScore">0</span></span>
-              </div>
-            </div>
-
-            <!-- Question Prompt -->
-            <div class="text-center py-2 space-y-1">
-              <h4 id="idiomQuizPromptIdiom" class="font-serif-hero text-2xl sm:text-3xl font-bold text-amber-300 tracking-wide">
-                Bite the bullet
-              </h4>
-              <div id="idiomQuizPromptLiteral" class="text-xs text-slate-400 italic">
-                (Harfi harfine: "Kurşunu ısırmak")
-              </div>
-            </div>
-
-            <!-- Options Grid -->
-            <div id="idiomQuizOptionsGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              <!-- Injected by JS -->
-            </div>
-
-            <!-- Feedback Box -->
-            <div id="idiomQuizFbBox" class="hidden p-4 rounded-xl bg-black/70 border border-white/[0.08] text-xs space-y-2">
-              <div id="idiomQuizFbStatus" class="font-bold"></div>
-              <div id="idiomQuizFbEx"></div>
-            </div>
-
-            <!-- Next Button -->
-            <div class="pt-2 text-right">
-              <button onclick="loadNextIdiomQuizQuestion()" id="idiomQuizNextBtn" class="hidden px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs shadow-lg transition">
-                Sıradaki Soru →
-              </button>
-            </div>
-
-          </div>
+        <!-- Deyimler Listesi / Kataloğu Grid -->
+        <div id="idiomLibraryGrid" class="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">
+          <!-- Injected by JS -->
         </div>
 
       </div>
+
+      <!-- MODE 2: DEYİM TESTİ (QUIZ CHALLENGE WORKSTATION) -->
+      <div id="idiomQuizView" class="hidden space-y-4">
+        <div class="p-6 sm:p-8 rounded-2xl bg-black/50 border border-white/[0.08] shadow-2xl space-y-5">
+          
+          <div class="flex items-center justify-between text-xs font-mono text-slate-400 pb-2 border-b border-white/[0.06]">
+            <div>Soru: Bu deyimin gerçek anlamı nedir?</div>
+            <div class="flex items-center gap-3">
+              <span class="text-amber-300 font-bold">Seri: <span id="idiomQuizStreak">0</span> 🔥</span>
+              <span class="text-emerald-400 font-bold">Skor: <span id="idiomQuizScore">0</span></span>
+            </div>
+          </div>
+
+          <!-- Question Prompt -->
+          <div class="text-center py-2 space-y-1">
+            <h4 id="idiomQuizPromptIdiom" class="font-serif-hero text-2xl sm:text-3xl font-bold text-amber-300 tracking-wide">
+              Bite the bullet
+            </h4>
+            <div id="idiomQuizPromptLiteral" class="text-xs text-slate-400 italic">
+              (Harfi harfine: "Kurşunu ısırmak")
+            </div>
+          </div>
+
+          <!-- Options Grid -->
+          <div id="idiomQuizOptionsGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <!-- Injected by JS -->
+          </div>
+
+          <!-- Feedback Box -->
+          <div id="idiomQuizFbBox" class="hidden p-4 rounded-xl bg-black/70 border border-white/[0.08] text-xs space-y-2">
+            <div id="idiomQuizFbStatus" class="font-bold"></div>
+            <div id="idiomQuizFbEx"></div>
+          </div>
+
+          <!-- Next Button -->
+          <div class="pt-2 text-right">
+            <button onclick="loadNextIdiomQuizQuestion()" id="idiomQuizNextBtn" class="hidden px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs shadow-lg transition">
+              Sıradaki Soru →
+            </button>
+          </div>
+
+        </div>
+      </div>
+
     </section>
 
     <!-- ==================== 7. MORPHOLOGY LAB (KELİME RÖNTGENİ) ==================== -->
@@ -4219,6 +4168,24 @@
               <div class="text-[11px] text-[#a8998c] leading-snug mt-0.5">20 kademeli metin (A1–C1), kelime analizi ve sorular</div>
             </div>
           </button>
+
+          <!-- 1.4 Gramer Bilgisi & Kurallar -->
+          <button type="button" onclick="selectMode('grammar')" id="modeCard-grammar" class="mode-card w-full p-3.5 rounded-2xl bg-black/40 hover:bg-rose-950/30 border border-white/[0.08] hover:border-rose-500/50 transition-all text-left flex items-start gap-3 active:scale-[0.98] group">
+            <span class="w-10 h-10 rounded-xl bg-rose-950/60 border border-rose-500/30 text-lg flex items-center justify-center shrink-0 group-hover:scale-105 transition">📋</span>
+            <div>
+              <div class="text-sm font-bold text-white group-hover:text-rose-200 transition">Gramer Bilgisi & Kurallar</div>
+              <div class="text-[11px] text-[#a8998c] leading-snug mt-0.5">A1–C1 Konular, Karışan Yapılar ve Zaman Çizelgesi</div>
+            </div>
+          </button>
+
+          <!-- 1.5 100+ Deyimler Kütüphanesi -->
+          <button type="button" onclick="selectMode('idioms')" id="modeCard-idioms" class="mode-card w-full p-3.5 rounded-2xl bg-black/40 hover:bg-amber-950/30 border border-white/[0.08] hover:border-amber-500/50 transition-all text-left flex items-start gap-3 active:scale-[0.98] group">
+            <span class="w-10 h-10 rounded-xl bg-amber-950/60 border border-amber-500/30 text-lg flex items-center justify-center shrink-0 group-hover:scale-105 transition">🎭</span>
+            <div>
+              <div class="text-sm font-bold text-white group-hover:text-amber-200 transition">100+ Deyimler Kütüphanesi</div>
+              <div class="text-[11px] text-[#a8998c] leading-snug mt-0.5">Katalog, kök hikayeleri, anlamlar ve deyim testi</div>
+            </div>
+          </button>
         </div>
 
         <!-- SÜTUN 2: 🎮 TEST & PRATİK -->
@@ -4279,12 +4246,12 @@
             </div>
           </button>
 
-          <!-- 3.2 Gramer & Kalıp Arenası -->
-          <button type="button" onclick="selectMode('grammar')" id="modeCard-grammar" class="mode-card w-full p-3.5 rounded-2xl bg-black/40 hover:bg-emerald-950/30 border border-white/[0.08] hover:border-emerald-500/50 transition-all text-left flex items-start gap-3 active:scale-[0.98] group">
-            <span class="w-10 h-10 rounded-xl bg-emerald-950/60 border border-emerald-500/30 text-lg flex items-center justify-center shrink-0 group-hover:scale-105 transition">📋</span>
+          <!-- 3.2 Fiil Çekimi Sınavı -->
+          <button type="button" onclick="openVerbFormsFromMenu()" id="modeCard-verbforms" class="mode-card w-full p-3.5 rounded-2xl bg-black/40 hover:bg-emerald-950/30 border border-white/[0.08] hover:border-emerald-500/50 transition-all text-left flex items-start gap-3 active:scale-[0.98] group">
+            <span class="w-10 h-10 rounded-xl bg-emerald-950/60 border border-emerald-500/30 text-lg flex items-center justify-center shrink-0 group-hover:scale-105 transition">⚡</span>
             <div>
-              <div class="text-sm font-bold text-white group-hover:text-emerald-200 transition">Gramer & Kalıp Arenası</div>
-              <div class="text-[11px] text-[#a8998c] leading-snug mt-0.5">A1–C1 Konular, Fiil Testi, Hata Avcısı ve Versus</div>
+              <div class="text-sm font-bold text-white group-hover:text-emerald-200 transition">Fiil Çekimi Testi (70 Soru)</div>
+              <div class="text-[11px] text-[#a8998c] leading-snug mt-0.5">Zamanlar, Gerund/Inf, Conditionals ve Pasifler</div>
             </div>
           </button>
 
@@ -4297,30 +4264,12 @@
             </div>
           </button>
 
-          <!-- 3.4 Fiil Çekimi Sınavı -->
-          <button type="button" onclick="openVerbFormsFromMenu()" id="modeCard-verbforms" class="mode-card w-full p-3.5 rounded-2xl bg-black/40 hover:bg-emerald-950/30 border border-white/[0.08] hover:border-emerald-500/50 transition-all text-left flex items-start gap-3 active:scale-[0.98] group">
-            <span class="w-10 h-10 rounded-xl bg-emerald-950/60 border border-emerald-500/30 text-lg flex items-center justify-center shrink-0 group-hover:scale-105 transition">⚡</span>
-            <div>
-              <div class="text-sm font-bold text-white group-hover:text-emerald-200 transition">Fiil Çekimi Testi (70 Soru)</div>
-              <div class="text-[11px] text-[#a8998c] leading-snug mt-0.5">Zamanlar, Gerund/Inf, Conditionals ve Pasifler</div>
-            </div>
-          </button>
-
-          <!-- 3.5 Preposition & Phrasal Verbs -->
+          <!-- 3.4 Preposition & Phrasal Verbs -->
           <button type="button" onclick="selectMode('phrasal')" id="modeCard-phrasal" class="mode-card w-full p-3.5 rounded-2xl bg-black/40 hover:bg-rose-950/30 border border-white/[0.08] hover:border-rose-500/50 transition-all text-left flex items-start gap-3 active:scale-[0.98] group">
             <span class="w-10 h-10 rounded-xl bg-rose-950/60 border border-rose-500/30 text-lg flex items-center justify-center shrink-0 group-hover:scale-105 transition">🎯</span>
             <div>
               <div class="text-sm font-bold text-white group-hover:text-rose-200 transition">Preposition & Phrasal Verbs (100+)</div>
               <div class="text-[11px] text-[#a8998c] leading-snug mt-0.5">Akademik kalıplar ve deyimsel fiil parçacıkları</div>
-            </div>
-          </button>
-
-          <!-- 3.6 Deyimler & Günlük İfadeler -->
-          <button type="button" onclick="selectMode('idioms')" id="modeCard-idioms" class="mode-card w-full p-3.5 rounded-2xl bg-black/40 hover:bg-amber-950/30 border border-white/[0.08] hover:border-amber-500/50 transition-all text-left flex items-start gap-3 active:scale-[0.98] group">
-            <span class="w-10 h-10 rounded-xl bg-amber-950/60 border border-amber-500/30 text-lg flex items-center justify-center shrink-0 group-hover:scale-105 transition">🎭</span>
-            <div>
-              <div class="text-sm font-bold text-white group-hover:text-amber-200 transition">100+ Deyimler Arenası</div>
-              <div class="text-[11px] text-[#a8998c] leading-snug mt-0.5">Kök hikayeleri, deyim kartları ve testler</div>
             </div>
           </button>
         </div>
@@ -6556,7 +6505,7 @@
       toneshifter: { icon: '🧪', name: 'Akademik Ton Çevirici', short: 'Ton Çevirici' },
       defender: { icon: '⚖️', name: 'Tez Savunması', short: 'Tez Savunması' },
       phrasal: { icon: '🎯', name: 'Phrasal & Edat Arenası', short: 'Phrasal & Edatlar' },
-      idioms: { icon: '🎭', name: '100+ Deyimler Arenası', short: '100+ Deyimler' }
+      idioms: { icon: '🎭', name: '100+ Deyimler Kütüphanesi', short: '100+ Deyimler' }
     };
 
     function toggleModeSelectModal() {
@@ -9532,12 +9481,13 @@
       // 4C. 100+ DEYİMLER ARENASI KISAYOLLARI
       const isIdiomsActive = !document.getElementById('view-idioms').classList.contains('hidden');
       if (isIdiomsActive) {
-        if (idiomMode === 'cards') {
-          if (e.code === 'Space') { e.preventDefault(); flipIdiomCard(); return; }
-          if (e.code === 'ArrowRight' || e.code === 'KeyD') { nextIdiom(); return; }
-          if (e.code === 'ArrowLeft' || e.code === 'KeyA') { prevIdiom(); return; }
-          if (e.code === 'KeyR' || e.key === 'r' || e.key === 'R') { randomIdiom(); return; }
-          if (['KeyV', 'KeyS'].includes(e.code) || ['v', 'V', 's', 'S'].includes(e.key)) { speakCurrentIdiom(); return; }
+        if (idiomMode === 'library') {
+          if (e.key === '/' || ((e.metaKey || e.ctrlKey) && (e.key === 'f' || e.key === 'F'))) {
+            e.preventDefault();
+            const inp = document.getElementById('idiomSearchInput');
+            if (inp) { inp.focus(); inp.select(); }
+            return;
+          }
         } else if (idiomMode === 'quiz') {
           const qBtns = document.querySelectorAll('#idiomQuizOptionsGrid button');
           if (!idiomQuizAnswered && qBtns.length >= 4) {
@@ -19073,143 +19023,216 @@
     // ==================== 100+ HIGH-FREQUENCY ENGLISH IDIOMS & EXPRESSIONS ====================
     const IDIOMS_DATA = [{"id": 1, "idiom": "Bite the bullet", "literal": "Kurşunu ısırmak", "meaning": "Kaçınılmaz ve acı veren bir durumla cesaretle yüzleşmek, dişini sıkmak", "origin": "Eski savaş meydanlarında anestezi yokken, yaralı askerlere ameliyat sırasında acıdan bağırmasınlar diye kurşun ısırtılırdı.", "example": "I really hate visiting the dentist, but I just have to bite the bullet and go.", "exampleTr": "Dişçiye gitmekten nefret ediyorum ama dişimi sıkıp gitmek zorundayım.", "category": "Cesaret & Zorluk", "group": "cesaret"}, {"id": 2, "idiom": "Break a leg", "literal": "Bacağını kır", "meaning": "İyi şanslar! (Özellikle sahne sanatçılarına veya sınav/mülakata girenlere söylenir)", "origin": "Tiyatro batıl inancına göre 'iyi şanslar' demek uğursuzluk getirir; bu yüzden tam tersi söylenir.", "example": "You have prepared so hard for this piano recital. Go out there and break a leg!", "exampleTr": "Bu piyano dinletisi için çok çalıştın. Sahneye çık ve şansın bol olsun!", "category": "Şans & Başarı", "group": "para"}, {"id": 3, "idiom": "Hit the nail on the head", "literal": "Çivinin tam tepesine vurmak", "meaning": "Tam üstüne basmak, gerçeği 12'den vurmak, meseleyi tam olarak doğru tespit etmek", "origin": "Marangozlukta çivinin başına tam dik vurmazsanız çivi eğrilir; tam isabet ettirmek ustalığı simgeler.", "example": "Your analysis of our marketing problem hit the nail right on the head.", "exampleTr": "Pazarlama sorunumuzla ilgili analizin tam üstüne bastı.", "category": "İletişim & Fikir", "group": "iletisim"}, {"id": 4, "idiom": "Spill the beans", "literal": "Fasulyeleri dökmek", "meaning": "Ağzındaki baklayı çıkarmak, bir sırrı vaktinden önce açığa vurmak", "origin": "Antik Yunan'da oylamalarda beyaz ve siyah fasulyeler gizli kavanozlara atılırdı; fasulyeler dökülürse gizli oy sonucu ifşa olurdu.", "example": "We were planning a surprise birthday party, but her brother spilled the beans.", "exampleTr": "Sürpriz doğum günü partisi planlıyorduk ama erkek kardeşi ağzındaki baklayı çıkardı.", "category": "İletişim & Sırlar", "group": "iletisim"}, {"id": 5, "idiom": "Burn the midnight oil", "literal": "Gece yarısı yağını yakmak", "meaning": "Gece geç saatlere kadar harıl harıl ders çalışmak veya iş üretmek", "origin": "Elektrik öncesi dönemde gece çalışabilmek için gaz lambasının veya yağ kandilinin yakılmasından gelir.", "example": "With final exams approaching next week, all medical students are burning the midnight oil.", "exampleTr": "Önümüzdeki hafta finaller yaklaşırken tüm tıp öğrencileri gece geç saatlere kadar dirsek çürütüyor.", "category": "Çalışma & Başarı", "group": "para"}, {"id": 6, "idiom": "Once in a blue moon", "literal": "Mavi ayda bir kere", "meaning": "Kırk yılda bir, son derece nadiren, binde bir", "origin": "Bir takvim ayında ikinci dolunayın gerçekleşmesi astronomik olarak 2.7 yılda bir olur ve 'Mavi Ay' olarak anılır.", "example": "He lives in Australia now, so we only get to see him once in a blue moon.", "exampleTr": "Artık Avustralya'da yaşıyor, bu yüzden onu kırk yılda bir görebiliyoruz.", "category": "Zaman & Sıklık", "group": "zaman"}, {"id": 7, "idiom": "Under the weather", "literal": "Havanın altında", "meaning": "Keyifsiz, hafif hasta, kırgın veya halsiz hissetmek", "origin": "Eski denizcilikte fırtına çıktığında deniz tutan yolcular güverte altına, havanın etkisinden uzağa gönderilirdi.", "example": "I won't be able to join the team meeting today; I'm feeling a bit under the weather.", "exampleTr": "Bugünkü ekip toplantısına katılamayacağım; kendimi biraz kırgın ve halsiz hissediyorum.", "category": "Sağlık & Duygular", "group": "şans"}, {"id": 8, "idiom": "Cost an arm and a leg", "literal": "Bir kol ve bir bacağa mal olmak", "meaning": "Ateş pahası olmak, cep yakmak, aşırı derecede pahalı olmak", "origin": "18. yüzyılda portre ressamları sadece başı çizmek için az para, kolları ve bacakları da eklemek için çok daha yüksek ücret alırdı.", "example": "Repairing the engine of that imported sports car is going to cost an arm and a leg.", "exampleTr": "O ithal spor arabanın motorunu tamir ettirmek ateş pahasına mal olacak.", "category": "Para & Harcama", "group": "para"}, {"id": 9, "idiom": "Piece of cake", "literal": "Bir parça kek", "meaning": "Çocuk oyuncağı, tereyağından kıl çeker gibi, son derece kolay iş", "origin": "19. yüzyılda kolayca kazanılan ve ödülü pasta olan yarışmalardan türemiştir.", "example": "Don't stress over the introductory grammar quiz; it's going to be a piece of cake.", "exampleTr": "Giriş gramer testi için stres yapma; çocuk oyuncağı olacak.", "category": "Kolaylık & Başarı", "group": "para"}, {"id": 10, "idiom": "Barking up the wrong tree", "literal": "Yanlış ağaca havlamak", "meaning": "Yanlış kapıyı çalmak, yanlış hedefe odaklanmak, hatayı yanlış yerde aramak", "origin": "Av köpeklerinin sincap veya rakunun kaçtığı ağacı karıştırıp başka bir ağacın dibinde boşuna havlamasından gelir.", "example": "If you think I leaked that confidential document, you are barking up the wrong tree.", "exampleTr": "O gizli belgeyi benim sızdırdığımı düşünüyorsan tamamen yanlış kapıyı çalıyorsun.", "category": "Hata & Yanılgı", "group": "şans"}, {"id": 11, "idiom": "Break the ice", "literal": "Buzu kırmak", "meaning": "Buzları eritmek, ortamdaki ilk soğukluğu ve çekingenliği gidermek", "origin": "Kuzey limanlarında kışın ticaret gemilerinin yanaşabilmesi için öncü küçük gemilerin buzu kırmasından gelir.", "example": "The host started the international seminar with a humorous story to break the ice.", "exampleTr": "Sunucu, ortamdaki buzları eritmek için uluslararası semineri esprili bir hikayeyle başlattı.", "category": "İletişim & Sosyal", "group": "şans"}, {"id": 12, "idiom": "Cry over spilled milk", "literal": "Dökülen süte ağlamak", "meaning": "Son pişmanlığın fayda etmemesi, geri getirilemeyecek kayıplara boş yere üzülmek", "origin": "Süt bir kez döküldüğünde geri toplanamaz; boşuna yakınmanın anlamsızlığını ifade eder.", "example": "We lost the contract, but there is no use crying over spilled milk. Let's focus on the next bid.", "exampleTr": "Sözleşmeyi kaybettik ama dökülen süte ağlamanın faydası yok. Bir sonraki ihaleye odaklanalım.", "category": "Hata & Pişmanlık", "group": "şans"}, {"id": 13, "idiom": "Let the cat out of the bag", "literal": "Kediyi torbadan çıkarmak", "meaning": "Sırrı açığa vurmak, gizli bir planı kazara veya erkenden ifşa etmek", "origin": "Orta çağ pazarlarında domuz yavrusu yerine torbaya kedi koyup satan dolandırıcıların torbası açılınca hilenin ortaya çıkmasından gelir.", "example": "Who let the cat out of the bag about our upcoming product launch?", "exampleTr": "Yaklaşan ürün lansmanımız hakkındaki sırrı kim ortaya döktü?", "category": "İletişim & Sırlar", "group": "iletisim"}, {"id": 14, "idiom": "The ball is in your court", "literal": "Top senin sahanda", "meaning": "Sıra sende, top sende, hamle yapma kararı artık sana ait", "origin": "Tenis sporunda top karşı tarafa geçtiğinde oyunun devam etmesi için karşı oyuncunun vurmak zorunda olmasından gelir.", "example": "We have offered you our best salary package; now the ball is in your court.", "exampleTr": "Sana en iyi maaş teklifimizi sunduk; artık top senin sahanda.", "category": "Karar & Eylem", "group": "cesaret"}, {"id": 15, "idiom": "Cut corners", "literal": "Köşeleri kesmek", "meaning": "İşi ucuza/kolaya kaçarak baştan savma yapmak, kaliteden kısmak", "origin": "Virajlı yollarda köşeleri kestirerek yolu kısaltma tehlikesinden mecazi olarak türemiştir.", "example": "Never cut corners when designing structural safety features for a passenger airplane.", "exampleTr": "Bir yolcu uçağının yapısal güvenlik sistemlerini tasarlarken asla ucuza ve kolaya kaçmayın.", "category": "Çalışma & Kalite", "group": "para"}, {"id": 16, "idiom": "Blessing in disguise", "literal": "Kılık değiştirmiş lütuf", "meaning": "Görünüşte kötü ama aslında hayırlı olan durum, her işte bir hayır olması", "origin": "Kötü bir olay gibi maskelenmiş ama sonuçta büyük fayda sağlayan olayları tanımlar.", "example": "Losing that corporate job was a blessing in disguise; it forced me to start my own thriving company.", "exampleTr": "O kurumsal işi kaybetmem kılık değiştirmiş bir lütuftu; beni kendi başarılı şirketimi kurmaya mecbur bıraktı.", "category": "Şans & Hayat", "group": "şans"}, {"id": 17, "idiom": "Call it a day", "literal": "Ona bir gün demek", "meaning": "Bugünlük bu kadar yeter deyip işi paydos etmek, çalışmayı sonlandırmak", "origin": "Sanayi devriminde işçilerin mesai bitiminde 'artık bugünkü iş bitti' demesinden yaygınlaşmıştır.", "example": "We have been debugging code for eight straight hours. Let's call it a day and rest.", "exampleTr": "Sekiz saattir aralıksız kod ayıklıyoruz. Bugünlük bu kadar yeter, paydos edelim ve dinlenelim.", "category": "Zaman & Çalışma", "group": "zaman"}, {"id": 18, "idiom": "Best of both worlds", "literal": "İki dünyanın da en iyisi", "meaning": "İki farklı avantajı aynı anda elde etme, hem pastam dursun hem karnım doysun durumu", "origin": "İki zıt durumun en cazip yönlerini bir arada yaşayabilmeyi anlatır.", "example": "Living in a quiet countryside village while working remotely gives her the best of both worlds.", "exampleTr": "Uzaktan çalışırken sakin bir köyde yaşamak ona iki dünyanın da en iyi yönlerini bir arada sunuyor.", "category": "Fırsat & Avantaj", "group": "para"}, {"id": 19, "idiom": "Through thick and thin", "literal": "Kalın ve incenin içinden", "meaning": "İyi günde kötü günde, her türlü zorlukta ve badirede sadakatle", "origin": "Ortaçağ İngiltere'sinde sık ormanların (thick) ve açık düzlüklerin (thin) içinden sadakatle yol almaya dayanır.", "example": "True lifelong friends stand beside you through thick and thin.", "exampleTr": "Gerçek ömürlük dostlar iyi günde kötü günde her zaman yanında dururlar.", "category": "Sadakat & İlişkiler", "group": "şans"}, {"id": 20, "idiom": "Kill two birds with one stone", "literal": "Bir taşla iki kuş vurmak", "meaning": "Bir taşla iki kuş vurmak, tek bir eylemle iki ayrı fayda sağlamak", "origin": "Avcılık kökenli olup hemen her dilde benzer şekilde yerleşmiş evrensel bir deyiştir.", "example": "By cycling to the university, I save commute money and exercise daily, killing two birds with one stone.", "exampleTr": "Üniversiteye bisikletle giderek hem yol parasından tasarruf ediyorum hem de günlük spor yapıyorum; bir taşla iki kuş vuruyorum.", "category": "Verimlilik & Eylem", "group": "para"}, {"id": 21, "idiom": "Take it with a grain of salt", "literal": "Bir tutam tuzla almak", "meaning": "Şüpheyle yaklaşmak, hemen inanmamak, ihtiyatla karşılamak", "category": "Haber & Güven", "origin": "Antik Roma'da zehirlere karşı tuzun panzehir etkisi olduğuna inanılmasından gelir.", "example": "Online celebrity rumors should always be taken with a grain of salt.", "exampleTr": "İnternetteki ünlü dedikoduları her zaman ihtiyatla karşılanmalıdır.", "group": "iletisim"}, {"id": 22, "idiom": "Add insult to injury", "literal": "Yaraya hakaret eklemek", "meaning": "Yaranın üstüne tuz basmak, kötü durumu daha da beter hale getirmek", "category": "Zorluk", "origin": "Ezop masalında kafasını kaşırken kendini yaralayan adama sineğin alay etmesinden gelir.", "example": "First they canceled our flight, and then to add insult to injury, they lost our luggage.", "exampleTr": "Önce uçuşumuzu iptal ettiler, sonra yaranın üstüne tuz basarcasına valizlerimizi kaybettiler.", "group": "cesaret"}, {"id": 23, "idiom": "Elephant in the room", "literal": "Odadaki fil", "meaning": "Herkesin bildiği ama kimsenin konuşmaya cesaret edemediği bariz gerçek/sorun", "category": "İletişim & Tabu", "origin": "Odanın ortasında dev bir fil varken kimsenin onu fark etmemiş gibi davranmasının absürtlüğünden gelir.", "example": "Nobody mentioned the budget deficit during the meeting, even though it was the elephant in the room.", "exampleTr": "Toplantıda odadaki fil olmasına rağmen hiç kimse bütçe açığından bahsetmedi.", "group": "şans"}, {"id": 24, "idiom": "Beat around the bush", "literal": "Çalının etrafına vurmak", "meaning": "Lafı gevelemek, konunun etrafında dolanıp asıl meseleye gelmemek", "category": "İletişim", "origin": "Yaban kuşu avında avcıların çalıya doğrudan vurmayıp etrafında gürültü yapmasından gelir.", "example": "Stop beating around the bush and tell me what really happened.", "exampleTr": "Lafı gevelemeyi bırak ve bana gerçekte ne olduğunu anlat.", "group": "şans"}, {"id": 25, "idiom": "Burning bridges", "literal": "Köprüleri yakmak", "meaning": "Geri dönüşü olmayan bir yola girmek, ilişkileri tamamen koparmak", "category": "Karar & İlişki", "origin": "Savaşta geri çekilmeyi imkansız kılmak için askeri komutanların köprüleri yakmasından gelir.", "example": "Be respectful during your exit interview; you don't want to burn any bridges.", "exampleTr": "İşten ayrılma mülakatında saygılı ol; arkandaki köprüleri yakmak istemezsin.", "group": "cesaret"}, {"id": 26, "idiom": "Jump on the bandwagon", "literal": "Müzik arabasına atlamak", "meaning": "Popüler akıma kapılmak, herkes yapıyor diye modaya uymak", "category": "Toplum & Trend", "origin": "Amerikan seçimlerinde adayların müzik arabasıyla dolaşıp kalabalıkları peşine takmasından gelir.", "example": "Now that electric cars are popular, every legacy automaker is jumping on the bandwagon.", "exampleTr": "Elektrikli arabalar popüler olunca her geleneksel otomobil üreticisi bu akıma katıldı.", "group": "şans"}, {"id": 27, "idiom": "Face the music", "literal": "Müzikle yüzleşmek", "meaning": "Yaptığı hatanın sonucuna katlanmak, faturayı ödemek", "category": "Sorumluluk", "origin": "Askeri mahkemede rütbesi sökülen askerin cenaze marşı eşliğinde kovulmasından türemiştir.", "example": "He made a huge financial error, and now he has to face the music before the executive board.", "exampleTr": "Büyük bir finansal hata yaptı ve şimdi yönetim kurulunun karşısında faturayı ödemek zorunda.", "group": "şans"}, {"id": 28, "idiom": "Leave no stone unturned", "literal": "Çevrilmedik taş bırakmamak", "meaning": "Aramadık delik bırakmamak, hedefe ulaşmak için her yolu denemek", "category": "Çaba & Araştırma", "origin": "Delphi kahininin hazine arayan Polycrates'e 'her taşı tersyüz et' tavsiyesinden gelir.", "example": "Investigators promised to leave no stone unturned until the culprit was caught.", "exampleTr": "Müfettişler suçlu yakalanana kadar aramadık delik bırakmayacaklarına söz verdiler.", "group": "para"}, {"id": 29, "idiom": "See eye to eye", "literal": "Göz göze görmek", "meaning": "Aynı fikirde olmak, tam bir mutabakata varmak", "category": "Anlaşma", "origin": "İki kişinin birbirinin göz hizasından aynı perspektife bakmasından gelir.", "example": "The board and the union rarely see eye to eye on annual wage increases.", "exampleTr": "Yönetim kurulu ile sendika yıllık maaş zamları konusunda nadiren aynı fikirde olur.", "group": "iletisim"}, {"id": 30, "idiom": "On thin ice", "literal": "İnce buzun üzerinde", "meaning": "Riskli ve tehlikeli bir durumda olmak, sınırda dolaşmak", "category": "Risk", "origin": "Kışın donmuş göllerde ince buzun kırılma tehlikesinden mecazi olarak türemiştir.", "example": "After arriving late for the third time this week, you are on very thin ice with the boss.", "exampleTr": "Bu hafta üçüncü kez geç kaldıktan sonra patronun gözünde çok tehlikeli sulardasın.", "group": "cesaret"}, {"id": 31, "idiom": "Hit the sack", "literal": "Çuvala vurmak", "meaning": "Kafayı vurup yatmak, uyumaya gitmek", "category": "Günlük Yaşam", "origin": "Eski zamanlarda yatak şiltelerinin saman dolu çuvallardan yapılmasından gelir.", "example": "It is already 1 AM and I have an early meeting tomorrow; time to hit the sack.", "exampleTr": "Saat gece 1 oldu bile ve yarın erken bir toplantım var; kafayı vurup yatma vakti.", "group": "şans"}, {"id": 32, "idiom": "Throw in the towel", "literal": "Havluyu atmak", "meaning": "Yenilgiyi kabul edip pes etmek, havlu atmak", "category": "Pes Etme", "origin": "Boks maçlarında antrenörün boksörün daha fazla hırpalanmaması için ringe beyaz havlu atmasından gelir.", "example": "After fighting bankruptcy for two grueling years, the restaurant chain finally threw in the towel.", "exampleTr": "İki yıldır iflasla zorlu mücadeleden sonra restoran zinciri sonunda havlu attı.", "group": "cesaret"}, {"id": 33, "idiom": "Steal someone's thunder", "literal": "Birinin gök gürültüsünü çalmak", "meaning": "Birinin rolünü çalmak, başarısını veya ilgiyi üzerine çekmek", "category": "Kıskançlık & Başarı", "origin": "18. yüzyılda oyun yazarı John Dennis'in icat ettiği tiyatro gök gürültüsü aletinin başka bir oyun tarafından habersizce kullanılmasından gelir.", "example": "She announced her engagement at my graduation party and completely stole my thunder.", "exampleTr": "Mezuniyet partimde kendi nişanını duyurarak bütün ilgiyi üzerine çekti ve rolümü çaldı.", "group": "para"}, {"id": 34, "idiom": "Read between the lines", "literal": "Satır aralarını okumak", "meaning": "Söylenmeyen ama kastedilen gizli anlamı sezmek", "category": "Algı & Sezgi", "origin": "Gizli istihbarat mektuplarında görünmez mürekkeple satır aralarına mesaj yazılmasından gelir.", "example": "If you read between the lines of the CEO's statement, layoffs are definitely coming.", "exampleTr": "CEO'nun açıklamasının satır aralarını okursanız, işten çıkarmaların kesinlikle geleceğini anlarsınız.", "group": "şans"}, {"id": 35, "idiom": "Get cold feet", "literal": "Ayakları üşümek", "meaning": "Son anda gözü korkmak, cesaretini yitirip vazgeçmek", "category": "Korku & Karar", "origin": "Korkudan kan çekilmesi sonucu vücudun uç noktalarının üşümesi hissiyle bağlantılıdır.", "example": "He was about to propose marriage on the yacht, but he suddenly got cold feet.", "exampleTr": "Yatta evlilik teklif etmek üzereydi ama son anda gözü korkup cesaretini yitirdi.", "group": "cesaret"}, {"id": 36, "idiom": "Out of the blue", "literal": "Maviliğin dışından", "meaning": "Damdan düşer gibi, birdenbire, hiç beklenmedik anda", "category": "Sürpriz", "origin": "Açık ve bulutsuz mavi gökyüzünden aniden düşen bir şimşek benzetmesinden gelir.", "example": "An old college friend called me out of the blue after ten years of silence.", "exampleTr": "On yıllık sessizliğin ardından eski bir üniversite arkadaşım damdan düşer gibi aradı.", "group": "şans"}, {"id": 37, "idiom": "Pull someone's leg", "literal": "Birinin bacağını çekmek", "meaning": "Biriyle kafa bulmak, şaka yapmak, dalga geçmek", "category": "Mizah & Şaka", "origin": "19. yüzyılda sokak hırsızlarının kurbanlarını düşürmek için arkadan bacağına çelme takmasından evrilmiştir.", "example": "Don't be upset! I was only pulling your leg about losing the lottery ticket.", "exampleTr": "Kızma ya! Piyango biletini kaybettiğimi söylerken sadece seninle kafa buluyordum.", "group": "iletisim"}, {"id": 38, "idiom": "Bite off more than you can chew", "literal": "Çiğneyebileceğinden fazlasını ısırmak", "meaning": "Boyundan büyük işe kalkışmak, altından kalkamayacağı sorumluluk almak", "category": "Kapasite & Sınır", "origin": "Ağzına çiğneyemeyeceği kadar büyük lokma alan kişinin boğulma tehlikesine dayanır.", "example": "Taking on three international clients at the same time was biting off more than we could chew.", "exampleTr": "Aynı anda üç uluslararası müşteri almak boyumuzdan büyük işe kalkışmak oldu.", "group": "para"}, {"id": 39, "idiom": "A dime a dozen", "literal": "Düzinesi on sent", "meaning": "Peynir ekmek gibi, sıradan, her yerde bolca bulunan, değersiz", "category": "Değer & Bulunurluk", "origin": "1800'lerde ucuz malların bir düzinesinin 10 sente (dime) satılmasından gelir.", "example": "Good ideas are a dime a dozen; what really counts is ruthless execution.", "exampleTr": "İyi fikirler piyasada peynir ekmek gibi bol; asıl önemli olan kusursuz icraattır.", "group": "para"}, {"id": 40, "idiom": "Play devil's advocate", "literal": "Şeytanın avukatlığını yapmak", "meaning": "Karşıt argümanı savunarak konunun derinlemesine tartışılmasını sağlamak", "category": "Fikir & Tartışma", "origin": "Katolik kilisesinde azizlik unvanı verilmeden önce adayın eksiklerini bulmakla görevli resmi yetkiliye 'advocatus diaboli' denirdi.", "example": "Let me play devil's advocate for a moment: what if the competitor cuts their prices by half?", "exampleTr": "Bir an için şeytanın avukatlığını yapayım: ya rakibimiz fiyatlarını yarı yarıya indirirse?", "group": "iletisim"}, {"id": 41, "idiom": "Keep someone at arm's length", "literal": "Birini kol mesafesinde tutmak", "meaning": "Mesafeli davranmak, fazla samimi olmaktan kaçınmak", "category": "İlişkiler", "origin": "Dövüşte veya savunmada rakibi güvenli mesafede tutma taktiğine dayanır.", "example": "After being deceived once, she decided to keep all new acquaintances at arm's length.", "exampleTr": "Bir kez kandırıldıktan sonra tüm yeni tanıdıklarına mesafeli davranmaya karar verdi.", "group": "şans"}, {"id": 42, "idiom": "Cross that bridge when we come to it", "literal": "Köprüye varınca geçmek", "meaning": "Zamanı gelince düşünmek, şimdiden boşuna kaygılanmamak", "category": "Kaygı & Plan", "origin": "Henüz yaklaşılmamış uzak bir köprüden nasıl geçileceğini önceden dert etmeme öğüdüdür.", "example": "The server might crash under extreme load, but we will cross that bridge when we come to it.", "exampleTr": "Sunucu aşırı yük altında çökebilir ama o köprüye vardığımızda bakarız, şimdiden kaygılanmayalım.", "group": "zaman"}, {"id": 43, "idiom": "Back to the drawing board", "literal": "Çizim masasına geri dönmek", "meaning": "Sil baştan başlamak, başarısız olan planı en baştan yeniden tasarlamak", "category": "Yeniden Başlama", "origin": "İkinci Dünya Savaşı'nda uçağı düşen mühendisin karikatüründe çizim masasına dönmesiyle ünlenmiştir.", "example": "The prototype failed the thermal pressure test, so it's back to the drawing board.", "exampleTr": "Prototip termal basınç testinden geçemedi, bu yüzden sil baştan çizim masasına dönüyoruz.", "group": "zaman"}, {"id": 44, "idiom": "Bark is worse than one's bite", "literal": "Havlaması ısırmasından beter", "meaning": "Kuru gürültü yapmak, sert görünse de aslında zararsız olmak", "category": "Karakter", "origin": "Çok havlayan köpeklerin genelde ısırmaması gözlemine dayanır.", "example": "Don't be intimidated by the professor's strict tone; his bark is much worse than his bite.", "exampleTr": "Profesörün sert tavrından gözün korkmasın; kuru gürültü yapıyor, aslında pamuk gibi biridir.", "group": "şans"}, {"id": 45, "idiom": "Fit as a fiddle", "literal": "Keman gibi zinde", "meaning": "Turp gibi, son derece sağlıklı ve zinde", "category": "Sağlık", "origin": "Kemanın iyi ses vermesi için tellerinin ve gövdesinin kusursuz bakımda olması gerektiğine dayanır.", "example": "My eighty-year-old grandfather goes hiking every weekend and is as fit as a fiddle.", "exampleTr": "Seksen yaşındaki dedem her hafta sonu doğa yürüyüşüne çıkıyor ve turp gibi zinde.", "group": "şans"}, {"id": 46, "idiom": "In hot water", "literal": "Sıcak suyun içinde", "meaning": "Başı dertte olmak, ciddi sıkıntıya düşmek", "category": "Tehlike & Dert", "origin": "Eski zamanlarda ev sahibinin izinsiz giren davetsiz misafirlerin üstüne kaynar su dökmesine dayanır.", "example": "If the auditor discovers these unrecorded transactions, the accountant will be in hot water.", "exampleTr": "Denetçi bu kayıtsız işlemleri keşfederse muhasebecinin başı fena halde derde girecek.", "group": "cesaret"}, {"id": 47, "idiom": "Miss the boat", "literal": "Gemiyi kaçırmak", "meaning": "Treni kaçırmak, fırsatı elden kaçırmak", "category": "Fırsat", "origin": "Limandan kalkan gemiyi kaçıran yolcunun bir sonraki seferi uzun süre beklemek zorunda kalmasına dayanır.", "example": "Those who waited too long to invest in solar technology definitely missed the boat.", "exampleTr": "Güneş teknolojisine yatırım yapmak için çok uzun süre bekleyenler kesinlikle treni kaçırdı.", "group": "para"}, {"id": 48, "idiom": "Penny for your thoughts", "literal": "Düşüncelerin için bir peni", "meaning": "Ne düşünüyorsun? Dalıp gittin, aklından ne geçiyor?", "category": "İletişim", "origin": "16. yüzyılda derin düşüncelere dalmış birinin sessizliğini bozmak için yapılan kibar tekliftir.", "example": "You have been staring out the window for ten minutes. A penny for your thoughts?", "exampleTr": "On dakikadır pencereden dışarı bakıyorsun. Ne düşünüyorsun, aklından ne geçiyor?", "group": "şans"}, {"id": 49, "idiom": "Skeleton in the closet", "literal": "Dolaptaki iskelet", "meaning": "Aile sırrı, geçmişte saklanan utanç verici gizli gerçek", "category": "Sırlar & Geçmiş", "origin": "Tıp öğrencilerinin kadavraları gizlemesi veya evlerdeki karanlık sırları simgeleyen tabirdir.", "example": "Almost every wealthy dynasty has at least one embarrassing skeleton in the closet.", "exampleTr": "Hemen hemen her zengin hanedanın geçmişinde sakladığı utanç verici bir sırrı vardır.", "group": "zaman"}, {"id": 50, "idiom": "Straight from the horse's mouth", "literal": "Doğrudan atın ağzından", "meaning": "İlk elden, en güvenilir kaynaktan, doğrudan muhatabından", "category": "Güven & Bilgi", "origin": "At yarışlarında bir atın yaşını ve sağlığını tüccardan değil, atın dişlerine bakarak anlamaya dayanır.", "example": "I know the project is canceled because I heard it straight from the horse's mouth.", "exampleTr": "Projenin iptal edildiğini biliyorum çünkü bunu ilk elden bizzat genel müdürden duydum.", "group": "şans"}, {"id": 51, "idiom": "Take the bull by the horns", "literal": "Boğayı boynuzlarından tutmak", "meaning": "Zor bir durumun üstüne cesurca gitmek, inisiyatif alıp kontrolü sağlamak", "category": "Cesaret", "origin": "Kızgın bir boğayı kontrol altına almanın en riskli ama tek etkili yolunun boynuzlarından kavramak olmasına dayanır.", "example": "Instead of avoiding the difficult client, she took the bull by the horns and scheduled an in-person meeting.", "exampleTr": "Zorlu müşteriden kaçmak yerine cesaretle üstüne gitti ve yüz yüze bir toplantı ayarladı.", "group": "cesaret"}, {"id": 52, "idiom": "Taste of one's own medicine", "literal": "Kendi ilacının tadına bakmak", "meaning": "Kendi kazdığı kuyuya düşmek, başkasına yaptığı kötülüğün aynısına maruz kalmak", "category": "Adalet & İntikam", "origin": "Ezop masalında hastalara sahte ilaç satan şarlatanın hastalanınca kendi sahte ilacını içmek zorunda kalmasına dayanır.", "example": "The aggressive critic finally got a taste of his own medicine when his debut novel was ridiculed.", "exampleTr": "Saldırgan eleştirmen, ilk romanı alay konusu olunca nihayet kendi kazdığı kuyuya düştü.", "group": "şans"}, {"id": 53, "idiom": "The tip of the iceberg", "literal": "Buzdağının görünen kısmı", "meaning": "Buzdağının görünen ucu, devasa bir sorunun sadece küçük bir parçası", "category": "Gerçek & Kapsam", "origin": "Buzdağlarının yüzde doksanının suyun altında gizli kalması bilimsel gerçeğine dayanır.", "example": "These initial accounting irregularities are merely the tip of the iceberg.", "exampleTr": "Bu ilk muhasebe usulsüzlükleri buzdağının sadece görünen ucu.", "group": "şans"}, {"id": 54, "idiom": "Under the table", "literal": "Masanın altından", "meaning": "Elden, yasadışı yoldan, kayıt dışı olarak", "category": "Para & Hukuk", "origin": "Rüşvet veya vergisiz ödemelerin resmi masa üstünde değil gizlice masa altından el değiştirmesine dayanır.", "example": "He was accused of accepting cash payments under the table to bypass safety inspections.", "exampleTr": "Güvenlik denetimlerini atlatmak için masanın altından elden nakit rüşvet almakla suçlandı.", "group": "para"}, {"id": 55, "idiom": "Weather the storm", "literal": "Fırtınayı atlatmak", "meaning": "Zor bir dönemi sağ salim atlatmak, badireyi savuşturmak", "category": "Dayanıklılık", "origin": "Denizcilerin büyük fırtınalarda gemiyi batırmadan limana ulaştırma başarısına dayanır.", "example": "With loyal customers and prudent management, the family business managed to weather the economic storm.", "exampleTr": "Sadık müşterileri ve ihtiyatlı yönetimi sayesinde aile şirketi ekonomik fırtınayı sağ salim atlattı.", "group": "cesaret"}, {"id": 56, "idiom": "Wrap one's head around something", "literal": "Aklını bir şeyin etrafına sarmak", "meaning": "Kavramak, aklı yatmak, karmaşık bir meseleyi idrak etmek", "category": "Anlayış", "origin": "Zor bir konuyu zihnin bütünüyle çevreleyip sindirmesi mecazıdır.", "example": "Quantum mechanics is fascinating, but I still struggle to wrap my head around wave-particle duality.", "exampleTr": "Kuantum mekaniği büyüleyici ama dalga-parçacık ikiliğini aklımın alması hala zaman alıyor.", "group": "iletisim"}, {"id": 57, "idiom": "A storm in a teacup", "literal": "Çay fincanında fırtına", "meaning": "Bir kaşık suda fırtına koparmak, incir çekirdeğini doldurmayacak meseleyi büyütmek", "category": "Abartı", "origin": "Küçük bir kapta çalkantı olmasının okyanus fırtınasıyla kıyaslanamayacak kadar önemsizliğine dayanır.", "example": "Their heated argument over office seating was simply a storm in a teacup.", "exampleTr": "Ofisteki oturma düzeni yüzünden ettikleri hararetli kavga resmen bir kaşık suda fırtına koparmaktı.", "group": "iletisim"}, {"id": 58, "idiom": "At the drop of a hat", "literal": "Şapkanın düşüşüyle", "meaning": "Göz açıp kapayıncaya kadar, ikiletmeden, hemen anında", "category": "Hız & İsteklilik", "origin": "Eski yarışlarda başlangıç işaretinin bir şapkanın yere düşürülmesiyle verilmesine dayanır.", "example": "She is so passionate about wildlife that she will travel to the rainforest at the drop of a hat.", "exampleTr": "Yaban hayatına o kadar tutkulu ki ikiletmeden anında yağmur ormanlarına gider.", "group": "zaman"}, {"id": 59, "idiom": "Burn the candle at both ends", "literal": "Mumu iki ucundan yakmak", "meaning": "Kendini aşırı yıpratmak, gece gündüz dinlenmeden pestili çıkana kadar çalışmak", "category": "Yorgunluk", "origin": "Mumu iki ucundan yakarsan hızla eriyip biter benzetmesine dayanır.", "example": "Working two full-time jobs while studying is burning the candle at both ends; you will collapse.", "exampleTr": "Okurken iki tam zamanlı işte çalışmak kendini aşırı yıpratmaktır; yakında yere serilirsin.", "group": "şans"}, {"id": 60, "idiom": "Catch someone red-handed", "literal": "Birini eli kızıl yakalamak", "meaning": "Suçüstü yakalamak, suç işlerken anında basmak", "category": "Hukuk & Suç", "origin": "Eski İngiliz hukukunda av hırsızının üzerinde hayvan kanı varken yakalanmasına dayanır.", "example": "The store security caught the shoplifter red-handed with diamond jewelry in his pocket.", "exampleTr": "Mağaza güvenliği dükkan hırsızını cebinde elmas takılarla suçüstü yakaladı.", "group": "şans"}, {"id": 61, "idiom": "Cut to the chase", "literal": "Kovalamacaya geçmek", "meaning": "Lafı uzatmadan sadede gelmek, ana konuya girmek", "category": "İletişim", "origin": "Eski sessiz filmlerde sıkıcı diyaloglar yerine seyircinin heyecanla beklediği kovalamaca sahnesine atlanmasından gelir.", "example": "We only have ten minutes left, so please cut to the chase.", "exampleTr": "Sadece on dakikamız kaldı, bu yüzden lütfen lafı uzatmadan sadede gel.", "group": "şans"}, {"id": 62, "idiom": "Devil is in the details", "literal": "Şeytan ayrıntıda gizlidir", "meaning": "Bir işin asıl zorluğu ve püf noktası küçük ayrıntılarda yatar", "category": "Detay & Dikkat", "origin": "Görünüşte basit olan projelerin inceliklerinin gözden kaçırılmaması uyarısıdır.", "example": "The software architecture looks clean, but the devil is in the details of concurrency.", "exampleTr": "Yazılım mimarisi temiz görünüyor ama asıl zorluk eşzamanlılık ayrıntılarında gizli.", "group": "şans"}, {"id": 63, "idiom": "Don't put all your eggs in one basket", "literal": "Tüm yumurtaları aynı sepete koyma", "meaning": "Tüm varlığını veya umudunu tek bir yere bağlama, riskleri dağıt", "category": "Risk & Yatırım", "origin": "Sepet düşerse tüm yumurtalar aynı anda kırılır gerçeğine dayanır.", "example": "Diversify your investment portfolio; never put all your eggs in one basket.", "exampleTr": "Yatırım portföyünüzü çeşitlendirin; asla tüm yumurtaları aynı sepete koymayın.", "group": "cesaret"}, {"id": 64, "idiom": "Down to the wire", "literal": "Tele kadar", "meaning": "Son ana kadar başa baş, son saniyeye kadar süren çekişme", "category": "Rekabet & Zaman", "origin": "At yarışlarında bitiş çizgisindeki gergin metal tele dayanır.", "example": "The presidential election came down to the wire in three swing states.", "exampleTr": "Başkanlık seçimi üç kritik eyalette son ana kadar nefes nefese geçti.", "group": "zaman"}, {"id": 65, "idiom": "Give the benefit of the doubt", "literal": "Şüphenin yararını vermek", "meaning": "Hüsnüzan beslemek, kuşkulu durumda birini iyi niyetli kabul etmek", "category": "Hukuk & Güven", "origin": "Ceza hukukunda şüpheden sanığın yararlanması ilkesinden günlük dile geçmiştir.", "example": "I am not sure if he forgot on purpose, so let's give him the benefit of the doubt.", "exampleTr": "Bunu kasten mi unuttu emin değilim, bu yüzden şimdilik ona iyi niyetle yaklaşalım.", "group": "şans"}, {"id": 66, "idiom": "Go the extra mile", "literal": "Fazladan bir mil gitmek", "meaning": "Fazladan çaba sarf etmek, beklenenden daha fazlasını yapmak", "category": "Çaba & Kalite", "origin": "İncil'de bir askerin zorla 1 mil taşıttığı yüke karşılık 'sen iki mil taşı' öğüdünden gelir.", "example": "Our customer service team always goes the extra mile to resolve client issues.", "exampleTr": "Müşteri hizmetleri ekibimiz müşteri sorunlarını çözmek için her zaman fazladan çaba sarf eder.", "group": "para"}, {"id": 67, "idiom": "Hear a pin drop", "literal": "Bir iğnenin düşüşünü duymak", "meaning": "Çıt çıkmamak, derin ve mutlak bir sessizlik olmak", "category": "Sessizlik", "origin": "Ortamın o kadar sessiz olması ki yere düşen bir toplu iğnenin bile duyulabilmesidir.", "example": "When the tragic news was announced, you could hear a pin drop in the auditorium.", "exampleTr": "Trajik haber duyurulduğunda salonda adeta çıt çıkmıyordu.", "group": "iletisim"}, {"id": 68, "idiom": "In the heat of the moment", "literal": "Anın hararetinde", "meaning": "Öfkenin veya heyecanın etkisiyle, düşünmeden anlık tepkiyle", "category": "Duygular & Hata", "origin": "Duyguların tepe noktasına ulaştığı o ilk anın sıcaklığına işaret eder.", "example": "He said hurtful things in the heat of the moment, but he later apologized sincerely.", "exampleTr": "O anın hararetiyle kırıcı sözler söyledi ama daha sonra samimiyetle özür diledi.", "group": "şans"}, {"id": 69, "idiom": "It takes two to tango", "literal": "Tango için iki kişi gerekir", "meaning": "Bir kavgada veya ilişkide her iki tarafın da sorumluluğu vardır", "category": "İlişkiler", "origin": "Tango dansının tek başına yapılamayacağı gerçeğinden türemiştir.", "example": "Do not blame him entirely for the divorce; remember, it takes two to tango.", "exampleTr": "Boşanma için tamamen onu suçlama; unutma, bir kavgada iki tarafın da payı vardır.", "group": "şans"}, {"id": 70, "idiom": "Kill the goose that lays golden eggs", "literal": "Altın yumurtlayan kazı kesmek", "meaning": "Kısa vadeli açgözlülükle gelecekteki sürekli kazanç kaynağını yok etmek", "category": "Açgözlülük", "origin": "Ezop'un altın yumurtlayan kaz masalından tüm dünya dillerine geçmiştir.", "example": "Overworking creative staff for immediate profits is killing the goose that lays the golden eggs.", "exampleTr": "Kısa vadeli kar uğruna yaratıcı personeli tüketmek altın yumurtlayan kazı kesmektir.", "group": "para"}, {"id": 71, "idiom": "Let sleeping dogs lie", "literal": "Uyuyan köpekleri bırak uyusun", "meaning": "Uyuyan yılanın kuyruğuna basmamak, kapanmış yaraları deşmemek", "category": "İhtiyat", "origin": "Uyuyan bir köpeği dürtersen uyanıp seni ısırabilir uyarısına dayanır.", "example": "The dispute was settled five years ago; let sleeping dogs lie.", "exampleTr": "O anlaşmazlık beş yıl önce çözüldü; eski defterleri açıp uyuyan yılanın kuyruğuna basma.", "group": "şans"}, {"id": 72, "idiom": "Live and learn", "literal": "Yaşa ve öğren", "meaning": "İnsan yaşaya yaşaya tecrübe edinir, bu da bana ders olsun", "category": "Tecrübe", "origin": "Yapılan hatalardan olgunlaşarak hayat dersi çıkarma teslimiyetidir.", "example": "I lost my backup files because I didn't verify the drive. Well, live and learn!", "exampleTr": "Diski doğrulamadığım için yedek dosyalarımı kaybettim. Eh, insan yaşaya yaşaya öğrenir!", "group": "şans"}, {"id": 73, "idiom": "Make a long story short", "literal": "Uzun hikayeyi kısa yapmak", "meaning": "Uzun lafın kısası, özetle, netice itibarıyla", "category": "İletişim", "origin": "Gereksiz teferruatları atlayıp sonuca bağlama kalıbıdır.", "example": "To make a long story short, we missed the connecting flight and slept at the terminal.", "exampleTr": "Uzun lafın kısası, aktarma uçuşunu kaçırdık ve geceyi terminalde uyuyarak geçirdik.", "group": "şans"}, {"id": 74, "idiom": "Method to one's madness", "literal": "Deliliğinin bir yöntemi olmak", "meaning": "Dışarıdan tuhaf veya mantıksız görünse de arkasında gizli bir plan olmak", "category": "Strateji", "origin": "Shakespeare'in Hamlet oyunundaki 'delilik olsa da içinde bir yöntem var' sözünden gelir.", "example": "His chaotic desk seems disorganized, but there is definitely a method to his madness.", "exampleTr": "Karmaşık masası dağınık görünüyor ama bu deliliğin arkasında kesinlikle gizli bir düzen var.", "group": "para"}, {"id": 75, "idiom": "No pain, no gain", "literal": "Acı yoksa kazanç da yok", "meaning": "Zahmetsiz rahmet olmaz, fedakarlık yapmadan başarı gelmez", "category": "Başarı & Çaba", "origin": "Sporcuların kas gelişimi için yorgunluk ve yanma hissini aşması ilkesidir.", "example": "Learning advanced academic vocabulary is challenging, but remember: no pain, no gain.", "exampleTr": "İleri akademik kelimeleri öğrenmek zorlayıcıdır ama unutmayın: zahmetsiz rahmet olmaz.", "group": "para"}, {"id": 76, "idiom": "Off the top of one's head", "literal": "Kafasının tepesinden", "meaning": "Ayaküstü, kabataslak, detaylı düşünmeden ezbere tahminle", "category": "Tahmin & Bilgi", "origin": "Yazılı bir kaynağa bakmadan doğrudan zihindeki ilk hatırayla söylemektir.", "example": "Off the top of my head, I would estimate the restoration project will cost fifty thousand dollars.", "exampleTr": "Ayaküstü bir tahminle, restorasyon projesinin elli bin dolara mal olacağını söyleyebilirim.", "group": "iletisim"}, {"id": 77, "idiom": "On cloud nine", "literal": "Dokuzuncu bulutun üzerinde", "meaning": "Havada uçmak, mutluluktan etekleri zil çalmak", "category": "Mutluluk", "origin": "Meteorolojide en yüksek irtifadaki kümülonimbüs bulutunun 9 numaralı katman olmasına dayanır.", "example": "Ever since she received her medical school acceptance letter, she has been on cloud nine.", "exampleTr": "Tıp fakültesi kabul mektubunu aldığından beri mutluluktan havalara uçuyor.", "group": "şans"}, {"id": 78, "idiom": "Picture is worth a thousand words", "literal": "Bir resim bin kelimeye değer", "meaning": "Görsel bir anlatım sayfalarca yazıdan çok daha etkilidir", "category": "Görsel & İletişim", "origin": "Karmaşık bir fikrin tek bir fotoğrafla çok daha çarpıcı anlatılabilmesidir.", "example": "The graph clearly demonstrates market collapse; truly, a picture is worth a thousand words.", "exampleTr": "Grafik piyasadaki çöküşü açıkça gösteriyor; gerçekten bir resim bin kelimeye değer.", "group": "iletisim"}, {"id": 79, "idiom": "Play it by ear", "literal": "Kulağına göre çalmak", "meaning": "Duruma göre hareket etmek, önceden plan yapmayıp akışına bırakmak", "category": "Esneklik", "origin": "Müzisyenin notaya bakmadan kulaktan dolma doğaçlama çalmasından türemiştir.", "example": "We don't know what the weather will be like, so let's just play it by ear tomorrow.", "exampleTr": "Havanın nasıl olacağını bilmiyoruz, bu yüzden yarın duruma göre hareket edelim.", "group": "cesaret"}, {"id": 80, "idiom": "Rain on someone's parade", "literal": "Birinin geçit törenine yağmur yağdırmak", "meaning": "Birinin hevesini kursağında bırakmak, sevincini gölgelemek", "category": "Hayal Kırıklığı", "origin": "Büyük bir kutlama geçit töreninin aniden bastıran sağanakla mahvolması mecazıdır.", "example": "I don't mean to rain on your parade, but the committee still hasn't signed the final approval.", "exampleTr": "Hevesini kursağında bırakmak istemem ama komite son onayı henüz imzalamadı.", "group": "şans"}, {"id": 81, "idiom": "Raining cats and dogs", "literal": "Kedi ve köpek yağması", "meaning": "Bardaktan boşanırcasına, sağanak halinde çok şiddetli yağmur yağmak", "category": "Hava Durumu", "origin": "Eski İngiltere'de şiddetli yağmurlarda sokak oluklarında mahsur kalan sokak hayvanları efsanesine dayanır.", "example": "Take an umbrella and waterproof boots; it is raining cats and dogs outside.", "exampleTr": "Şemsiye ve su geçirmez çizmelerini al; dışarıda bardaktan boşanırcasına yağmur yağıyor.", "group": "şans"}, {"id": 82, "idiom": "Seeing is believing", "literal": "Görmek inanmaktır", "meaning": "Gözünle görmeden inanılmaz, şüpheyi ancak somut kanıt giderir", "category": "Kanıt & Şüphe", "origin": "Gözle tanık olmanın en kesin kanıt sayılmasına dayanır.", "example": "They claimed the electric sports car reaches 100 km/h in two seconds; seeing is believing.", "exampleTr": "Elektrikli spor arabanın iki saniyede 100 km hıza ulaştığını iddia ettiler; gözümle görmeden inanmam.", "group": "iletisim"}, {"id": 83, "idiom": "Shoot yourself in the foot", "literal": "Kendi ayağına sıkmak", "meaning": "Kendi bindiği dalı kesmek, dikkatsizce kendi çıkarlarına zarar vermek", "category": "Hata", "origin": "Silahı kılıfından çıkarırken kazara kendi ayağını vurma sakarlığına dayanır.", "example": "Rejecting that lucrative collaboration offer is simply shooting yourself in the foot.", "exampleTr": "O kazançlı iş birliği teklifini reddetmek resmen kendi ayağına sıkmaktır.", "group": "şans"}, {"id": 84, "idiom": "Speak of the devil", "literal": "Şeytandan bahsetmek", "meaning": "İti an çomağı hazırla, tam senden bahsediyorduk ki çıkageldin", "category": "Sosyal & Sürpriz", "origin": "'Speak of the devil and he shall appear' eski atasözünün günlük konuşmadaki kısaltmasıdır.", "example": "Speak of the devil! We were just discussing your promotion when you walked through the door.", "exampleTr": "İti an çomağı hazırla! Tam kapıdan girdiğinde biz de senin terfini konuşuyorduk.", "group": "şans"}, {"id": 85, "idiom": "Take a rain check", "literal": "Yağmur çeki almak", "meaning": "Bir teklifi başka bir zamana ertelemek, bir dahaki sefere kalsın demek", "category": "Kibar Ret", "origin": "Beyzbol maçları yağmurdan iptal edildiğinde seyircilere bir sonraki maç için verilen yağmur biletine dayanır.", "example": "I would love to join for dinner, but I am swamped with work; can I take a rain check?", "exampleTr": "Akşam yemeğine katılmayı çok isterdim ama işe boğuldum; bir dahaki sefere kalsın mı?", "group": "iletisim"}, {"id": 86, "idiom": "Best thing since sliced bread", "literal": "Dilimlenmiş ekmekten beri en iyi şey", "meaning": "Son yılların en harika ve çığır açan buluşu/fikri", "category": "Yenilik & Övgü", "origin": "1928'de otomatik ekmek dilimleme makinesinin icadının yarattığı büyük kolaylığa övgüdür.", "example": "This automated vocabulary testing tool is genuinely the best thing since sliced bread.", "exampleTr": "Bu otomatik kelime test aracı gerçekten son yılların en harika buluşu.", "group": "şans"}, {"id": 87, "idiom": "Through the grapevine", "literal": "Asma dalı üzerinden", "meaning": "Kulaktan kulağa, dedikodu kanalıyla, gayriresmi yoldan duymak", "category": "Dedikodu", "origin": "Amerikan iç savaşındaki ilkel telgraf hatlarının asma dallarına benzetilmesinden gelir.", "example": "I heard through the grapevine that our manager is getting transferred to the London branch.", "exampleTr": "Müdürümüzün Londra şubesine transfer edileceğini kulaktan kulağa duydum.", "group": "iletisim"}, {"id": 88, "idiom": "Time flies", "literal": "Zaman uçar", "meaning": "Zaman su gibi akıp geçer, su gibi akıp gitmek", "category": "Zaman", "origin": "Latincedeki 'tempus fugit' deyişinin İngilizceye yerleşmiş halidir.", "example": "It feels like we started university yesterday; truly, time flies when you are learning.", "exampleTr": "Daha dün üniversiteye başlamışız gibi hissediyorum; gerçekten öğrenirken zaman su gibi akıp geçiyor.", "group": "zaman"}, {"id": 89, "idiom": "To each their own", "literal": "Herkesinkisi kendine", "meaning": "Zevkler ve renkler tartışılmaz, herkesin tercihi kendine göredir", "category": "Hoşgörü", "origin": "Farklı görüşlere ve kişisel tercihlere saygı duyma ifadesidir.", "example": "I don't personally enjoy modern electronic music, but to each their own.", "exampleTr": "Ben şahsen modern elektronik müzikten hoşlanmıyorum ama zevkler ve renkler tartışılmaz.", "group": "şans"}, {"id": 90, "idiom": "Two peas in a pod", "literal": "Bir kabuktaki iki bezelye", "meaning": "Hık demiş burnundan düşmüş, birbirinin kopyası iki insan/nesne", "category": "Benzerlik", "origin": "Bezelye kabuğundaki tanelerin birbirine tıpatıp benzemesine dayanır.", "example": "Those identical twins think alike and dress alike; they are like two peas in a pod.", "exampleTr": "O tek yumurta ikizleri aynı düşünüp aynı giyiniyor; hık demiş birbirinin burnundan düşmüşler.", "group": "şans"}, {"id": 91, "idiom": "Up in the air", "literal": "Havada olmak", "meaning": "Henüz askıda olmak, netleşmemiş, belirsizliğini korumak", "category": "Belirsizlik", "origin": "Yere inip sağlam zemine oturmamış kararları simgeler.", "example": "Our summer vacation plans are still up in the air until the company approves our holiday leaves.", "exampleTr": "Şirket tatil izinlerimizi onaylayana kadar yaz tatili planlarımız hala askıda.", "group": "zaman"}, {"id": 92, "idiom": "Walk on eggshells", "literal": "Yumurta kabuklarında yürümek", "meaning": "Aşırı temkinli davranmak, birini kızdırmamak için diken üstünde olmak", "category": "Tedirginlik", "origin": "Kırılgan yumurta kabuklarının üzerinde sessizce ve kırmadan yürüme zorluğuna dayanır.", "example": "Whenever the CEO is stressed, everyone in the head office walks on eggshells.", "exampleTr": "Genel müdür stresli olduğunda merkez ofisteki herkes diken üstünde yürür.", "group": "zaman"}, {"id": 93, "idiom": "The whole nine yards", "literal": "Dokuz yardanın tamamı", "meaning": "A'dan Z'ye her şey, tüm teferruatıyla, sonuna kadar", "category": "Eksiksizlik", "origin": "İkinci Dünya Savaşı savaş uçaklarındaki makineli tüfek mermi şeritlerinin 9 yarda uzunluğunda olmasına dayanır.", "example": "When she organizes a conference, she provides catering, lodging, transport—the whole nine yards.", "exampleTr": "Bir konferans düzenlediğinde yemek, konaklama, ulaşım—baştan aşağı her şeyi eksiksiz sağlar.", "group": "para"}, {"id": 94, "idiom": "You can't judge a book by its cover", "literal": "Kitabı kapağına göre yargılayamazsın", "meaning": "Görünüşe aldanmamak gerekir, dış görünüş yanıltıcı olabilir", "category": "Yargı & Görünüş", "origin": "Bir kitabın değerinin kapağından değil içeriğinden anlaşılması gerçeğidir.", "example": "The quaint old bookstore looks modest from the outside, but you can't judge a book by its cover.", "exampleTr": "O eski kitapçı dışarıdan mütevazı görünüyor ama görünüşe aldanmamak gerek; içi bir hazine.", "group": "şans"}, {"id": 95, "idiom": "Your guess is as good as mine", "literal": "Senin tahminin benimki kadar iyi", "meaning": "İnan benim de hiçbir fikrim yok, ben de senin kadar biliyorum", "category": "Bilinmezlik", "origin": "İki tarafın da konu hakkında eşit düzeyde bilgisiz olduğunu dürüstçe itiraf etmektir.", "example": "Will the currency fluctuate next quarter? Your guess is as good as mine.", "exampleTr": "Gelecek çeyrekte döviz kurları dalgalanır mı? İnan benim de hiçbir fikrim yok.", "group": "şans"}, {"id": 96, "idiom": "Burn one's fingers", "literal": "Parmaklarını yakmak", "meaning": "Sütten ağzı yanmak, tedbirsiz bir girişim sonucu zarar görmek", "category": "Zarar & İkaz", "origin": "Sıcak bir nesneye düşüncesizce dokunan kişinin parmaklarının yanmasına dayanır.", "example": "He burned his fingers in cryptocurrency speculation and now avoids volatile assets.", "exampleTr": "Kripto para spekülasyonunda sütten ağzı yandı ve şimdi dalgalı varlıklardan uzak duruyor.", "group": "cesaret"}, {"id": 97, "idiom": "Cry wolf", "literal": "Kurt var diye bağırmak", "meaning": "Yalancı çobanlık yapmak, tehlike yokken yaygara koparmak", "category": "Dürüstlük", "origin": "Ezop'un şaka olsun diye 'kurt var' diye bağıran çoban masalından gelir.", "example": "If you keep calling emergencies for minor issues, people will think you are crying wolf.", "exampleTr": "Küçük meseleler için acil durum çağrısı yapmaya devam edersen insanlar yalancı çobanlık yaptığını düşünür.", "group": "iletisim"}, {"id": 98, "idiom": "Grease someone's palm", "literal": "Birinin avucunu yağlamak", "meaning": "Birine rüşvet vermek, el altından para yedirmek", "category": "Yolsuzluk", "origin": "Eski zamanlarda arabanın gıcırtısını kesmek için aksı yağlama benzetmesinden türemiştir.", "example": "The contractor attempted to grease the building inspector's palm to pass the code.", "exampleTr": "Müteahhit, yapı ruhsatını geçirmek için inşaat denetçisinin avucunu yağlamaya kalkıştı.", "group": "para"}, {"id": 99, "idiom": "In a nutshell", "literal": "Bir fındık kabuğunda", "meaning": "Kısacası, özetle, özün özü", "category": "Özet", "origin": "Plinius'un Homeros'un İlyada destanının bir fındık kabuğuna sığacak küçüklükte parşömene yazılması hikayesinden gelir.", "example": "In a nutshell, sustainable economic development requires balanced ecological stewardship.", "exampleTr": "Özetle, sürdürülebilir ekonomik kalkınma dengeli bir ekolojik sorumluluk gerektirir.", "group": "iletisim"}, {"id": 100, "idiom": "Throw caution to the wind", "literal": "Tedbiri rüzgara fırlatmak", "meaning": "Tüm riskleri göze almak, gözünü karartıp cesurca atılmak", "category": "Cesaret & Risk", "origin": "Tedbirli olmayı bir kenara bırakıp tutkularının peşinden gitmeyi simgeler.", "example": "Tired of corporate monotony, she threw caution to the wind and bought a sailing vessel.", "exampleTr": "Kurumsal monotonluktan bıkarak tüm riskleri göze aldı ve bir yelkenli satın aldı.", "group": "cesaret"}];
 
-    let currentIdiomIndex = 0;
-    let isIdiomFlipped = false;
+    let idiomMode = 'library'; // 'library' | 'quiz'
     let idiomActiveFilter = 'all';
+    let idiomSearchQuery = '';
+    let expandedIdiomIds = new Set();
     let idiomQuizScore = 0;
     let idiomQuizStreak = 0;
     let idiomQuizAnswered = false;
     let idiomQuizCurrentItem = null;
-    let idiomMode = 'cards'; // 'cards' | 'quiz'
 
     function setIdiomMode(mode) {
       idiomMode = mode;
-      const cardsView = document.getElementById('idiomCardsView');
+      const libView = document.getElementById('idiomLibraryView');
       const quizView = document.getElementById('idiomQuizView');
-      const btnCards = document.getElementById('idiomModeBtnCards');
+      const btnLib = document.getElementById('idiomModeBtnLibrary');
       const btnQuiz = document.getElementById('idiomModeBtnQuiz');
 
-      if (mode === 'cards') {
-        if (cardsView) cardsView.classList.remove('hidden');
+      if (mode === 'library') {
+        if (libView) libView.classList.remove('hidden');
         if (quizView) quizView.classList.add('hidden');
-        if (btnCards) btnCards.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm';
+        if (btnLib) btnLib.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm transition';
         if (btnQuiz) btnQuiz.className = 'px-3.5 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white transition';
-        renderCurrentIdiomCard();
+        renderIdiomLibrary();
       } else {
-        if (cardsView) cardsView.classList.add('hidden');
+        if (libView) libView.classList.add('hidden');
         if (quizView) quizView.classList.remove('hidden');
-        if (btnQuiz) btnQuiz.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm';
-        if (btnCards) btnCards.className = 'px-3.5 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white transition';
+        if (btnQuiz) btnQuiz.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm transition';
+        if (btnLib) btnLib.className = 'px-3.5 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white transition';
         loadNextIdiomQuizQuestion();
       }
     }
 
     function getFilteredIdioms() {
-      if (idiomActiveFilter === 'all') return IDIOMS_DATA;
-      const matched = IDIOMS_DATA.filter(x => x.group === idiomActiveFilter || x.category.toLowerCase().includes(idiomActiveFilter.toLowerCase()));
-      return matched.length > 0 ? matched : IDIOMS_DATA;
+      let list = IDIOMS_DATA;
+      if (idiomActiveFilter !== 'all') {
+        list = list.filter(x => x.group === idiomActiveFilter || x.category.toLowerCase().includes(idiomActiveFilter.toLowerCase()));
+      }
+      if (idiomSearchQuery && idiomSearchQuery.trim()) {
+        const q = idiomSearchQuery.toLowerCase().trim();
+        list = list.filter(x => 
+          (x.idiom && x.idiom.toLowerCase().includes(q)) ||
+          (x.literal && x.literal.toLowerCase().includes(q)) ||
+          (x.meaning && x.meaning.toLowerCase().includes(q)) ||
+          (x.origin && x.origin.toLowerCase().includes(q)) ||
+          (x.example && x.example.toLowerCase().includes(q)) ||
+          (x.exampleTr && x.exampleTr.toLowerCase().includes(q)) ||
+          (x.category && x.category.toLowerCase().includes(q))
+        );
+      }
+      return list;
     }
 
-    function renderCurrentIdiomCard() {
-      const filtered = getFilteredIdioms();
-      
-      if (filtered.length === 0) return;
-      if (currentIdiomIndex >= filtered.length) currentIdiomIndex = 0;
-      if (currentIdiomIndex < 0) currentIdiomIndex = filtered.length - 1;
-
-      const item = filtered[currentIdiomIndex];
-      isIdiomFlipped = false;
-
-      const cardFront = document.getElementById('idiomCardFront');
-      const cardBack = document.getElementById('idiomCardBack');
-      if (cardFront) cardFront.classList.remove('hidden');
-      if (cardBack) cardBack.classList.add('hidden');
-
-      const elTitle = document.getElementById('idiomCardTitle');
-      const elLiteral = document.getElementById('idiomCardLiteral');
-      const elCategory = document.getElementById('idiomCardCategory');
-      const elCounter = document.getElementById('idiomCardCounter');
-      const elMeaning = document.getElementById('idiomCardMeaning');
-      const elOrigin = document.getElementById('idiomCardOrigin');
-      const elEx = document.getElementById('idiomCardEx');
-      const elExTr = document.getElementById('idiomCardExTr');
-
-      if (elTitle) elTitle.innerText = item.idiom;
-      if (elLiteral) elLiteral.innerText = 'Harfi harfine: "' + item.literal + '"';
-      if (elCategory) elCategory.innerText = item.category;
-      if (elCounter) elCounter.innerText = (currentIdiomIndex + 1) + ' / ' + filtered.length;
-      if (elMeaning) elMeaning.innerText = item.meaning;
-      if (elOrigin) elOrigin.innerText = item.origin;
-      if (elEx) elEx.innerText = '"' + item.example + '"';
-      if (elExTr) elExTr.innerText = item.exampleTr;
-    }
-
-    function flipIdiomCard() {
-      isIdiomFlipped = !isIdiomFlipped;
-      const cardFront = document.getElementById('idiomCardFront');
-      const cardBack = document.getElementById('idiomCardBack');
-      if (cardFront && cardBack) {
-        cardFront.classList.toggle('hidden', isIdiomFlipped);
-        cardBack.classList.toggle('hidden', !isIdiomFlipped);
+    function toggleIdiomDetail(id) {
+      if (expandedIdiomIds.has(id)) {
+        expandedIdiomIds.delete(id);
+      } else {
+        expandedIdiomIds.add(id);
+      }
+      const drawer = document.getElementById('idiomDrawer-' + id);
+      const chev = document.getElementById('idiomChev-' + id);
+      if (drawer) {
+        drawer.classList.toggle('hidden', !expandedIdiomIds.has(id));
+      }
+      if (chev) {
+        chev.innerText = expandedIdiomIds.has(id) ? '▴' : '▾';
       }
       triggerHaptic('tap');
     }
 
-    function prevIdiom() {
-      currentIdiomIndex--;
-      renderCurrentIdiomCard();
-      triggerHaptic('selection');
+    function practiceThisIdiom(id) {
+      const target = IDIOMS_DATA.find(x => x.id === id);
+      if (!target) return;
+      setIdiomMode('quiz');
+      loadNextIdiomQuizQuestion(target);
     }
 
-    function nextIdiom() {
-      currentIdiomIndex++;
-      renderCurrentIdiomCard();
-      triggerHaptic('selection');
+    function handleIdiomSearchInput(val) {
+      idiomSearchQuery = val;
+      const clearBtn = document.getElementById('idiomSearchClearBtn');
+      if (clearBtn) {
+        clearBtn.classList.toggle('hidden', !val.trim());
+      }
+      renderIdiomLibrary();
     }
 
-    function randomIdiom() {
-      const filtered = getFilteredIdioms();
-      currentIdiomIndex = Math.floor(Math.random() * filtered.length);
-      renderCurrentIdiomCard();
-      triggerHaptic('selection');
+    function clearIdiomSearch() {
+      const inp = document.getElementById('idiomSearchInput');
+      if (inp) {
+        inp.value = '';
+        inp.focus();
+      }
+      idiomSearchQuery = '';
+      const clearBtn = document.getElementById('idiomSearchClearBtn');
+      if (clearBtn) clearBtn.classList.add('hidden');
+      renderIdiomLibrary();
     }
 
-    function speakCurrentIdiom() {
-      const filtered = getFilteredIdioms();
-      const item = filtered[currentIdiomIndex];
-      if (item && item.idiom) speakText(item.idiom);
+    function renderIdiomLibrary() {
+      const grid = document.getElementById('idiomLibraryGrid');
+      const countEl = document.getElementById('idiomResultCount');
+      if (!grid) return;
+
+      const pool = getFilteredIdioms();
+      if (countEl) {
+        countEl.innerText = pool.length + ' Deyim';
+      }
+
+      if (pool.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full p-8 text-center bg-black/40 border border-white/[0.08] rounded-2xl space-y-2">
+            <div class="text-3xl">🔍</div>
+            <div class="text-white font-medium text-sm">Eşleşen Deyim Bulunamadı</div>
+            <p class="text-xs text-[#a8998c]">"${escapeHtmlAttr(idiomSearchQuery)}" aramasına uygun kayıt bulunamadı.</p>
+            <button onclick="clearIdiomSearch()" class="mt-2 px-4 py-2 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-semibold">
+              Aramayı Temizle
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = pool.map(item => {
+        const isExpanded = expandedIdiomIds.has(item.id);
+        return `
+          <div class="idiom-card p-4 sm:p-5 rounded-2xl bg-[#140609] hover:bg-[#19080d] border border-white/[0.08] hover:border-amber-500/40 transition-all shadow-xl space-y-3 cursor-pointer group select-none" onclick="toggleIdiomDetail(${item.id})">
+            <!-- Üst Sıra: Kategori Rozeti & Hızlı Ses -->
+            <div class="flex items-center justify-between text-xs pb-1.5 border-b border-white/[0.05]">
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20 text-[10px] font-bold tracking-wider">${item.category}</span>
+                <span class="text-slate-500 font-mono text-[11px]">#${item.id}</span>
+              </div>
+              <button type="button" onclick="event.stopPropagation(); speakText('${escapeHtmlAttr(item.idiom)}')" title="Sesli Dinle" class="p-1.5 rounded-lg bg-white/[0.04] hover:bg-amber-500/20 text-amber-300 transition active:scale-95">
+                🔊
+              </button>
+            </div>
+
+            <!-- Deyim Başlığı & Harfi Harfine Çeviri -->
+            <div>
+              <h3 class="font-serif-hero text-lg sm:text-xl font-bold text-white group-hover:text-amber-300 transition tracking-wide flex items-center justify-between">
+                <span>${escapeHtmlAttr(item.idiom)}</span>
+                <span id="idiomChev-${item.id}" class="text-xs text-amber-400 font-sans font-normal transition-transform">${isExpanded ? '▴' : '▾'}</span>
+              </h3>
+              <div class="text-[11px] sm:text-xs text-slate-400 italic mt-0.5">
+                Harfi harfine: "${escapeHtmlAttr(item.literal)}"
+              </div>
+            </div>
+
+            <!-- Kısa Anlam (Girmeden de görünen) -->
+            <div class="p-2.5 rounded-xl bg-emerald-950/30 border border-emerald-500/20 text-xs text-emerald-300 leading-snug">
+              <strong class="text-emerald-400">💡 Anlamı:</strong> ${escapeHtmlAttr(item.meaning)}
+            </div>
+
+            <!-- Cümle İçi Kullanım (Girmeden de görünen) -->
+            <div class="p-2.5 rounded-xl bg-black/40 border border-white/[0.05] text-xs space-y-0.5">
+              <div class="text-slate-200 italic font-medium leading-relaxed">"${escapeHtmlAttr(item.example)}"</div>
+              <div class="text-[#a8998c] text-[11px]">(${escapeHtmlAttr(item.exampleTr)})</div>
+            </div>
+
+            <!-- Açılır Ayrıntı & Tarihi Kök Hikayesi Çekmecesi -->
+            <div id="idiomDrawer-${item.id}" class="${isExpanded ? '' : 'hidden'} pt-2 border-t border-white/[0.06] space-y-2.5 text-xs">
+              <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-200/90 leading-relaxed space-y-1">
+                <div class="font-bold text-amber-300 flex items-center gap-1.5">
+                  <span>📜</span> <span>Tarihi Kök Hikayesi:</span>
+                </div>
+                <p class="text-slate-300 text-xs leading-relaxed">${escapeHtmlAttr(item.origin)}</p>
+              </div>
+              <div class="flex items-center justify-between text-[11px] text-slate-400 pt-1 font-mono">
+                <span class="text-slate-500">Tıklayarak ayrıntıyı kapatabilirsiniz</span>
+                <button type="button" onclick="event.stopPropagation(); practiceThisIdiom(${item.id})" class="px-3 py-1.5 rounded-xl bg-amber-600/30 hover:bg-amber-600/60 text-amber-200 border border-amber-500/40 transition font-sans font-medium flex items-center gap-1.5 active:scale-95">
+                  <span>🎯</span> <span>Bu Deyimle Test Çöz</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
     }
 
     function filterIdiomsByCategory(cat) {
       idiomActiveFilter = cat;
-      currentIdiomIndex = 0;
       ['all', 'cesaret', 'zaman', 'iletisim', 'para', 'şans'].forEach(c => {
         const btn = document.getElementById('idiomFilter-' + c);
         if (btn) {
           if (c === cat) {
-            btn.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm';
+            btn.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm transition';
           } else {
-            btn.className = 'px-2.5 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-white/[0.03] border border-white/5';
+            btn.className = 'px-2.5 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-white/[0.03] border border-white/5 transition';
           }
         }
       });
       if (idiomMode === 'quiz') {
         loadNextIdiomQuizQuestion();
       } else {
-        renderCurrentIdiomCard();
+        renderIdiomLibrary();
       }
     }
 
     // --- IDIOM QUIZ MODE ---
-    function loadNextIdiomQuizQuestion() {
+    function loadNextIdiomQuizQuestion(specificItem = null) {
       idiomQuizAnswered = false;
       const nextBtn = document.getElementById('idiomQuizNextBtn');
       const fbBox = document.getElementById('idiomQuizFbBox');
       if (nextBtn) nextBtn.classList.add('hidden');
       if (fbBox) fbBox.classList.add('hidden');
 
-      const pool = getFilteredIdioms();
-      idiomQuizCurrentItem = pool[Math.floor(Math.random() * pool.length)];
+      if (specificItem) {
+        idiomQuizCurrentItem = specificItem;
+      } else {
+        const pool = getFilteredIdioms();
+        idiomQuizCurrentItem = pool[Math.floor(Math.random() * pool.length)];
+      }
       if (!idiomQuizCurrentItem) return;
 
       const pIdiom = document.getElementById('idiomQuizPromptIdiom');
@@ -19308,10 +19331,8 @@
     }
 
     function initIdiomsArena() {
-      currentIdiomIndex = 0;
-      isIdiomFlipped = false;
-      setIdiomMode('cards');
-      renderCurrentIdiomCard();
+      setIdiomMode('library');
+      renderIdiomLibrary();
     }
 
     function openCollocFromMenu() { selectMode('phrasal'); }
